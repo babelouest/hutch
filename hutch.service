@@ -1,0 +1,15 @@
+[Unit]
+Description=Hutch password and secret safe
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/usr/local/etc/hutch/hutch.conf
+ExecStart=/usr/local/bin/hutch --config-file=/usr/local/etc/hutch/hutch.conf
+User=pi
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=hutch
