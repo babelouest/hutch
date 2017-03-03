@@ -1,0 +1,4 @@
+*.o
+valgrind.txt
+hutch.conf
+hutch
