@@ -107,7 +107,9 @@ int callback_hutch_safe_get_list (const struct _u_request * request, struct _u_r
   if (check_result_value(j_token, G_OK)) {
     j_safe = safe_get_list(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")));
     if (check_result_value(j_safe, HU_OK)) {
+      response->json_body = json_copy(json_object_get(j_safe, "safe"));
     } else {
+      response->status = 500;
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_list - Error getting safe");
     }
     json_decref(j_safe);
@@ -267,6 +269,7 @@ int callback_hutch_coin_get_list (const struct _u_request * request, struct _u_r
     if (check_result_value(j_coin, HU_OK)) {
       response->json_body = json_copy(json_object_get(j_coin, "coin"));
     } else {
+      response->status = 500;
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_list - Error getting coin");
     }
     json_decref(j_coin);
