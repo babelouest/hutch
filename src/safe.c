@@ -31,11 +31,13 @@ json_t * safe_get_list(struct config_elements * config, const char * username) {
   escaped = h_escape_string(config->conn, username);
   clause_profile = msprintf("= (SELECT `hp_id` FROM `%s` WHERE `hp_username`='%s')", HUTCH_TABLE_PROFILE, escaped);
   
-  j_query = json_pack("{sss[s]s{sis{ssss}}}",
+  j_query = json_pack("{sss[sss]s{sis{ssss}}}",
                       "table",
                       HUTCH_TABLE_SAFE,
                       "columns",
                         "hs_name AS name",
+                        "hs_description AS description",
+                        "hs_key AS `key`",
                       "where",
                         "hs_deleted",
                         0,
