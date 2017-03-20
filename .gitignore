@@ -2,3 +2,6 @@
 valgrind.txt
 hutch.conf
 hutch
+tests/hutch_coin
+tests/hutch_profile
+tests/hutch_safe
