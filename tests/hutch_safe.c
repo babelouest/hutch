@@ -17,7 +17,7 @@
 #define USER_LOGIN "user1"
 #define USER_PASSWORD "MyUser1Password!"
 #define USER_SCOPE_LIST "hutch"
-#define HUTCH_SERVER_URI "http://localhost:4884/hutch"
+#define HUTCH_SERVER_URI "http://localhost:4884/api"
 
 struct _u_request user_req;
 
