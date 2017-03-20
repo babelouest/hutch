@@ -61,17 +61,19 @@ int main (int argc, char ** argv) {
   config->allow_origin = NULL;
   config->static_files_path = NULL;
   config->static_files_prefix = NULL;
-  config->glewlwyd_client_config = malloc(sizeof(struct _glewlwyd_client_config));
+  config->glewlwyd_resource_config = malloc(sizeof(struct _glewlwyd_resource_config));
   config->secure_connection_key_file = NULL;
   config->secure_connection_pem_file = NULL;
-  if (config->instance == NULL || config->glewlwyd_client_config == NULL) {
-    fprintf(stderr, "Memory error - config->instance || config->glewlwyd_client_config\n");
+  if (config->instance == NULL || config->glewlwyd_resource_config == NULL) {
+    fprintf(stderr, "Memory error - config->instance || config->glewlwyd_resource_config\n");
     return 1;
   }
   ulfius_init_instance(config->instance, -1, NULL);
-  config->glewlwyd_client_config->oauth_scope = NULL;
-  config->glewlwyd_client_config->jwt_decode_key = NULL;
-  config->glewlwyd_client_config->jwt_alg = JWT_ALG_NONE;
+  config->glewlwyd_resource_config->method = G_METHOD_HEADER;
+  config->glewlwyd_resource_config->realm = NULL;
+  config->glewlwyd_resource_config->oauth_scope = NULL;
+  config->glewlwyd_resource_config->jwt_decode_key = NULL;
+  config->glewlwyd_resource_config->jwt_alg = JWT_ALG_NONE;
 
   config->mime_types = malloc(sizeof(struct _u_map));
   if (config->mime_types == NULL) {
@@ -111,25 +113,35 @@ int main (int argc, char ** argv) {
   // At this point, we declare all API endpoints and configure 
   
   // Profile endpoint
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_profile_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/history", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_profile_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/profile/", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_profile_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/", NULL, NULL, NULL, &callback_hutch_profile_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/history", NULL, NULL, NULL, &callback_hutch_profile_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/profile/", NULL, NULL, NULL, &callback_hutch_profile_set, (void*)config);
   
   // Safe endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_safe_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_safe_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/history", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_safe_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_safe_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_safe_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_safe_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/", NULL, NULL, NULL, &callback_hutch_safe_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe", NULL, NULL, NULL, &callback_hutch_safe_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/history", NULL, NULL, NULL, &callback_hutch_safe_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/", NULL, NULL, NULL, &callback_hutch_safe_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe", NULL, NULL, NULL, &callback_hutch_safe_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe", NULL, NULL, NULL, &callback_hutch_safe_delete, (void*)config);
 
   // Coin endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_coin_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_coin_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin/history", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_coin_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_coin_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_coin_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_scope, (void*)config->glewlwyd_client_config, NULL, &callback_hutch_coin_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/", NULL, NULL, NULL, &callback_hutch_coin_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin", NULL, NULL, NULL, &callback_hutch_coin_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin/history", NULL, NULL, NULL, &callback_hutch_coin_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/:safe/coin/", NULL, NULL, NULL, &callback_hutch_coin_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe/coin/:coin", NULL, NULL, NULL, &callback_hutch_coin_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe/coin/:coin", NULL, NULL, NULL, &callback_hutch_coin_delete, (void*)config);
+  
+  // Set callback_check_glewlwyd_access_token as authentication callback function for all API endpoints
+  ulfius_set_default_auth_function(config->instance, &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL);
+  
+  // Other endpoints
+  ulfius_add_endpoint_by_val(config->instance, "GET", "/", NULL, &callback_hutch_no_auth, NULL, NULL, &callback_hutch_root, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, &callback_hutch_no_auth, NULL, NULL, &callback_hutch_server_configuration, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", NULL, &callback_hutch_no_auth, NULL, &callback_hutch_options, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->static_files_prefix, "*", &callback_hutch_no_auth, NULL, NULL, &callback_hutch_static_file, (void*)config);
+  ulfius_set_default_endpoint(config->instance, &callback_hutch_no_auth, NULL, NULL, &callback_default, (void*)config);
 
   // Set default headers
   u_map_put(config->instance->default_headers, "Access-Control-Allow-Origin", config->allow_origin);
@@ -137,7 +149,7 @@ int main (int argc, char ** argv) {
   u_map_put(config->instance->default_headers, "Cache-Control", "no-store");
   u_map_put(config->instance->default_headers, "Pragma", "no-cache");
 
-  y_log_message(Y_LOG_LEVEL_INFO, "Start hutch on port %d, prefix: %s, secure: %s, scope %s", config->instance->port, config->url_prefix, config->use_secure_connection?"true":"false", config->glewlwyd_client_config->oauth_scope);
+  y_log_message(Y_LOG_LEVEL_INFO, "Start hutch on port %d, prefix: %s, secure: %s, scope %s", config->instance->port, config->url_prefix, config->use_secure_connection?"true":"false", config->glewlwyd_resource_config->oauth_scope);
   
   if (config->use_secure_connection) {
     char * key_file = get_file_content(config->secure_connection_key_file);
@@ -180,9 +192,9 @@ void exit_server(struct config_elements ** config, int exit_value) {
     free((*config)->static_files_prefix);
     free((*config)->secure_connection_key_file);
     free((*config)->secure_connection_pem_file);
-    free((*config)->glewlwyd_client_config->oauth_scope);
-    free((*config)->glewlwyd_client_config->jwt_decode_key);
-    free((*config)->glewlwyd_client_config);
+    free((*config)->glewlwyd_resource_config->oauth_scope);
+    free((*config)->glewlwyd_resource_config->jwt_decode_key);
+    free((*config)->glewlwyd_resource_config);
     
     u_map_clean_full((*config)->mime_types);
     h_close_db((*config)->conn);
@@ -543,9 +555,9 @@ int build_config_from_file(struct config_elements * config) {
     if (cur_use_rsa) {
       config_setting_lookup_string(jwt, "rsa_pub_file", &cur_rsa_pub_file);
       if (cur_rsa_pub_file != NULL) {
-        config->glewlwyd_client_config->jwt_decode_key = get_file_content(cur_rsa_pub_file);
-        config->glewlwyd_client_config->jwt_alg = JWT_ALG_RS512;
-        if (config->glewlwyd_client_config->jwt_decode_key == NULL) {
+        config->glewlwyd_resource_config->jwt_decode_key = get_file_content(cur_rsa_pub_file);
+        config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS512;
+        if (config->glewlwyd_resource_config->jwt_decode_key == NULL) {
           config_destroy(&cfg);
           fprintf(stderr, "Error, rsa_pub_file content incorrect\n");
           return 0;
@@ -558,8 +570,8 @@ int build_config_from_file(struct config_elements * config) {
     } else if (cur_use_sha) {
       config_setting_lookup_string(jwt, "sha_secret", &cur_sha_secret);
       if (cur_sha_secret != NULL) {
-        config->glewlwyd_client_config->jwt_decode_key = nstrdup(cur_sha_secret);
-        config->glewlwyd_client_config->jwt_alg = JWT_ALG_HS512;
+        config->glewlwyd_resource_config->jwt_decode_key = nstrdup(cur_sha_secret);
+        config->glewlwyd_resource_config->jwt_alg = JWT_ALG_HS512;
       } else {
         config_destroy(&cfg);
         fprintf(stderr, "Error, sha_secret incorrect\n");
@@ -573,8 +585,8 @@ int build_config_from_file(struct config_elements * config) {
   }
   
   if (config_lookup_string(&cfg, "oauth_scope", &cur_oauth_scope)) {
-    config->glewlwyd_client_config->oauth_scope = nstrdup(cur_oauth_scope);
-    if (config->glewlwyd_client_config->oauth_scope == NULL) {
+    config->glewlwyd_resource_config->oauth_scope = nstrdup(cur_oauth_scope);
+    if (config->glewlwyd_resource_config->oauth_scope == NULL) {
       fprintf(stderr, "Error allocating config->oauth_scope, exiting\n");
       config_destroy(&cfg);
       return 0;

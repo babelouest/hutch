@@ -68,21 +68,21 @@ typedef enum {
 } hutch_data_access;
 
 struct config_elements {
-  char *                           config_file;
-  char *                           url_prefix;
-  unsigned long                    log_mode;
-  unsigned long                    log_level;
-  char *                           log_file;
-  char *                           allow_origin;
-  char *                           static_files_path;
-  char *                           static_files_prefix;
-  unsigned int                     use_secure_connection;
-  char *                           secure_connection_key_file;
-  char *                           secure_connection_pem_file;
-  struct _h_connection *           conn;
-  struct _u_instance *             instance;
-  struct _u_map *                  mime_types;
-  struct _glewlwyd_client_config * glewlwyd_client_config;
+  char *                             config_file;
+  char *                             url_prefix;
+  unsigned long                      log_mode;
+  unsigned long                      log_level;
+  char *                             log_file;
+  char *                             allow_origin;
+  char *                             static_files_path;
+  char *                             static_files_prefix;
+  unsigned int                       use_secure_connection;
+  char *                             secure_connection_key_file;
+  char *                             secure_connection_pem_file;
+  struct _h_connection *             conn;
+  struct _u_instance *               instance;
+  struct _u_map *                    mime_types;
+  struct _glewlwyd_resource_config * glewlwyd_resource_config;
 };
 
 // Main functions and misc functions
@@ -139,5 +139,12 @@ int callback_hutch_coin_get_history (const struct _u_request * request, struct _
 int callback_hutch_coin_add (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_coin_set (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_coin_delete (const struct _u_request * request, struct _u_response * response, void * user_data);
+
+int callback_hutch_no_auth (const struct _u_request * request, struct _u_response * response, void * user_data);
+int callback_hutch_root (const struct _u_request * request, struct _u_response * response, void * user_data);
+int callback_hutch_server_configuration (const struct _u_request * request, struct _u_response * response, void * user_data);
+int callback_hutch_options (const struct _u_request * request, struct _u_response * response, void * user_data);
+int callback_hutch_static_file (const struct _u_request * request, struct _u_response * response, void * user_data);
+int callback_default (const struct _u_request * request, struct _u_response * response, void * user_data);
 
 #endif
