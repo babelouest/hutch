@@ -32,11 +32,12 @@ json_t * coin_get_list(struct config_elements * config, const char * username, c
   safe_escaped = h_escape_string(config->conn, safe_name);
   clause_safe = msprintf("= (SELECT `hs_id` FROM `%s` WHERE `hs_name`='%s' AND `hs_deleted`=0 AND `hp_id`=(SELECT `hp_id` FROM `%s` WHERE `hp_username`='%s'))", HUTCH_TABLE_SAFE, safe_escaped, HUTCH_TABLE_PROFILE, escaped);
   
-  j_query = json_pack("{sss[s]s{sis{ssss}}}",
+  j_query = json_pack("{sss[ss]s{sis{ssss}}}",
                       "table",
                       HUTCH_TABLE_COIN,
                       "columns",
                         "hc_name AS name",
+                        "hc_data AS data",
                       "where",
                         "hc_deleted",
                         0,
