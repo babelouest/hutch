@@ -25,13 +25,6 @@
 #include "hutch.h"
 
 /**
- * authorization cllback when there's no authorization required
- */
-int callback_hutch_no_auth (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  return U_OK;
-}
-
-/**
  * default callback endpoint
  * return an error 404
  */

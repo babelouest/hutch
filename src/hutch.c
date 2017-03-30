@@ -113,35 +113,32 @@ int main (int argc, char ** argv) {
   // At this point, we declare all API endpoints and configure 
   
   // Profile endpoint
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/", NULL, NULL, NULL, &callback_hutch_profile_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/history", NULL, NULL, NULL, &callback_hutch_profile_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/profile/", NULL, NULL, NULL, &callback_hutch_profile_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/profile/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_set, (void*)config);
   
   // Safe endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/", NULL, NULL, NULL, &callback_hutch_safe_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe", NULL, NULL, NULL, &callback_hutch_safe_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/history", NULL, NULL, NULL, &callback_hutch_safe_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/", NULL, NULL, NULL, &callback_hutch_safe_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe", NULL, NULL, NULL, &callback_hutch_safe_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe", NULL, NULL, NULL, &callback_hutch_safe_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_delete, (void*)config);
 
   // Coin endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/", NULL, NULL, NULL, &callback_hutch_coin_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin", NULL, NULL, NULL, &callback_hutch_coin_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin/history", NULL, NULL, NULL, &callback_hutch_coin_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/:safe/coin/", NULL, NULL, NULL, &callback_hutch_coin_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe/coin/:coin", NULL, NULL, NULL, &callback_hutch_coin_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe/coin/:coin", NULL, NULL, NULL, &callback_hutch_coin_delete, (void*)config);
-  
-  // Set callback_check_glewlwyd_access_token as authentication callback function for all API endpoints
-  ulfius_set_default_auth_function(config->instance, &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_delete, (void*)config);
   
   // Other endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", "/", NULL, &callback_hutch_no_auth, NULL, NULL, &callback_hutch_root, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, &callback_hutch_no_auth, NULL, NULL, &callback_hutch_server_configuration, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", NULL, &callback_hutch_no_auth, NULL, &callback_hutch_options, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->static_files_prefix, "*", &callback_hutch_no_auth, NULL, NULL, &callback_hutch_static_file, (void*)config);
-  ulfius_set_default_endpoint(config->instance, &callback_hutch_no_auth, NULL, NULL, &callback_default, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", "/", NULL, NULL, NULL, NULL, &callback_hutch_root, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, NULL, NULL, NULL, &callback_hutch_server_configuration, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", NULL, NULL, NULL, &callback_hutch_options, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->static_files_prefix, "*", NULL, NULL, NULL, &callback_hutch_static_file, (void*)config);
+  ulfius_set_default_endpoint(config->instance, NULL, NULL, NULL, &callback_default, (void*)config);
 
   // Set default headers
   u_map_put(config->instance->default_headers, "Access-Control-Allow-Origin", config->allow_origin);

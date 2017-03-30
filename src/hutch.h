@@ -140,7 +140,6 @@ int callback_hutch_coin_add (const struct _u_request * request, struct _u_respon
 int callback_hutch_coin_set (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_coin_delete (const struct _u_request * request, struct _u_response * response, void * user_data);
 
-int callback_hutch_no_auth (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_root (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_server_configuration (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_options (const struct _u_request * request, struct _u_response * response, void * user_data);
