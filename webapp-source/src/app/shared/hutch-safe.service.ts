@@ -12,17 +12,11 @@ export class HutchSafeService {
   constructor(private hutchApiService: HutchApiService) { }
 
   list(): Promise<Safe[]> {
-    return this.hutchApiService.httpRequest('GET', '/safe/')
-               .then(function (result) {
-                 return result.json();
-               });
+    return this.hutchApiService.httpRequest('GET', '/safe/');
   }
 
   get(name: string): Promise<Safe> {
-    return this.hutchApiService.httpRequest('GET', '/safe/' + name)
-               .then(function (result) {
-                 return result.json();
-               });
+    return this.hutchApiService.httpRequest('GET', '/safe/' + name);
   }
 
   add(safe: Safe): Promise<void> {

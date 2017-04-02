@@ -1,15 +1,40 @@
-<ul class="nav nav-tabs">
-  <li role="presentation" class="nav active" [ngClass]="{active:homeActive}">
-    <a href="" [routerLink]="['']" (click)="selectTab($event, false)">Home</a>
-  </li>
-  <li role="presentation" *ngFor="let safe of safeList" class="nav active" [ngClass]="{active:safe.active}">
-    <a href="" [routerLink]="['/safe', safe.name]" title="{{safe.description}}" (click)="selectTab($event, safe)">
-      <i class="fa fa-lock" aria-hidden="true" *ngIf="!safe.safeKey"></i>
-      <i class="fa fa-unlock" aria-hidden="true" *ngIf="safe.safeKey"></i>
-      {{safe.name}}
-    </a>
-  </li>
-</ul>
+<div class="row">
+  <div class="col-xs-11 pull-left">
+    <ul class="nav nav-tabs">
+      <li role="presentation" class="nav active" [ngClass]="{active:homeActive}">
+        <a href="" [routerLink]="['']" (click)="selectTab($event, false)">Home</a>
+      </li>
+      <li role="presentation" *ngFor="let safe of safeList" class="nav active" [ngClass]="{active:safe.active}">
+        <a href="" [routerLink]="['/safe', safe.name]" title="{{safe.description}}" (click)="selectTab($event, safe)">
+          <i class="fa fa-lock" aria-hidden="true" *ngIf="!safe.safeKey"></i>
+          <i class="fa fa-unlock" aria-hidden="true" *ngIf="safe.safeKey"></i>
+          {{safe.name}}
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-xs-1 text-right">
+    <my-oauth2-connect
+      serverUri=""
+      clientId=""
+      responseType="code"
+      redirectUri="http://localhost:8080/"
+      scope="hutch"
+      authorizePath="auth/"
+      tokenPath="token/"
+      storage="localStorage">
+      <div>
+        <button type="button" *ngIf="accessToken" (click)="logOut()" class="btn btn-default" title="log out">
+          <i class="fa fa-sign-out" aria-hidden="true"></i>
+        </button>
+        <button type="button" *ngIf="!accessToken" (click)="signIn()" class="btn btn-default" title="log in">
+          <i class="fa fa-sign-in" aria-hidden="true"></i>
+        </button>
+      </div>
+    </my-oauth2-connect>
+  </div>
+</div>
+
 <main>
   <router-outlet></router-outlet>
 </main>

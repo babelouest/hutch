@@ -56,6 +56,15 @@ export class HutchObserveService {
     }
   }
 
+  removeAll(storeName: string) {
+    let store = _.find(this.storage, {name: storeName});
+    if (store) {
+      delete store.data;
+      store.data = {};
+      store.observable.next({ action: 'clear', name: '' });
+    }
+  }
+
   getObservable(storeName: string): Observable<any> {
     let store = _.find(this.storage, {name: storeName});
     if (store) {

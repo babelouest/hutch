@@ -12,17 +12,11 @@ export class HutchCoinService {
   constructor(private hutchApiService: HutchApiService) { }
 
   list(safe: string): Promise<Coin[]> {
-    return this.hutchApiService.httpRequest('GET', '/safe/' + safe + '/coin/')
-               .then(function (result) {
-                 return result.json();
-               });
+    return this.hutchApiService.httpRequest('GET', '/safe/' + safe + '/coin/');
   }
 
   get(safe: string, name: string): Promise<Coin> {
-    return this.hutchApiService.httpRequest('GET', '/safe/' + safe + '/coin/' + name)
-               .then(function (result) {
-                 return result.json();
-               });
+    return this.hutchApiService.httpRequest('GET', '/safe/' + safe + '/coin/' + name);
   }
 
   add(safe: string, coin: Coin): Promise<void> {

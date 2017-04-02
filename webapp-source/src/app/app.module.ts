@@ -2,14 +2,21 @@ import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
-import { BootstrapModalModule } from 'ng2-bootstrap-modal';
-import { DndModule } from 'ng2-dnd';
+import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
 
+import { DndModule } from 'ng2-dnd';
+import { BootstrapModalModule } from 'ng2-bootstrap-modal';
+import { CookieService } from 'angular2-cookie/services/cookies.service';
+
+import { routing } from './app.routing';
 import { AppComponent } from './app.component';
+
 import { HomeComponent } from './home/home.component';
 import { SafeComponent } from './safe/safe.component';
 import { CoinComponent } from './coin/coin.component';
-import { routing } from './app.routing';
+
+import { Oauth2ConnectComponent } from './oauth2-connect/oauth2-connect.component';
+import { Oauth2ConnectObservable } from './oauth2-connect/oauth2-connect.service';
 
 import { ConfirmComponent } from './modal/confirm.component';
 import { GeneratePasswordComponent } from './modal/generate-password.component';
@@ -23,10 +30,7 @@ import { HutchProfileService } from './shared/hutch-profile.service';
 import { HutchSafeService } from './shared/hutch-safe.service';
 import { HutchCoinService } from './shared/hutch-coin.service';
 import { HutchCryptoService } from './shared/hutch-crypto.service';
-import { HutchStoreService } from './shared/hutch-store.service';
 import { HutchObserveService } from './shared/hutch-observe.service';
-
-import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
 
 @NgModule({
   imports: [
@@ -43,6 +47,7 @@ import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
     HomeComponent,
     SafeComponent,
     CoinComponent,
+    Oauth2ConnectComponent,
     ConfirmComponent,
     GeneratePasswordComponent,
     EditSafeComponent,
@@ -57,14 +62,15 @@ import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
     EditTagsComponent
   ],
   providers: [
+    CookieService,
     WikimediaCommonsService,
     HutchApiService,
     HutchProfileService,
     HutchSafeService,
     HutchCoinService,
     HutchCryptoService,
-    HutchStoreService,
-    HutchObserveService
+    HutchObserveService,
+    Oauth2ConnectObservable
   ],
   bootstrap: [AppComponent]
 })

@@ -12,10 +12,7 @@ export class HutchProfileService {
   constructor(private hutchApiService: HutchApiService) { }
 
   getProfile(): Promise<Profile> {
-    return this.hutchApiService.httpRequest('GET', '/profile')
-               .then(function (result) {
-                 return result.json();
-               });
+    return this.hutchApiService.httpRequest('GET', '/profile');
   }
 
   setProfile(profile: Profile): Promise<void> {
