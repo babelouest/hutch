@@ -1,0 +1,82 @@
+<div class="row">
+  <div class="col-xs-12 input-group text-right" style="padding-right: 10px;">
+    <span class="input-group-btn">
+      <button data-toggle="tooltip" title="Refresh" type="button" class="btn btn-default" (click)="refreshSafe()">
+        <i class="fa fa-refresh"></i>
+      </button>
+      <button data-toggle="tooltip" title="Edit" type="button" class="btn btn-default" (click)="editSafe()">
+        <i class="fa fa-pencil"></i>
+      </button>
+      <button data-toggle="tooltip" title="Lock" type="button" class="btn btn-default" (click)="lockSafe()">
+        <i class="fa fa-lock"></i>
+      </button>
+      <button data-toggle="tooltip" title="Delete" type="button" class="btn btn-default" (click)="deleteSafe()">
+        <i class="fa fa-trash"></i>
+      </button>
+    </span>
+  </div>
+</div>
+
+<h1><span [innerHtml]="safe.name"></span><i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></h1>
+<h3 [innerHtml]="safe.description"></h3>
+
+<div class="container" *ngIf="unlocked">
+  <div class="row" style="margin-bottom:10px;">
+    <div class="col-xs-12 text-center">
+      <label class="label label-danger" *ngIf="errorMessage" [innerHtml]="safe.name"></label>
+    </div>
+  </div>
+  <div class="row" style="margin-bottom:10px;">
+    <div class="col-xs-12 input-group">
+      <span class="input-group-btn">
+        <input class="form-control input-medium" 
+               placeholder="Search coin" 
+               data-toggle="tooltip" 
+               title="Search value" 
+               type="text"
+               [(ngModel)]="searchValue" 
+               (ngModelChange)="searchCoin()">
+        <button data-toggle="tooltip" title="Add coin" type="button" class="btn btn-default" (click)="addCoin()">
+          <i class="fa fa-plus"></i>
+        </button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="unlocked">
+  <div class="col-md-6" *ngFor="let coin of coinListDisplayed">
+    <my-hutch-coin [coin]="coin" [safeKey]="safe.safeKey" [safe]="safe.name" [editCoinMode]="coin.editCoinMode" (onDeleteCoin)="deleteCoin(coin)"></my-hutch-coin>
+  </div>
+</div>
+
+<div class="container" *ngIf="!unlocked">
+  <form (ngSubmit)="checkPassword()">
+    <div class="row">
+      <div class="col-xs-12 text-center">
+        <h4 for="safePassword">Enter your password to unlock the safe: </h4>
+    </div>
+    <div class="row">
+        <input type="password" id="safePassword" name="safePassword" [(ngModel)]="safePassword" class="form-control input-medium">
+      </div>
+    </div>
+    <div class="row" *ngIf="passwordError">
+      <div class="col-xs-12 text-center">
+        <label class="label label-danger">Error, password incorrect</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-center checkbox-inline">
+        <label for="keepSafeOpen">
+          <input type="checkbox" [(ngModel)]="keepSafeOpen" name="keepSafeOpen" id="keepSafeOpen">
+          Keep this safe open on this computer
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-center">
+        <input type="submit" value="OK" class="btn btn-default">
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,15 @@
+<ul class="nav nav-tabs">
+  <li role="presentation" class="nav active" [ngClass]="{active:homeActive}">
+    <a href="" [routerLink]="['']" (click)="selectTab($event, false)">Home</a>
+  </li>
+  <li role="presentation" *ngFor="let safe of safeList" class="nav active" [ngClass]="{active:safe.active}">
+    <a href="" [routerLink]="['/safe', safe.name]" title="{{safe.description}}" (click)="selectTab($event, safe)">
+      <i class="fa fa-lock" aria-hidden="true" *ngIf="!safe.safeKey"></i>
+      <i class="fa fa-unlock" aria-hidden="true" *ngIf="safe.safeKey"></i>
+      {{safe.name}}
+    </a>
+  </li>
+</ul>
+<main>
+  <router-outlet></router-outlet>
+</main>

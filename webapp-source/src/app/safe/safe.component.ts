@@ -1,0 +1,221 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
+import { DialogService } from 'ng2-bootstrap-modal';
+import { Observable } from 'rxjs/Observable';
+
+import { Safe } from '../shared/safe';
+
+import { ConfirmComponent } from '../modal/confirm.component';
+import { EditSafeComponent } from '../modal/edit-safe.component';
+
+import { HutchObserveService } from '../shared/hutch-observe.service';
+import { HutchSafeService } from '../shared/hutch-safe.service';
+import { HutchCoinService } from '../shared/hutch-coin.service';
+import { HutchCryptoService } from '../shared/hutch-crypto.service';
+
+import * as _ from 'lodash';
+
+@Component({
+  selector: 'my-hutch-safe',
+  templateUrl: './safe.component.html',
+  styleUrls: ['./safe.component.scss']
+})
+
+export class SafeComponent implements OnInit {
+  safe: Safe;
+  searchValue: string;
+  loading = false;
+
+  coinList = [];
+  coinListDisplayed = [];
+
+  unlocked = false;
+  passwordError = false;
+  keepSafeOpen = false;
+  safePassword = '';
+  errorMessage = '';
+
+  constructor(private router: Router,
+              private dialogService: DialogService,
+              private route: ActivatedRoute,
+              private hutchStoreService: HutchObserveService,
+              private hutchCryptoService: HutchCryptoService,
+              private hutchSafeService: HutchSafeService,
+              private hutchCoinService: HutchCoinService) {
+    this.safe = {name: '', description: '', key: '', safeKey: null, coinList: []};
+  }
+
+  searchCoin() {
+    if (this.searchValue !== '') {
+      this.coinListDisplayed = [];
+      for (let curCoin of this.coinList) {
+        if (curCoin.displayName.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0) {
+          this.coinListDisplayed.push(curCoin);
+        }
+      }
+    } else {
+      this.coinListDisplayed = this.coinList;
+    }
+  }
+
+  editSafe() {
+    this.dialogService.addDialog(EditSafeComponent, {
+      isNew: false,
+      name: this.safe.name,
+      description: this.safe.description,
+      key: this.safe.key
+    })
+    .subscribe((result) => {
+      if (result) {
+        this.safe.name = result.name;
+        this.safe.description = result.description;
+        this.safe.key = result.key;
+      }
+    });
+  }
+
+  deleteSafe() {
+    this.dialogService.addDialog(ConfirmComponent, {
+      title: 'Delete safe',
+      message: 'Are you sure you want to delete the safe ' + this.safe.name + '?'})
+      .subscribe((result) => {
+        if (result) {
+          this.hutchSafeService.delete(this.safe.name)
+          .then(() => {
+            this.hutchStoreService.delete('safe', this.safe.name);
+            this.router.navigate(['']);
+          });
+        }
+      });
+  }
+
+  addCoin() {
+    let charsAvailable = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let array = new Uint32Array(128);
+    window.crypto.getRandomValues(array);
+    let name = '';
+
+    for (let i = 0; i < array.length; i++) {
+      name += charsAvailable[array[i] % charsAvailable.length];
+    }
+    let newCoin = {
+      editCoinMode: true,
+      name: name,
+      data: '',
+      rows: [],
+      displayName: 'New secret'
+    };
+
+    // Save new coin in the coin list
+    let saveCoin = {
+      displayName: newCoin.displayName,
+      rows: newCoin.rows
+    };
+    this.hutchCryptoService.encryptData(saveCoin, this.safe.safeKey).then((encryptedCoin) => {
+      this.hutchCoinService.add(this.safe.name, { name: newCoin.name, data: encryptedCoin }).then(() => {
+        this.coinList.push(newCoin);
+        this.coinListDisplayed.push(newCoin);
+      })
+      .catch(() => {
+        this.errorMessage = 'Error saving coin';
+      });
+    });
+  }
+
+  loadSafe(name) {
+    this.safe = {name: '', description: '', key: '', safeKey: null, coinList: []};
+    this.coinList = [];
+    this.coinListDisplayed = [];
+    if (this.hutchStoreService.get('safe', name)) {
+      this.safe = this.hutchStoreService.get('safe', name);
+      if (!!this.safe.safeKey) {
+        this.unlocked = true;
+        if (!this.safe.coinList) {
+          this.loadCoins();
+        } else {
+          this.coinList = this.safe.coinList;
+          this.coinListDisplayed = this.safe.coinList;
+        }
+      } else {
+        this.unlocked = false;
+      }
+    } else {
+      this.router.navigate(['']);
+    }
+  }
+
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.loadSafe(params['name']);
+      this.searchValue = '';
+    });
+  }
+
+  checkPassword() {
+    this.passwordError = false;
+    this.hutchCryptoService.getKeyFromPassword(this.safePassword).then((passwordKey) => {
+      this.hutchCryptoService.decryptData(this.safe.key, passwordKey).then((exportedKey) => {
+        this.hutchCryptoService.getKeyFromExport(exportedKey).then((safeKey) => {
+          this.safe.safeKey = safeKey;
+          this.hutchStoreService.add('safe', this.safe.name, this.safe);
+          this.unlocked = true;
+          this.safePassword = '';
+          this.loadSafe(this.safe.name);
+          if (this.keepSafeOpen) {
+            console.log('Store key in local storage', exportedKey);
+            localStorage.setItem(this.safe.name, JSON.stringify(exportedKey));
+          }
+        });
+      })
+      .catch(() => {
+        this.passwordError = true;
+        this.unlocked = false;
+      });
+    });
+  }
+
+  loadCoins() {
+    this.loading = true;
+    this.coinList = [];
+    this.coinListDisplayed = [];
+    this.hutchCoinService.list(this.safe.name).then((result) => {
+      let promises = [];
+      result.forEach((encryptedCoin) => {
+        promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.safe.safeKey).then((decryptedCoin) => {
+          decryptedCoin.name = encryptedCoin.name;
+          this.coinList.push(decryptedCoin);
+          this.coinListDisplayed.push(decryptedCoin);
+        }));
+      });
+      Observable.forkJoin(promises).subscribe(() => {
+        this.safe.coinList = this.coinList;
+        this.hutchStoreService.add('safe', this.safe.name, this.safe);
+        this.loading = false;
+      });
+    })
+    .catch(() => {
+    });
+  }
+
+  refreshSafe() {
+    if (this.safe && this.safe.safeKey) {
+      this.loadCoins();
+    }
+  }
+
+  lockSafe() {
+    delete this.safe.safeKey;
+    delete this.safe.coinList;
+    localStorage.removeItem(this.safe.name);
+    this.coinList = [];
+    this.coinListDisplayed = [];
+    this.unlocked = false;
+    this.hutchStoreService.add('safe', this.safe.name, this.safe);
+  }
+
+  deleteCoin(coin) {
+    _.remove(this.coinList, {name: coin.name});
+    _.remove(this.coinListDisplayed, {name: coin.name});
+  }
+}
