@@ -1,0 +1,15 @@
+{
+  "api": {
+    "baseUrl": "https://resource.server.url/"
+  },
+  "oauth2Connect": {
+      "serverUri": "https://oauth.server.url/",
+      "clientId": "clientxyz",
+      "responseType": "code",
+      "redirectUri": "https://client.server.url/",
+      "scope": "hutch",
+      "authorizePath": "auth/",
+      "tokenPath": "token/",
+      "storage": "localStorage"
+  }
+}

@@ -131,14 +131,12 @@ export class SafeComponent implements OnInit {
       this.safe = this.hutchStoreService.get('safe', name);
       if (!!this.safe.safeKey) {
         this.unlocked = true;
-        if (!this.safe.coinList) {
-          this.loadCoins();
-        } else {
-          this.coinList = this.safe.coinList;
-          this.coinListDisplayed = this.safe.coinList;
-        }
+        this.coinList = this.safe.coinList;
+        this.coinListDisplayed = this.safe.coinList;
       } else {
         this.unlocked = false;
+        this.coinList = [];
+        this.coinListDisplayed = [];
       }
     } else {
       this.router.navigate(['']);
@@ -150,6 +148,15 @@ export class SafeComponent implements OnInit {
       this.loadSafe(params['name']);
       this.searchValue = '';
     });
+    if (this.safe.name) {
+      this.hutchStoreService.getObservable('safe').subscribe((status) => {
+        if (this.safe && status.action === 'add' && status.name === this.safe.name) {
+          this.loadSafe(this.safe.name);
+        } else if (this.safe && (status.action === 'clear' || (status.action === 'delete' && status.name === this.safe.name))) {
+          this.lockSafe();
+        }
+      });
+    }
   }
 
   checkPassword() {
@@ -160,12 +167,12 @@ export class SafeComponent implements OnInit {
           this.safe.safeKey = safeKey;
           this.hutchStoreService.add('safe', this.safe.name, this.safe);
           this.unlocked = true;
-          this.safePassword = '';
-          this.loadSafe(this.safe.name);
+          this.loadCoins();
           if (this.keepSafeOpen) {
-            console.log('Store key in local storage', exportedKey);
             localStorage.setItem(this.safe.name, JSON.stringify(exportedKey));
           }
+          this.safePassword = '';
+          this.keepSafeOpen = false;
         });
       })
       .catch(() => {
@@ -177,19 +184,16 @@ export class SafeComponent implements OnInit {
 
   loadCoins() {
     this.loading = true;
-    this.coinList = [];
-    this.coinListDisplayed = [];
     this.hutchCoinService.list(this.safe.name).then((result) => {
       let promises = [];
+      this.safe.coinList = [];
       result.forEach((encryptedCoin) => {
         promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.safe.safeKey).then((decryptedCoin) => {
           decryptedCoin.name = encryptedCoin.name;
-          this.coinList.push(decryptedCoin);
-          this.coinListDisplayed.push(decryptedCoin);
+          this.safe.coinList.push(decryptedCoin);
         }));
       });
       Observable.forkJoin(promises).subscribe(() => {
-        this.safe.coinList = this.coinList;
         this.hutchStoreService.add('safe', this.safe.name, this.safe);
         this.loading = false;
       });

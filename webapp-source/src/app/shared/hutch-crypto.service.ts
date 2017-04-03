@@ -4,7 +4,8 @@ declare function unescape(s: string): string;
 
 // All crypto calls return a PromiseLike
 // But for some reason, a PromiseLike has no catch function
-// So I cast them into a Promise, so the catch available
+// And if I cast a PromiseLike into a Promise, ng2 zone seems to have problems to refresh data
+// So I wrap them into a Promise, so the catch is available
 // See https://github.com/Microsoft/TypeScript/issues/13947
 export class HutchCryptoService {
 

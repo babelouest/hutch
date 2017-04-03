@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { Observable } from 'rxjs/Observable';
+
 import { HutchSafeService } from './shared/hutch-safe.service';
+import { HutchCoinService } from './shared/hutch-coin.service';
 import { HutchObserveService } from './shared/hutch-observe.service';
 import { HutchCryptoService } from './shared/hutch-crypto.service';
+import { HutchConfigService } from './shared/hutch-config.service';
 
 import { Oauth2ConnectObservable } from './oauth2-connect/oauth2-connect.service';
 
@@ -20,12 +24,19 @@ export class AppComponent implements OnInit {
   title: string;
   safeList = [];
   homeActive = true;
+  // To avoid compilator warning
+  oauth: any = false;
 
   constructor(private hutchSafeService: HutchSafeService,
+              private hutchCoinService: HutchCoinService,
               private hutchStoreService: HutchObserveService,
               private hutchCryptoService: HutchCryptoService,
               private oauth2Connect: Oauth2ConnectObservable,
-              private router: Router) {
+              private router: Router,
+              private config: HutchConfigService) {
+    this.config.get().then(curConfig => {
+      this.oauth = curConfig.oauth2Connect;
+    });
   }
 
   ngOnInit() {
@@ -37,12 +48,28 @@ export class AppComponent implements OnInit {
               try {
                 this.hutchCryptoService.getKeyFromExport(JSON.parse(localStorage.getItem(safe.name))).then((safeKey) => {
                   safe.safeKey = safeKey;
+                  this.hutchCoinService.list(safe.name).then((encryptedCoinList) => {
+                    let promises = [];
+                    safe.coinList = [];
+                    encryptedCoinList.forEach((encryptedCoin) => {
+                      promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, safe.safeKey).then((decryptedCoin) => {
+                        decryptedCoin.name = encryptedCoin.name;
+                        safe.coinList.push(decryptedCoin);
+                      }));
+                    });
+                    Observable.forkJoin(promises).subscribe(() => {
+                      this.hutchStoreService.add('safe', safe.name, safe);
+                    });
+                  })
+                  .catch(() => {
+                  });
                 });
               } catch (e) {
                 localStorage.removeItem(safe.name);
               }
+            } else {
+              this.hutchStoreService.add('safe', safe.name, safe);
             }
-            this.hutchStoreService.add('safe', safe.name, safe);
           }
           this.safeList = result;
           this.hutchStoreService.getObservable('safe').subscribe((event) => {
@@ -62,11 +89,11 @@ export class AppComponent implements OnInit {
             }
           });
         })
-        .catch((error) => {
-          console.log('Error', error);
+        .catch(() => {
         });
       } else if (status === 'disconnected') {
         this.safeList = [];
+        this.router.navigate(['']);
       }
     });
     this.router.events.subscribe((route) => {
@@ -96,5 +123,15 @@ export class AppComponent implements OnInit {
     } else {
       this.homeActive = true;
     }
+  }
+
+  lockAll() {
+    let self = this;
+    _.each(this.safeList, function (curSafe) {
+      delete curSafe.safeKey;
+      delete curSafe.coinList;
+      localStorage.removeItem(curSafe.name);
+      self.hutchStoreService.add('safe', curSafe.name, curSafe);
+    });
   }
 }

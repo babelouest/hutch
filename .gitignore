@@ -7,6 +7,8 @@ tests/hutch_profile
 tests/hutch_safe
 
 # webapp-source ignore list, based on original .gitignore from angular2-webpack: https://github.com/preboot/angular-webpack
+webapp-source/src/public/config.json
+
 # Logs
 webapp-source/logs
 webapp-source/*.log

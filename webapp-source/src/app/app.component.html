@@ -13,21 +13,24 @@
       </li>
     </ul>
   </div>
-  <div class="col-xs-1 text-right">
-    <my-oauth2-connect
-      serverUri=""
-      clientId=""
-      responseType="code"
-      redirectUri="http://localhost:8080/"
-      scope="hutch"
-      authorizePath="auth/"
-      tokenPath="token/"
-      storage="localStorage">
-      <div>
-        <button type="button" *ngIf="accessToken" (click)="logOut()" class="btn btn-default" title="log out">
+  <div class="col-xs-1 text-right" *ngIf="oauth">
+    <my-oauth2-connect #oauth2
+      [serverUri]="oauth.serverUri"
+      [clientId]="oauth.clientId"
+      [responseType]="oauth.responseType"
+      [redirectUri]="oauth.redirectUri"
+      [scope]="oauth.scope"
+      [authorizePath]="oauth.authorizePath"
+      [tokenPath]="oauth.tokenPath"
+      [storage]="oauth.storage">
+      <div class="input-group-btn" style="padding: 10px;">
+        <button type="button" (click)="lockAll()" class="btn btn-default" title="lock all safe">
+          <i class="fa fa-lock" aria-hidden="true"></i>
+        </button>
+        <button type="button" *ngIf="oauth2.accessToken" (click)="oauth2.logOut()" class="btn btn-default" title="log out">
           <i class="fa fa-sign-out" aria-hidden="true"></i>
         </button>
-        <button type="button" *ngIf="!accessToken" (click)="signIn()" class="btn btn-default" title="log in">
+        <button type="button" *ngIf="!oauth2.accessToken" (click)="oauth2.logIn()" class="btn btn-default" title="log in">
           <i class="fa fa-sign-in" aria-hidden="true"></i>
         </button>
       </div>

@@ -2,6 +2,7 @@ import { Injectable }    from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
 
 import { Oauth2ConnectObservable } from '../oauth2-connect/oauth2-connect.service';
+import { HutchConfigService } from './hutch-config.service';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -12,9 +13,12 @@ export class HutchApiService {
   });
 
   // TODO: Use config service
-  private hutcApiBasehUrl = '';
+  private hutchApiBasehUrl = '';
 
-  constructor(private http: Http, private oauth2Connect: Oauth2ConnectObservable) {
+  constructor(private http: Http, private oauth2Connect: Oauth2ConnectObservable, private config: HutchConfigService) {
+    this.config.get().then(curConfig => {
+      this.hutchApiBasehUrl = curConfig.api.baseUrl;
+    });
     this.oauth2Connect.getToken().subscribe((token) => {
       this.headers.set('Authorization', 'Bearer ' + token);
     });
@@ -28,7 +32,7 @@ export class HutchApiService {
       }
       let options: RequestOptions = new RequestOptions({
         method: method,
-        url: this.hutcApiBasehUrl + url,
+        url: this.hutchApiBasehUrl + url,
         search: searchParams,
         body: JSON.stringify(data),
         headers: this.headers

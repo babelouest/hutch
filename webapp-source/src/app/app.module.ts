@@ -31,6 +31,7 @@ import { HutchSafeService } from './shared/hutch-safe.service';
 import { HutchCoinService } from './shared/hutch-coin.service';
 import { HutchCryptoService } from './shared/hutch-crypto.service';
 import { HutchObserveService } from './shared/hutch-observe.service';
+import { HutchConfigService } from './shared/hutch-config.service';
 
 @NgModule({
   imports: [
@@ -64,6 +65,7 @@ import { HutchObserveService } from './shared/hutch-observe.service';
   providers: [
     CookieService,
     WikimediaCommonsService,
+    HutchConfigService,
     HutchApiService,
     HutchProfileService,
     HutchSafeService,

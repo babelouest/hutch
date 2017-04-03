@@ -1,3 +1,13 @@
+/**
+ *
+ * Oauth2-connect Observable service, to be informed of the status change
+ * and of the new access_token
+ *
+ * Copyright 2017 Nicolas Mora <mail@babelouest.org>
+ *
+ * Licence: MIT
+ *
+ */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';

@@ -1,3 +1,16 @@
+/**
+ *
+ * OAuth2-connect
+ *
+ * Angular 2 component for OAuth2 connection
+ *
+ * Implements response types implicit and code
+ *
+ * Copyright 2017 Nicolas Mora <mail@babelouest.org>
+ *
+ * Licence: MIT
+ *
+ */
 import { Component, OnInit, Input } from '@angular/core';
 import { CookieService } from 'angular2-cookie/core';
 import { Router } from '@angular/router';
@@ -7,28 +20,29 @@ import { Oauth2ConnectObservable } from './oauth2-connect.service';
 
 @Component({
   selector: 'my-oauth2-connect',
-  template:
-`<div #contentWrap><ng-content></ng-content></div>
-<div *ngIf="contentWrap.childNodes.length === 0">
+  template: `<div #content><ng-content></ng-content></div>
+<div *ngIf="content.childNodes.length === 0">
   <button type="button" *ngIf="accessToken" (click)="logOut()" title="log out">
-    <i class="fa fa-sign-out" aria-hidden="true"></i>
+    Log out
   </button>
-  <button type="button" *ngIf="!accessToken" (click)="signIn()" title="log in">
-    <i class="fa fa-sign-in" aria-hidden="true"></i>
+  <button type="button" *ngIf="!accessToken" (click)="logIn()" title="log in">
+    Log in
   </button>
 </div>`
 })
 
 export class Oauth2ConnectComponent implements OnInit {
-  @Input() serverUri: string;
-  @Input() clientId: string;
-  @Input() responseType: string;
-  @Input() redirectUri: string;
-  @Input() scope: string;
-  @Input() authorizePath: string;
-  @Input() tokenPath?: string;
-  @Input() storage?: string;
+  @Input() serverUri: string;      // URL to the OAuth2 server
+  @Input() clientId: string;       // client_id to use
+  @Input() responseType: string;   // response_type, can be 'code' or 'token'
+  @Input() redirectUri: string;    // redirect_uri for the connection
+  @Input() scope?: string;         // multiple scopes must be separated by a space
+  @Input() authorizePath: string;  // Path to auth url, relative to serverUri
+  @Input() tokenPath?: string;     // Path to token url, relative to serverUri, not used if response_type is 'token'
+  @Input() storage?: string;       // Storage method to store the refresh_token if response_type is 'code',
+                                   // can be 'localStorage' or 'cookie' or null, default is null
 
+  storageName = 'oauth2-token';
   accessToken = '';
   refreshToken = '';
   code = '';
@@ -42,33 +56,44 @@ export class Oauth2ConnectComponent implements OnInit {
 
   ngOnInit() {
     this.oauth2ConnectObservable.setStatus('not connected');
+    this.parseUrl(this.router.url);
     this.router.events.subscribe((route) => {
-      let parsedUrl = this.router.parseUrl(route.url);
-      let fragmentParams = this.getQueryParams(parsedUrl.fragment);
-      if (this.responseType === 'token' && fragmentParams['access_token']) {
-        this.accessToken = fragmentParams['access_token'];
-        this.oauth2ConnectObservable.setToken(this.accessToken);
-        this.oauth2ConnectObservable.setStatus('connected');
-        this.expiresIn = fragmentParams['expires_in'];
-        this.runTokenTimeout();
-        this.router.navigate(['']);
-      } else if (this.responseType === 'code' && parsedUrl.queryParams['code']) {
-        // Get refresh_token from code
-        this.code = parsedUrl.queryParams['code'];
-        this.getRefreshTokenFromCode();
-        this.router.navigate(['']);
-      } else if (!fragmentParams['error'] && !this.accessToken && !this.code) {
-        this.refreshToken = this.getStorage();
-        if (this.refreshToken) {
-          this.runRefreshToken();
-        } else {
-          // this.signIn();
-        }
-      }
-      this.runTokenTimeout();
+      this.parseUrl(route.url);
     });
   }
 
+  parseUrl(url) {
+    let parsedUrl = this.router.parseUrl(url);
+    let fragmentParams = this.getQueryParams(parsedUrl.fragment);
+    if (this.responseType === 'token' && fragmentParams['access_token']) {
+      // Get access_token from fragment url
+      this.accessToken = fragmentParams['access_token'];
+      this.oauth2ConnectObservable.setToken(this.accessToken);
+      this.oauth2ConnectObservable.setStatus('connected');
+      this.expiresIn = fragmentParams['expires_in'];
+      this.runTokenTimeout();
+      this.router.navigate(['']);
+    } else if (this.responseType === 'code' && parsedUrl.queryParams['code']) {
+      // Get refresh_token from code
+      this.code = parsedUrl.queryParams['code'];
+      this.getRefreshTokenFromCode();
+      this.router.navigate(['']);
+    } else if (!fragmentParams['error'] && !this.accessToken && !this.code) {
+      this.refreshToken = this.getStorage();
+      if (this.refreshToken) {
+        this.runRefreshToken();
+      }
+    }
+    this.runTokenTimeout();
+  }
+
+  /**
+   * Parse a parameters string like 'foo=bar&bob=sam' into an object like
+   * {
+   *   foo: 'bar',
+   *   bob: 'sam'
+   * }
+   */
   getQueryParams(qs) {
     if (qs) {
       qs = qs.split('+').join(' ');
@@ -86,6 +111,11 @@ export class Oauth2ConnectComponent implements OnInit {
     }
   }
 
+  /**
+   * Run a timeout to disable the access_token when exired
+   * and refresh the token if available
+   * Expiration is ran 1 minute before expires_in value
+   */
   runTokenTimeout() {
     if (this.expiresIn > 0) {
       clearTimeout(this.timer);
@@ -97,6 +127,9 @@ export class Oauth2ConnectComponent implements OnInit {
     }
   }
 
+  /**
+   * Request a new access_token from on a refresh_token
+   */
   runRefreshToken() {
     if (this.refreshToken) {
       let bodyParams = new URLSearchParams();
@@ -134,6 +167,9 @@ export class Oauth2ConnectComponent implements OnInit {
     }
   }
 
+  /**
+   * Request a refresh_token from a code
+   */
   getRefreshTokenFromCode() {
     if (this.code) {
       let bodyParams = new URLSearchParams();
@@ -157,13 +193,13 @@ export class Oauth2ConnectComponent implements OnInit {
           .toPromise()
           .then((result) => {
             this.accessToken = result.json().access_token;
+            this.expiresIn = result.json().expires_in;
             this.oauth2ConnectObservable.setToken(this.accessToken);
             this.refreshToken = result.json().refresh_token;
             this.setStorage(this.refreshToken);
-            this.expiresIn = result.json().expires_in;
+            this.code = '';
             this.oauth2ConnectObservable.setStatus('connected');
             this.runTokenTimeout();
-            this.code = '';
           })
           .catch(() => {
             this.code = '';
@@ -171,51 +207,72 @@ export class Oauth2ConnectComponent implements OnInit {
     }
   }
 
+  /**
+   * Get the refresh_token from the storage if available
+   */
   getStorage(): string {
     if (this.storage === 'localStorage') {
-      return localStorage.getItem('oauth2-token');
+      return localStorage.getItem(this.storageName);
     } else if (this.storage === 'cookie') {
-      return this.cookieService.get('oauth2-token');
+      return this.cookieService.get(this.storageName);
     } else {
       return null;
     }
   }
 
+  /**
+   * Set the refresh_token in the storage if available
+   */
   setStorage(token: string) {
     if (this.storage === 'localStorage') {
-      localStorage.setItem('oauth2-token', token);
+      localStorage.setItem(this.storageName, token);
     } else if (this.storage === 'cookie') {
-      this.cookieService.put('oauth2-token', token);
+      this.cookieService.put(this.storageName, token);
     }
   }
 
+  /**
+   * Remove the refresh_token from the storage if available
+   */
   removeStorage() {
     if (this.storage === 'localStorage') {
-      localStorage.removeItem('oauth2-token');
+      localStorage.removeItem(this.storageName);
     } else if (this.storage === 'cookie') {
-      this.cookieService.remove('oauth2-token');
+      this.cookieService.remove(this.storageName);
     }
   }
 
-  signIn() {
+  /**
+   * Redirect to the connection url with the specified parameters
+   */
+  logIn() {
     let redirectUri = this.serverUri + this.authorizePath +
                       '?response_type=' + this.responseType +
                       '&client_id=' + this.clientId +
-                      '&redirect_uri=' + encodeURIComponent(this.redirectUri) +
-                      '&scope=' + this.scope;
+                      '&redirect_uri=' + encodeURIComponent(this.redirectUri);
+    if (this.scope) {
+      redirectUri += '&scope=' + this.scope;
+    }
     document.location.href = redirectUri;
   }
 
+  /**
+   * Erase the tokens and clear the storage
+   */
   logOut() {
     this.signOut();
     this.removeStorage();
   }
 
+  /**
+   * Erase the tokens and send a disconnect signal
+   */
   signOut() {
     this.accessToken = '';
     this.refreshToken = '';
     this.expiresIn = 0;
     clearTimeout(this.timer);
     this.oauth2ConnectObservable.setStatus('disconnected');
+    this.oauth2ConnectObservable.setToken(this.accessToken);
   }
 }
