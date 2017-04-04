@@ -8,16 +8,26 @@ export interface EditTagsModel {
     template: `<div class='modal-dialog'>
                 <div class='modal-content'>
                    <div class='modal-header'>
-                     <button type='button' class='close' (click)='close()'>&times;</button>
-                     <h4 class='modal-title'>Edit tags</h4>
+                     <button type='button' class='close' (click)='close()' [title]='"button_cancel" | translate'>&times;</button>
+                     <h4 class='modal-title' [innerHtml]='"modal_tags_title" | translate'></h4>
                    </div>
                    <div class='modal-body'>
-                     <p>Enter a list of tags separated by a comma</p>
-                     <input type='text' data-role='tagsinput' [(ngModel)]='tags'>
+                     <p [innerHtml]='"modal_tags_message" | translate'></p>
+                     <input type='text' data-role='tagsinput' [(ngModel)]='tags' [placeholder]='"modal_tags_placeholder" | translate''>
                    </div>
                    <div class='modal-footer'>
-                     <button type='button' class='btn btn-default' (click)='confirm()'>OK</button>
-                     <button type='button' class='btn btn-default' (click)='close()' >Cancel</button>
+                     <button type='button'
+                             class='btn btn-default'
+                             (click)='confirm()'
+                             [title]='"button_ok" | translate'
+                             [innerHtml]='"button_ok" | translate'>
+                     </button>
+                     <button type='button'
+                             class='btn btn-default'
+                             (click)='close()'
+                             [title]='"button_cancel" | translate'
+                             [innerHtml]='"button_cancel" | translate'>
+                     </button>
                    </div>
                  </div>
               </div>`

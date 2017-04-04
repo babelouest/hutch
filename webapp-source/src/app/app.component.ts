@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { TranslateService } from 'ng2-translate';
+
 import { Observable } from 'rxjs/Observable';
 
 import { HutchSafeService } from './shared/hutch-safe.service';
@@ -26,6 +28,8 @@ export class AppComponent implements OnInit {
   homeActive = true;
   // To avoid compilator warning
   oauth: any = false;
+  curLang: string;
+  langs: any;
 
   constructor(private hutchSafeService: HutchSafeService,
               private hutchCoinService: HutchCoinService,
@@ -33,10 +37,18 @@ export class AppComponent implements OnInit {
               private hutchCryptoService: HutchCryptoService,
               private oauth2Connect: Oauth2ConnectObservable,
               private router: Router,
+              private translate: TranslateService,
               private config: HutchConfigService) {
     this.config.get().then(curConfig => {
+      this.translate.setDefaultLang(curConfig.lang.default);
+      this.curLang = curConfig.lang.default;
+      this.langs = curConfig.lang.available;
       this.oauth = curConfig.oauth2Connect;
     });
+  }
+
+  changeLang() {
+    this.translate.use(this.curLang);
   }
 
   ngOnInit() {

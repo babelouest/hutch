@@ -7,6 +7,7 @@ import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
 import { DndModule } from 'ng2-dnd';
 import { BootstrapModalModule } from 'ng2-bootstrap-modal';
 import { CookieService } from 'angular2-cookie/services/cookies.service';
+import { TranslateModule } from 'ng2-translate/ng2-translate';
 
 import { routing } from './app.routing';
 import { AppComponent } from './app.component';
@@ -41,7 +42,8 @@ import { HutchConfigService } from './shared/hutch-config.service';
     FormsModule,
     routing,
     BootstrapModalModule,
-    DndModule.forRoot()
+    DndModule.forRoot(),
+    TranslateModule.forRoot()
   ],
   declarations: [
     AppComponent,

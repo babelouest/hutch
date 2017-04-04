@@ -14,7 +14,7 @@ export interface EditSafeModel {
     template: `<div class='modal-dialog'>
                 <div class='modal-content'>
                   <div class='modal-header'>
-                    <button type='button' class='close' (click)='close()'>&times;</button>
+                    <button type='button' class='close' (click)='close()' [title]='"button_cancel" | translate'>&times;</button>
                     <h4 class='modal-title'>{{name || 'New safe'}}</h4>
                   </div>
                   <div class='modal-body'>
@@ -24,7 +24,10 @@ export interface EditSafeModel {
                         <label>Name</label>
                       </div>
                       <div class='col-xs-6'>
-                        <input type='text' class='form-control' [(ngModel)]='name' placeholder='Name'>
+                        <input type='text'
+                               class='form-control'
+                               [(ngModel)]='name'
+                               [placeholder]='"modal_safe_name" | translate'>
                       </div>
                     </div>
                     <div class='row'>
@@ -32,7 +35,10 @@ export interface EditSafeModel {
                         <label>Description</label>
                       </div>
                       <div class='col-xs-6'>
-                        <input type='text' class='form-control' [(ngModel)]='description' placeholder='Description'>
+                        <input type='text'
+                               class='form-control'
+                               [(ngModel)]='description'
+                               [placeholder]='"modal_safe_description" | translate'>
                       </div>
                     </div>
                     <div class='row'>
@@ -40,7 +46,10 @@ export interface EditSafeModel {
                         <label>New password</label>
                       </div>
                       <div class='col-xs-6'>
-                        <input type='password' class='form-control' [(ngModel)]='password' placeholder='New password'>
+                        <input type='password'
+                               class='form-control'
+                               [(ngModel)]='password'
+                               [placeholder]='"modal_safe_new_password" | translate'>
                       </div>
                     </div>
                     <div class='row'>
@@ -48,21 +57,35 @@ export interface EditSafeModel {
                         <label>Confirm new password</label>
                       </div>
                       <div class='col-xs-6'>
-                        <input type='password' class='form-control' [(ngModel)]='confirmPassword' placeholder='Confirm new password'>
+                        <input type='password'
+                               class='form-control'
+                               [(ngModel)]='confirmPassword'
+                               [placeholder]='"modal_safe_new_password_confirm" | translate'>
                       </div>
                     </div>
                     <div class='row' *ngIf='error'>
                       <div class='col-xs-12 text-center'>
-                        <label class='label label-danger'>An error has occured</label>
+                        <label class='label label-danger' [innerHtml]='"modal_safe_error" | translate'></label>
                       </div>
                     </div>
                   </div>
                   <div class='modal-footer'>
-                    <button type='button' class='btn btn-default' (click)='confirm()' [disabled]='!isValid()'>OK</button>
-                    <button type='button' class='btn btn-default' (click)='close()' >Cancel</button>
-                    </div>
-                 </div>
-              </div>`
+                    <button type='button'
+                            class='btn btn-default'
+                            (click)='confirm()'
+                            [disabled]='!isValid()'
+                            [title]='"button_ok" | translate'
+                            [innerHtml]='"button_ok" | translate'>
+                    </button>
+                    <button type='button'
+                            class='btn btn-default'
+                            (click)='close()'
+                            [title]='"button_cancel" | translate'
+                            [innerHtml]='"button_cancel" | translate'>
+                    </button>
+                  </div>
+               </div>
+            </div>`
 })
 export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeModel> implements EditSafeModel {
   title: string;

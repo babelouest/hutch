@@ -1,8 +1,8 @@
 <div class="row">
-  <div class="col-xs-11 pull-left">
+  <div class="col-xs-10 pull-left">
     <ul class="nav nav-tabs">
       <li role="presentation" class="nav active" [ngClass]="{active:homeActive}">
-        <a href="" [routerLink]="['']" (click)="selectTab($event, false)">Home</a>
+        <a href="" [routerLink]="['']" (click)="selectTab($event, false)">{{ 'menu_home' | translate }}</a>
       </li>
       <li role="presentation" *ngFor="let safe of safeList" class="nav active" [ngClass]="{active:safe.active}">
         <a href="" [routerLink]="['/safe', safe.name]" title="{{safe.description}}" (click)="selectTab($event, safe)">
@@ -13,7 +13,7 @@
       </li>
     </ul>
   </div>
-  <div class="col-xs-1 text-right" *ngIf="oauth">
+  <div class="col-xs-2" *ngIf="oauth">
     <my-oauth2-connect #oauth2
       [serverUri]="oauth.serverUri"
       [clientId]="oauth.clientId"
@@ -23,16 +23,21 @@
       [authorizePath]="oauth.authorizePath"
       [tokenPath]="oauth.tokenPath"
       [storage]="oauth.storage">
-      <div class="input-group-btn" style="padding: 10px;">
-        <button type="button" (click)="lockAll()" class="btn btn-default" title="lock all safe">
-          <i class="fa fa-lock" aria-hidden="true"></i>
-        </button>
-        <button type="button" *ngIf="oauth2.accessToken" (click)="oauth2.logOut()" class="btn btn-default" title="log out">
-          <i class="fa fa-sign-out" aria-hidden="true"></i>
-        </button>
-        <button type="button" *ngIf="!oauth2.accessToken" (click)="oauth2.logIn()" class="btn btn-default" title="log in">
-          <i class="fa fa-sign-in" aria-hidden="true"></i>
-        </button>
+      <div class="text-right input-group" style="padding-right: 10px;">
+        <select [(ngModel)]="curLang" (ngModelChange)="changeLang()" class="form-control">
+          <option *ngFor="let lang of langs" [value]="lang.code" [innerHtml]="lang.display"></option>
+        </select>
+        <span class="input-group-btn">
+          <button type="button" (click)="lockAll()" class="btn btn-default" [title]="'lock_all_safe' | translate">
+            <i class="fa fa-lock" aria-hidden="true"></i>
+          </button>
+          <button type="button" *ngIf="oauth2.accessToken" (click)="oauth2.logOut()" class="btn btn-default" [title]="'log_out' | translate">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+          </button>
+          <button type="button" *ngIf="!oauth2.accessToken" (click)="oauth2.logIn()" class="btn btn-default" [title]="'log_in' | translate">
+            <i class="fa fa-sign-in" aria-hidden="true"></i>
+          </button>
+        </span>
       </div>
     </my-oauth2-connect>
   </div>

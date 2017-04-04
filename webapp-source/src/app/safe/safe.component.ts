@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { DialogService } from 'ng2-bootstrap-modal';
+import { TranslateService } from 'ng2-translate/ng2-translate';
 import { Observable } from 'rxjs/Observable';
 
 import { Safe } from '../shared/safe';
@@ -37,8 +38,9 @@ export class SafeComponent implements OnInit {
   errorMessage = '';
 
   constructor(private router: Router,
-              private dialogService: DialogService,
               private route: ActivatedRoute,
+              private translate: TranslateService,
+              private dialogService: DialogService,
               private hutchStoreService: HutchObserveService,
               private hutchCryptoService: HutchCryptoService,
               private hutchSafeService: HutchSafeService,
@@ -77,8 +79,8 @@ export class SafeComponent implements OnInit {
 
   deleteSafe() {
     this.dialogService.addDialog(ConfirmComponent, {
-      title: 'Delete safe',
-      message: 'Are you sure you want to delete the safe ' + this.safe.name + '?'})
+      title: this.translate.instant('safe_delete_safe'),
+      message: this.translate.instant('safe_delete_safe_confirm', { name: this.safe.name })})
       .subscribe((result) => {
         if (result) {
           this.hutchSafeService.delete(this.safe.name)
@@ -104,7 +106,7 @@ export class SafeComponent implements OnInit {
       name: name,
       data: '',
       rows: [],
-      displayName: 'New secret'
+      displayName: this.translate.instant('safe_new_coin')
     };
 
     // Save new coin in the coin list
@@ -118,7 +120,7 @@ export class SafeComponent implements OnInit {
         this.coinListDisplayed.push(newCoin);
       })
       .catch(() => {
-        this.errorMessage = 'Error saving coin';
+        this.errorMessage = this.translate.instant('coin_save_error');
       });
     });
   }

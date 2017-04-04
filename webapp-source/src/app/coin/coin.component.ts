@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { Clipboard } from 'ts-clipboard';
+import { TranslateService } from 'ng2-translate/ng2-translate';
 
 import { CoinDisplayed, Row } from '../shared/coin';
 import { ConfirmComponent } from '../modal/confirm.component';
@@ -25,7 +26,8 @@ export class CoinComponent implements OnInit {
   newRowMode = false;
   newRow: Row;
 
-  constructor(private dialogService: DialogService,
+  constructor(private translate: TranslateService,
+              private dialogService: DialogService,
               private hutchCryptoService: HutchCryptoService,
               private hutchCoinService: HutchCoinService) {
   }
@@ -35,8 +37,8 @@ export class CoinComponent implements OnInit {
 
   deleteCoin() {
     this.dialogService.addDialog(ConfirmComponent, {
-      title: 'Delete secret',
-      message: 'Are you sure you want to delete secret ' + this.coin.displayName + '?'})
+      title: this.translate.instant('coin_delete_coin'),
+      message: this.translate.instant('coin_delete_coin_confirm', { name: this.coin.displayName })})
       .subscribe((result) => {
         if (result) {
           this.hutchCoinService.delete(this.safe, this.coin.name).then(() => {
@@ -69,16 +71,15 @@ export class CoinComponent implements OnInit {
     row.edit = true;
     row.saveValue = row.value;
     if (row.type === 'password') {
-      row.value = '';
-      row.valueVerified = '';
+      row.valueVerified = row.value;
     }
   }
 
   showPassword(row) {
     if (!row.show) {
       this.dialogService.addDialog(ConfirmComponent, {
-        title: 'Show password',
-        message: 'Are you sure you want to show this password?'})
+        title: this.translate.instant('coin_show_password'),
+        message: this.translate.instant('coin_show_password_confirm')})
         .subscribe((result) => {
           if (result) {
             row.show = true;
@@ -102,8 +103,8 @@ export class CoinComponent implements OnInit {
 
   deleteRow(index) {
     this.dialogService.addDialog(ConfirmComponent, {
-      title: 'Delete row',
-      message: 'Are you sure you want to delete this row?'})
+      title: this.translate.instant('coin_delete_row'),
+      message: this.translate.instant('coin_delete_row_confirm')})
       .subscribe((result) => {
         if (result) {
           this.coin.rows.splice(index, 1);
@@ -152,8 +153,8 @@ export class CoinComponent implements OnInit {
 
   deleteSecretQuestion(row, index) {
     this.dialogService.addDialog(ConfirmComponent, {
-      title: 'Delete secret question',
-      message: 'Are you sure you want to delete this secret question?'})
+      title: this.translate.instant('coin_delete_secret_question'),
+      message: this.translate.instant('coin_delete_secret_question_confirm')})
       .subscribe((result) => {
         if (result) {
           row.value.splice(index, 1);
@@ -224,5 +225,13 @@ export class CoinComponent implements OnInit {
         // TODO: Display message
       });
     });
+  }
+
+  displayTags(row) {
+    if (row.tags) {
+      return row.tags.join(',');
+    } else {
+      return '';
+    }
   }
 }

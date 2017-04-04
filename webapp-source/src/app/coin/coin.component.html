@@ -9,34 +9,34 @@
         <form (ngSubmit)="saveCoin()">
           <span class="input-group">
             <input type="text" class="form-control input-medium" *ngIf="editCoinMode" name="coinName" [(ngModel)]="coin.displayName">
-            <button title="Save name" type="submit" class="btn btn-default">
+            <button [title]="'coin_save_name' | translate" type="submit" class="btn btn-default">
               <i class="fa fa-save" aria-hidden="true"></i>
             </button>
-            <button title="Cancel" (click)="cancelEditCoin()" type="button" class="btn btn-default">
+            <button [title]="'button_cancel' | translate" (click)="cancelEditCoin()" type="button" class="btn btn-default">
               <i class="fa fa-close" aria-hidden="true"></i>
             </button>
           </span>
         </form>
       </div>
       <div class="btn-group pull-right" *ngIf="!editCoinMode">
-        <button title="Edit" (click)="editCoin()" class="btn btn-default">
+        <button [title]="'button_edit' | translate" (click)="editCoin()" class="btn btn-default">
           <i class="fa fa-pencil" aria-hidden="true"></i>
         </button>
-        <button title="Delete" (click)="deleteCoin()" class="btn btn-default">
+        <button [title]="'button_delete' | translate" (click)="deleteCoin()" class="btn btn-default">
           <i class="fa fa-trash" aria-hidden="true"></i>
         </button>
-        <button title="Add a line" (click)="addCoinRow()" class="btn btn-default">
+        <button [title]="'button_add_line' | translate" (click)="addCoinRow()" class="btn btn-default">
           <i class="fa fa-plus" aria-hidden="true"></i>
         </button>
       </div>
       <div *ngIf="!editCoinMode">
         <div class="btn-group pull-right" *ngFor="let row of coin.rows">
-          <button title="Copy password" *ngIf="row.type === 'password'" (click)="copyToClipboard(row.value)" class="btn btn-default">
+          <button [title]="'button_copy_password' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'password'" (click)="copyToClipboard(row.value)" class="btn btn-default">
             <i class="fa fa-key" aria-hidden="true"></i>
           </button>
         </div>
         <div class="btn-group pull-right" *ngFor="let row of coin.rows">
-          <button title="Copy login {{row.value}}" *ngIf="row.type === 'login'" (click)="copyToClipboard(row.value)" class="btn btn-default">
+          <button [title]="'button_copy_login' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'login'" (click)="copyToClipboard(row.value)" class="btn btn-default">
             <i class="fa fa-user" aria-hidden="true"></i>
           </button>
         </div>
@@ -49,37 +49,37 @@
             <div class="row">
               <div *ngIf="row.type === 'url'">
                 <div class="col-xs-4 text-left">
-                  <span class="label label-info">URL</span>
+                  <span class="label label-info" [innerHtml]="'coin_type_url' | translate"></span>
                   <div>
                     <span *ngFor="let tag of row.tags" class="badge" [innerHtml]="tag"></span>
                   </div>
                 </div>
                 <div class="col-xs-4 text-left">
-                  <a href="{{row.value}}" title="{{row.value}}" target="_blank" *ngIf="!row.edit" [innerHtml]="row.value"></a>
+                  <a href="{{row.value}}" [title]="row.value" target="_blank" *ngIf="!row.edit" [innerHtml]="row.value"></a>
                   <input type="text" class="form-control" [(ngModel)]="row.value" *ngIf="row.edit" class="form-control">
                 </div>
                 <div class="col-xs-4" *ngIf="!row.edit">
                   <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" title="Add a tag">
+                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" [title]="'button_manage_tag' | translate">
                       <i class="fa fa-tag" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" title="Copy to clipboard">
+                    <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" [title]="'button_copy' | translate">
                       <i class="fa fa-clipboard" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" title="Edit">
+                    <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" [title]="'button_edit' | translate">
                       <i class="fa fa-pencil" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="deleteRow(i)" title="Delete">
+                    <button type="button" class="btn btn-default btn-sm" (click)="deleteRow(i)" [title]="'button_delete' | translate">
                       <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                   </div>
                 </div>
                 <div class="col-xs-4" *ngIf="row.edit">
                   <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-default btn-sm" (click)="saveRow(row)" [disabled]="!isRowValid(row)" title="Save value">
+                    <button type="button" class="btn btn-default btn-sm" (click)="saveRow(row)" [disabled]="!isRowValid(row)" [title]="'button_save' | translate">
                       <i class="fa fa-save" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" title="Cancel edit">
+                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" [title]="'button_cancel' | translate">
                       <i class="fa fa-close" aria-hidden="true"></i>
                     </button>
                   </div>
@@ -87,8 +87,8 @@
               </div>
               <div *ngIf="row.type === 'login' || row.type === 'text'">
                 <div class="col-xs-4 text-left">
-                  <span class="label label-info" *ngIf="row.type === 'login'">Login</span>
-                  <span class="label label-info" *ngIf="row.type === 'text'">Misc</span>
+                  <span class="label label-info" *ngIf="row.type === 'login'" [innerHtml]="'coin_type_login' | translate"></span>
+                  <span class="label label-info" *ngIf="row.type === 'text'" [innerHtml]="'coin_type_text' | translate"></span>
                   <div>
                     <span *ngFor="let tag of row.tags" class="badge" [innerHtml]="tag"></span>
                   </div>
@@ -99,26 +99,26 @@
                 </div>
                 <div class="col-xs-4" *ngIf="!row.edit">
                   <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" title="Add a tag">
+                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" [title]="'button_manage_tag' | translate">
                       <i class="fa fa-tag" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" title="Copy to clipboard">
+                    <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" [title]="'button_copy' | translate">
                       <i class="fa fa-clipboard" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" title="Edit">
+                    <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" [title]="'button_edit' | translate">
                       <i class="fa fa-pencil" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="deleteRow(i)" title="Delete">
+                    <button type="button" class="btn btn-default btn-sm" (click)="deleteRow(i)" [title]="'button_delete' | translate">
                       <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                   </div>
                 </div>
                 <div class="col-xs-4" *ngIf="row.edit">
                   <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-default btn-sm" (click)="saveRow(row)" [disabled]="!isRowValid(row)" title="Save value">
+                    <button type="button" class="btn btn-default btn-sm" (click)="saveRow(row)" [disabled]="!isRowValid(row)" [title]="'button_save' | translate">
                       <i class="fa fa-save" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" title="Cancel edit">
+                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" [title]="'button_cancel' | translate">
                       <i class="fa fa-close" aria-hidden="true"></i>
                     </button>
                   </div>
@@ -126,7 +126,7 @@
               </div>
               <div *ngIf="row.type === 'password'">
                 <div class="col-xs-4 text-left">
-                  <span class="label label-info">Password</span>
+                  <span class="label label-info" [innerHtml]="'coin_type_password' | translate"></span>
                   <div>
                     <span *ngFor="let tag of row.tags" class="badge" [innerHtml]="tag"></span>
                   </div>
@@ -134,25 +134,25 @@
                 <div class="col-xs-4 text-left">
                   <span *ngIf="!row.edit && !row.show">********</span>
                   <span *ngIf="!row.edit && row.show" [innerHtml]="row.value"></span>
-                  <input type="password" class="form-control" [(ngModel)]="row.value" *ngIf="row.edit" placeholder="new password">
-                  <input type="password" class="form-control" [(ngModel)]="row.valueVerified" *ngIf="row.edit" placeholder="confirm new password">
+                  <input type="password" class="form-control" [(ngModel)]="row.value" *ngIf="row.edit" [placeholder]="'placeholder_password' | translate">
+                  <input type="password" class="form-control" [(ngModel)]="row.valueVerified" *ngIf="row.edit" [placeholder]="'placeholder_password_verify' | translate">
                 </div>
                 <div class="col-xs-4" *ngIf="!row.edit">
                   <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" title="Add a tag">
+                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" [title]="'button_manage_tag' | translate">
                       <i class="fa fa-tag" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="showPassword(row)" title="Copy to clipboard">
+                    <button type="button" class="btn btn-default btn-sm" (click)="showPassword(row)" [title]="'button_copy' | translate">
                       <i class="fa fa-eye" aria-hidden="true" *ngIf="!row.show"></i>
                       <i class="fa fa-eye-slash" aria-hidden="true" *ngIf="row.show"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" title="Copy to clipboard">
+                    <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" [title]="'button_copy' | translate">
                       <i class="fa fa-clipboard" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" title="Edit">
+                    <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" [title]="'button_edit' | translate">
                       <i class="fa fa-pencil" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="deleteRow(i)" title="Delete">
+                    <button type="button" class="btn btn-default btn-sm" (click)="deleteRow(i)" [title]="'button_delete' | translate">
                       <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                   </div>
@@ -162,10 +162,10 @@
                     <button type="button" class="btn btn-default btn-sm" (click)="generatePassword(row)" title="Generate a random password">
                       <i class="fa fa-magic" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="saveRow(row)" [disabled]="!isRowValid(row)" title="Save value">
+                    <button type="button" class="btn btn-default btn-sm" (click)="saveRow(row)" [disabled]="!isRowValid(row)" [title]="'button_save' | translate">
                       <i class="fa fa-save" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" title="Cancel edit">
+                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" [title]="'button_cancel' | translate">
                       <i class="fa fa-close" aria-hidden="true"></i>
                     </button>
                   </div>
@@ -173,33 +173,33 @@
               </div>
               <div *ngIf="row.type === 'secret-questions'">
                 <div class="col-xs-4 text-left">
-                  <span class="label label-info">Secret questions</span>
+                  <span class="label label-info" [innerHtml]="'coin_type_secret_question' | translate"></span>
                   <div>
                     <span *ngFor="let tag of row.tags" class="badge" [innerHtml]="tag"></span>
                   </div>
                 </div>
                 <div class="col-xs-8">
                   <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" title="Add a tag">
+                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" [title]="'button_manage_tag' | translate">
                       <i class="fa fa-tag" aria-hidden="true"></i>
                     </button>
                     <button type="button" class="btn btn-default btn-sm" (click)="addSecretQuestion(row)" title="Add secret question">
                       <i class="fa fa-plus" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" title="Edit">
+                    <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" [title]="'button_edit' | translate">
                       <i class="fa fa-pencil" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="deleteRow(i)" title="Delete">
+                    <button type="button" class="btn btn-default btn-sm" (click)="deleteRow(i)" [title]="'button_delete' | translate">
                       <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                   </div>
                 </div>
                 <div class="col-xs-7" *ngIf="row.edit">
                   <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-default btn-sm" (click)="saveRow(row)" [disabled]="!isRowValid(row)" title="Save value">
+                    <button type="button" class="btn btn-default btn-sm" (click)="saveRow(row)" [disabled]="!isRowValid(row)" [title]="'button_save' | translate">
                       <i class="fa fa-save" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" title="Cancel edit">
+                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" [title]="'button_cancel' | translate">
                       <i class="fa fa-close" aria-hidden="true"></i>
                     </button>
                   </div>
@@ -210,34 +210,34 @@
                 <div class="col-xs-12">
                   <div class="row" *ngFor="let secretQuestion of row.value; let i = index">
                     <div class="col-xs-4 text-left">
-                      <label class="label label-primary">Question #{{i}}:</label>
+                      <label class="label label-primary" [innerHtml]="'coin_secret_question_question' | translate:{ index: (i+1) }"></label>
                       <label [innerHtml]="secretQuestion.question" *ngIf="!secretQuestion.edit"></label>
                       <input type="text" [(ngModel)]="secretQuestion.question" *ngIf="secretQuestion.edit">
                     </div>
                     <div class="col-xs-4 text-left">
-                      <label class="label label-primary">Answer:</label>
+                      <label class="label label-primary" [innerHtml]="'coin_secret_question_answer' | translate"></label>
                       <label [innerHtml]="secretQuestion.answer" *ngIf="!secretQuestion.edit"></label>
                       <input type="text" [(ngModel)]="secretQuestion.answer" *ngIf="secretQuestion.edit">
                     </div>
                     <div class="col-xs-4" *ngIf="!secretQuestion.edit">
                       <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(secretQuestion.answer)" title="Copy to clipboard">
+                        <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(secretQuestion.answer)" [title]="'button_copy' | translate">
                           <i class="fa fa-clipboard" aria-hidden="true"></i>
                         </button>
-                        <button type="button" class="btn btn-default btn-sm" (click)="editSecretQuestion(secretQuestion)" title="Edit">
+                        <button type="button" class="btn btn-default btn-sm" (click)="editSecretQuestion(secretQuestion)" [title]="'button_edit' | translate">
                           <i class="fa fa-pencil" aria-hidden="true"></i>
                         </button>
-                        <button type="button" class="btn btn-default btn-sm" (click)="deleteSecretQuestion(row, i)" title="Delete">
+                        <button type="button" class="btn btn-default btn-sm" (click)="deleteSecretQuestion(row, i)" [title]="'button_delete' | translate">
                           <i class="fa fa-trash" aria-hidden="true"></i>
                         </button>
                       </div>
                     </div>
                     <div class="col-xs-4" *ngIf="secretQuestion.edit">
                       <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-default btn-sm" (click)="saveSecretQuestion(secretQuestion)" title="Save value">
+                        <button type="button" class="btn btn-default btn-sm" (click)="saveSecretQuestion(secretQuestion)" [title]="'button_save' | translate">
                           <i class="fa fa-save" aria-hidden="true"></i>
                         </button>
-                        <button type="button" class="btn btn-default btn-sm" (click)="cancelEditSecretQuestion(secretQuestion, row, i)" title="Cancel edit">
+                        <button type="button" class="btn btn-default btn-sm" (click)="cancelEditSecretQuestion(secretQuestion, row, i)" [title]="'button_cancel' | translate">
                           <i class="fa fa-close" aria-hidden="true"></i>
                         </button>
                       </div>
@@ -251,27 +251,27 @@
             <div class="row" *ngIf="newRowMode">
               <div class="col-xs-4 text-left">
                 <select class="form-control" [(ngModel)]="newRow.type" (ngModelChange)="updateNewRowType()">
-                  <option value="url">URL</option>
-                  <option value="login">Username</option>
-                  <option value="password">Password</option>
-                  <option value="secret-questions">Secret questions</option>
-                  <option value="text">Text</option>
+                  <option value="url" [innerHtml]="'coin_type_url' | translate"></option>
+                  <option value="login" [innerHtml]="'coin_type_login' | translate"></option>
+                  <option value="password" [innerHtml]="'coin_type_password' | translate"></option>
+                  <option value="secret-questions" [innerHtml]="'coin_type_secret_question' | translate"></option>
+                  <option value="text" [innerHtml]="'coin_type_text' | translate"></option>
                 </select>
               </div>
               <div class="col-xs-4 text-left">
-                <input type="text" class="form-control" [(ngModel)]="newRow.value" placeholder="Value" *ngIf="newRow.type === 'login' || newRow.type === 'url' || newRow.type === 'text'">
-                <input type="password" class="form-control" [(ngModel)]="newRow.value" placeholder="Password" *ngIf="newRow.type === 'password'">
-                <input type="password" class="form-control" [(ngModel)]="newRow.valueVerified" placeholder="Verify password" *ngIf="newRow.type === 'password'">
+                <input type="text" class="form-control" [(ngModel)]="newRow.value" [placeholder]="'placeholder_value' | translate" *ngIf="newRow.type === 'login' || newRow.type === 'url' || newRow.type === 'text'">
+                <input type="password" class="form-control" [(ngModel)]="newRow.value" [placeholder]="'placeholder_password' | translate" *ngIf="newRow.type === 'password'">
+                <input type="password" class="form-control" [(ngModel)]="newRow.valueVerified" [placeholder]="'placeholder_password_verify' | translate" *ngIf="newRow.type === 'password'">
               </div>
               <div class="col-xs-4 text-left">
                 <div class="btn-group pull-right">
-                  <button type="button" class="btn btn-default btn-sm" (click)="generatePassword(newRow)" title="Generate a random password" *ngIf="newRow.type === 'password'">
+                  <button type="button" class="btn btn-default btn-sm" (click)="generatePassword(newRow)" [title]="'button_generate_password' | translate" *ngIf="newRow.type === 'password'">
                     <i class="fa fa-magic" aria-hidden="true"></i>
                   </button>
-                  <button type="button" class="btn btn-default btn-sm" (click)="saveNewRow()" title="Save value" [disabled]="!isNewRowValid()">
+                  <button type="button" class="btn btn-default btn-sm" (click)="saveNewRow()" [title]="'button_save' | translate" [disabled]="!isNewRowValid()">
                     <i class="fa fa-save" aria-hidden="true"></i>
                   </button>
-                  <button type="button" class="btn btn-default btn-sm" (click)="cancelEditNewRow()" title="Cancel edit">
+                  <button type="button" class="btn btn-default btn-sm" (click)="cancelEditNewRow()" [title]="'button_cancel' | translate">
                     <i class="fa fa-close" aria-hidden="true"></i>
                   </button>
                 </div>
