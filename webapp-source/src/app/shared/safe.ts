@@ -1,5 +1,5 @@
 export class Safe {
-  name: string;
+  name?: string;
   description: string;
   key: string;
   safeKey?: any;

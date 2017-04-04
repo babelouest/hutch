@@ -12,8 +12,7 @@ import { HutchCoinService } from '../shared/hutch-coin.service';
 
 @Component({
   selector: 'my-hutch-coin',
-  templateUrl: './coin.component.html',
-  styleUrls: ['./coin.component.scss']
+  templateUrl: './coin.component.html'
 })
 export class CoinComponent implements OnInit {
   @Input() coin: CoinDisplayed;

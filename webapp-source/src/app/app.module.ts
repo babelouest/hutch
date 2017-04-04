@@ -20,6 +20,7 @@ import { Oauth2ConnectComponent } from './oauth2-connect/oauth2-connect.componen
 import { Oauth2ConnectObservable } from './oauth2-connect/oauth2-connect.service';
 
 import { ConfirmComponent } from './modal/confirm.component';
+import { MessageComponent } from './modal/message.component';
 import { GeneratePasswordComponent } from './modal/generate-password.component';
 import { EditSafeComponent } from './modal/edit-safe.component';
 import { EditProfileComponent } from './modal/edit-profile.component';
@@ -52,6 +53,7 @@ import { HutchConfigService } from './shared/hutch-config.service';
     CoinComponent,
     Oauth2ConnectComponent,
     ConfirmComponent,
+    MessageComponent,
     GeneratePasswordComponent,
     EditSafeComponent,
     EditProfileComponent,
@@ -59,6 +61,7 @@ import { HutchConfigService } from './shared/hutch-config.service';
   ],
   entryComponents: [
     ConfirmComponent,
+    MessageComponent,
     GeneratePasswordComponent,
     EditSafeComponent,
     EditProfileComponent,

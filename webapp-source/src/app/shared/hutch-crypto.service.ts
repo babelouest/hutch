@@ -69,7 +69,11 @@ export class HutchCryptoService {
                                    passwordKey,
                                    this.base64ToArrayBuffer(splitted[0]))
       .then((result) => {
-        resolve(JSON.parse(decodeURIComponent(escape(this.convertArrayBufferViewtoString(result)))));
+        try {
+          resolve(JSON.parse(decodeURIComponent(escape(this.convertArrayBufferViewtoString(result)))));
+        } catch (e) {
+          reject(e);
+        }
       }, (error) => {
         reject(error);
       });

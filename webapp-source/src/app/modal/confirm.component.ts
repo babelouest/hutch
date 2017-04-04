@@ -10,10 +10,10 @@ export interface ConfirmModel {
                 <div class='modal-content'>
                    <div class='modal-header'>
                      <button type='button' class='close' (click)='close()' [title]='"button_cancel" | translate'>&times;</button>
-                     <h4 class='modal-title'>{{title}}</h4>
+                     <h4 class='modal-title' [innerHtml]='title'></h4>
                    </div>
                    <div class='modal-body'>
-                     <p>{{message}}</p>
+                     <p [innerHtml]='message'></p>
                    </div>
                    <div class='modal-footer'>
                      <button type='button'

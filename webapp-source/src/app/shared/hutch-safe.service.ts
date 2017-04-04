@@ -23,8 +23,8 @@ export class HutchSafeService {
     return this.hutchApiService.httpRequest('POST', '/safe', null, safe);
   }
 
-  set(safe: Safe): Promise<void> {
-    return this.hutchApiService.httpRequest('PUT', '/safe', null, safe);
+  set(name: string, safe: Safe): Promise<void> {
+    return this.hutchApiService.httpRequest('PUT', '/safe/' + name, null, safe);
   }
 
   delete(name: string): Promise<void> {

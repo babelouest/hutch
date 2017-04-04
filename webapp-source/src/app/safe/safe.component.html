@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" *ngIf="unlocked">
   <div class="col-xs-12 input-group text-right" style="padding-right: 10px;">
     <span class="input-group-btn">
       <button data-toggle="tooltip" title="Refresh" type="button" class="btn btn-default" (click)="refreshSafe()">
@@ -16,9 +16,10 @@
     </span>
   </div>
 </div>
-
-<h1><span [innerHtml]="safe.name"></span><i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></h1>
-<h3 [innerHtml]="safe.description"></h3>
+<div class="text-center">
+  <h1><span [innerHtml]="safe.name"></span><i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></h1>
+  <h3 [innerHtml]="safe.description"></h3>
+</div>
 
 <div class="container" *ngIf="unlocked">
   <div class="row" style="margin-bottom:10px;">
@@ -65,13 +66,11 @@
         <label class="label label-danger" [innerHtml]="'safe_password_incorrect' | translate"></label>
       </div>
     </div>
-    <div class="row">
-      <div class="text-center checkbox-inline">
-        <label for="keepSafeOpen">
-          <input type="checkbox" [(ngModel)]="keepSafeOpen" name="keepSafeOpen" id="keepSafeOpen">
-          <span [innerHtml]="'safe_keep_open' | translate"></span>
-        </label>
-      </div>
+    <div class="row-fluid text-center">
+      <label for="keepSafeOpen" class="checkbox-inline" style="width: 100%;">
+        <input type="checkbox" [(ngModel)]="keepSafeOpen" name="keepSafeOpen" id="keepSafeOpen">
+        <span [innerHtml]="'safe_keep_open' | translate"></span>
+      </label>
     </div>
     <div class="row">
       <div class="text-center">

@@ -19,8 +19,7 @@ import * as _ from 'lodash';
 
 @Component({
   selector: 'my-hutch-app', // <my-hutch-app></my-hutch-app>
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
   title: string;

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'ng2-bootstrap-modal';
+import { TranslateService } from 'ng2-translate/ng2-translate';
 
+import { MessageComponent } from '../modal/message.component';
 import { EditSafeComponent } from '../modal/edit-safe.component';
 import { EditProfileComponent } from '../modal/edit-profile.component';
 
@@ -12,14 +14,15 @@ import { Oauth2ConnectObservable } from '../oauth2-connect/oauth2-connect.servic
 
 @Component({
   selector: 'my-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
   profile = { fortune: '', picture: '' };
   loading = true;
+  noProfile = false;
 
   constructor(private dialogService: DialogService,
+              private translate: TranslateService,
               private hutchProfileService: HutchProfileService,
               private hutchSafeService: HutchSafeService,
               private hutchStoreService: HutchObserveService,
@@ -45,7 +48,10 @@ export class HomeComponent implements OnInit {
         this.hutchStoreService.add('profile', 'profile', this.profile);
         this.loading = false;
       })
-      .catch(() => {
+      .catch((error) => {
+        if (error.status === 404) {
+          this.noProfile = true;
+        }
         this.loading = false;
       });
     } else {
@@ -83,6 +89,14 @@ export class HomeComponent implements OnInit {
           this.profile.picture = result.picture;
         });
       }
+    });
+  }
+
+  showWhyProfileModal(event) {
+    event.preventDefault();
+    this.dialogService.addDialog(MessageComponent, {
+      title: this.translate.instant('modal_why_this_title'),
+      message: this.translate.instant('modal_why_this_message')
     });
   }
 }

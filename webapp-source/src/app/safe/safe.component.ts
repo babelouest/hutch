@@ -19,8 +19,7 @@ import * as _ from 'lodash';
 
 @Component({
   selector: 'my-hutch-safe',
-  templateUrl: './safe.component.html',
-  styleUrls: ['./safe.component.scss']
+  templateUrl: './safe.component.html'
 })
 
 export class SafeComponent implements OnInit {
@@ -70,9 +69,13 @@ export class SafeComponent implements OnInit {
     })
     .subscribe((result) => {
       if (result) {
-        this.safe.name = result.name;
-        this.safe.description = result.description;
-        this.safe.key = result.key;
+        this.hutchSafeService.set(this.safe.name, { description: result.description, key: result.key })
+        .then(() => {
+          this.safe.name = result.name;
+          this.safe.description = result.description;
+          this.safe.key = result.key;
+          this.hutchStoreService.add('safe', this.safe.name, this.safe);
+        });
       }
     });
   }
@@ -195,10 +198,14 @@ export class SafeComponent implements OnInit {
           this.safe.coinList.push(decryptedCoin);
         }));
       });
-      Observable.forkJoin(promises).subscribe(() => {
-        this.hutchStoreService.add('safe', this.safe.name, this.safe);
+      if (promises.length > 0) {
+        Observable.forkJoin(promises).subscribe(() => {
+          this.hutchStoreService.add('safe', this.safe.name, this.safe);
+          this.loading = false;
+        });
+      } else {
         this.loading = false;
-      });
+      }
     })
     .catch(() => {
     });

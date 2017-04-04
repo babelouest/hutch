@@ -40,7 +40,11 @@ export class HutchApiService {
       return this.http.request(url, options)
                  .toPromise()
                  .then((result) => {
-                   return result.json();
+                   if (result.text()) {
+                    return result.json();
+                   } else {
+                     return '';
+                   }
                  });
     } else {
       return Promise.reject('Error, not connected');
