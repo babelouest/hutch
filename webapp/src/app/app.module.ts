@@ -15,6 +15,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { SafeComponent } from './safe/safe.component';
 import { CoinComponent } from './coin/coin.component';
+import { RowComponent } from './row/row.component';
 
 import { Oauth2ConnectComponent } from './oauth2-connect/oauth2-connect.component';
 import { Oauth2ConnectObservable } from './oauth2-connect/oauth2-connect.service';
@@ -53,6 +54,7 @@ import { HutchConfigService } from './shared/hutch-config.service';
     HomeComponent,
     SafeComponent,
     CoinComponent,
+    RowComponent,
     Oauth2ConnectComponent,
     ConfirmComponent,
     MessageComponent,
