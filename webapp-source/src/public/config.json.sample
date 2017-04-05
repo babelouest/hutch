@@ -1,4 +1,11 @@
 {
+  "lang": {
+    "available": [
+      { "code": "en", "display": "English" },
+      { "code": "fr", "display": "Français" }
+    ],
+    "default": "en"
+  },
   "api": {
     "baseUrl": "https://resource.server.url/"
   },
