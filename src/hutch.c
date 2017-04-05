@@ -52,15 +52,15 @@ int main (int argc, char ** argv) {
   
   // Init config structure with default values
   config->config_file = NULL;
-  config->url_prefix = NULL;
+  config->api_prefix = NULL;
   config->log_mode = Y_LOG_MODE_NONE;
   config->log_level = Y_LOG_LEVEL_NONE;
   config->log_file = NULL;
   config->conn = NULL;
   config->instance = malloc(sizeof(struct _u_instance));
   config->allow_origin = NULL;
-  config->static_files_path = NULL;
-  config->static_files_prefix = NULL;
+  config->app_files_path = NULL;
+  config->app_prefix = NULL;
   config->glewlwyd_resource_config = malloc(sizeof(struct _glewlwyd_resource_config));
   config->secure_connection_key_file = NULL;
   config->secure_connection_pem_file = NULL;
@@ -113,31 +113,31 @@ int main (int argc, char ** argv) {
   // At this point, we declare all API endpoints and configure 
   
   // Profile endpoint
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/profile/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/profile/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/profile/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_set, (void*)config);
   
   // Safe endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_delete, (void*)config);
 
   // Coin endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->url_prefix, "/safe/:safe/coin/:coin/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->url_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->url_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_delete, (void*)config);
   
   // Other endpoints
   ulfius_add_endpoint_by_val(config->instance, "GET", "/", NULL, NULL, NULL, NULL, &callback_hutch_root, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, NULL, NULL, NULL, &callback_hutch_server_configuration, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", NULL, NULL, NULL, &callback_hutch_options, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->static_files_prefix, "*", NULL, NULL, NULL, &callback_hutch_static_file, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->app_prefix, "*", NULL, NULL, NULL, &callback_hutch_static_file, (void*)config);
   ulfius_set_default_endpoint(config->instance, NULL, NULL, NULL, &callback_default, (void*)config);
 
   // Set default headers
@@ -146,7 +146,7 @@ int main (int argc, char ** argv) {
   u_map_put(config->instance->default_headers, "Cache-Control", "no-store");
   u_map_put(config->instance->default_headers, "Pragma", "no-cache");
 
-  y_log_message(Y_LOG_LEVEL_INFO, "Start hutch on port %d, prefix: %s, secure: %s, scope %s", config->instance->port, config->url_prefix, config->use_secure_connection?"true":"false", config->glewlwyd_resource_config->oauth_scope);
+  y_log_message(Y_LOG_LEVEL_INFO, "Start hutch on port %d, prefix: %s, secure: %s, scope %s", config->instance->port, config->api_prefix, config->use_secure_connection?"true":"false", config->glewlwyd_resource_config->oauth_scope);
   
   if (config->use_secure_connection) {
     char * key_file = get_file_content(config->secure_connection_key_file);
@@ -182,11 +182,11 @@ void exit_server(struct config_elements ** config, int exit_value) {
   if (config != NULL && *config != NULL) {
     // Cleaning data
     free((*config)->config_file);
-    free((*config)->url_prefix);
+    free((*config)->api_prefix);
     free((*config)->log_file);
     free((*config)->allow_origin);
-    free((*config)->static_files_path);
-    free((*config)->static_files_prefix);
+    free((*config)->app_files_path);
+    free((*config)->app_prefix);
     free((*config)->secure_connection_key_file);
     free((*config)->secure_connection_pem_file);
     free((*config)->glewlwyd_resource_config->oauth_scope);
@@ -256,9 +256,9 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
           break;
         case 'u':
           if (optarg != NULL) {
-            config->url_prefix = nstrdup(optarg);
-            if (config->url_prefix == NULL) {
-              fprintf(stderr, "Error allocating config->url_prefix, exiting\n");
+            config->api_prefix = nstrdup(optarg);
+            if (config->api_prefix == NULL) {
+              fprintf(stderr, "Error allocating config->api_prefix, exiting\n");
               exit_server(&config, HUTCH_STOP);
             }
           } else {
@@ -402,12 +402,12 @@ int build_config_from_file(struct config_elements * config) {
     config_lookup_int(&cfg, "port", &(config->instance->port));
   }
   
-  if (config->url_prefix == NULL) {
+  if (config->api_prefix == NULL) {
     // Get prefix url for angharad
-    if (config_lookup_string(&cfg, "url_prefix", &cur_prefix)) {
-      config->url_prefix = nstrdup(cur_prefix);
-      if (config->url_prefix == NULL) {
-        fprintf(stderr, "Error allocating config->url_prefix, exiting\n");
+    if (config_lookup_string(&cfg, "api_prefix", &cur_prefix)) {
+      config->api_prefix = nstrdup(cur_prefix);
+      if (config->api_prefix == NULL) {
+        fprintf(stderr, "Error allocating config->api_prefix, exiting\n");
         config_destroy(&cfg);
         return 0;
       }
@@ -521,24 +521,24 @@ int build_config_from_file(struct config_elements * config) {
     return 0;
   }
 
-  if (config->static_files_path == NULL) {
+  if (config->app_files_path == NULL) {
     // Get path that serve static files
-    if (config_lookup_string(&cfg, "static_files_path", &cur_static_files_path)) {
-      config->static_files_path = nstrdup(cur_static_files_path);
-      if (config->static_files_path == NULL) {
-        fprintf(stderr, "Error allocating config->static_files_path, exiting\n");
+    if (config_lookup_string(&cfg, "app_files_path", &cur_static_files_path)) {
+      config->app_files_path = nstrdup(cur_static_files_path);
+      if (config->app_files_path == NULL) {
+        fprintf(stderr, "Error allocating config->app_files_path, exiting\n");
         config_destroy(&cfg);
         return 0;
       }
     }
   }
 
-  if (config->static_files_prefix == NULL) {
+  if (config->app_prefix == NULL) {
     // Get prefix url
-    if (config_lookup_string(&cfg, "static_files_prefix", &cur_static_files_prefix)) {
-      config->static_files_prefix = nstrdup(cur_static_files_prefix);
-      if (config->static_files_prefix == NULL) {
-        fprintf(stderr, "Error allocating config->static_files_prefix, exiting\n");
+    if (config_lookup_string(&cfg, "app_prefix", &cur_static_files_prefix)) {
+      config->app_prefix = nstrdup(cur_static_files_prefix);
+      if (config->app_prefix == NULL) {
+        fprintf(stderr, "Error allocating config->app_prefix, exiting\n");
         config_destroy(&cfg);
         return 0;
       }
@@ -604,10 +604,10 @@ int check_config(struct config_elements * config) {
     config->instance->port = HUTCH_DEFAULT_PORT;
   }
   
-  if (config->url_prefix == NULL) {
-    config->url_prefix = nstrdup(HUTCH_DEFAULT_PREFIX);
-    if (config->url_prefix == NULL) {
-      fprintf(stderr, "Error allocating url_prefix, exit\n");
+  if (config->api_prefix == NULL) {
+    config->api_prefix = nstrdup(HUTCH_DEFAULT_PREFIX);
+    if (config->api_prefix == NULL) {
+      fprintf(stderr, "Error allocating api_prefix, exit\n");
       return 0;
     }
   }

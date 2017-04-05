@@ -69,13 +69,13 @@ typedef enum {
 
 struct config_elements {
   char *                             config_file;
-  char *                             url_prefix;
+  char *                             api_prefix;
   unsigned long                      log_mode;
   unsigned long                      log_level;
   char *                             log_file;
   char *                             allow_origin;
-  char *                             static_files_path;
-  char *                             static_files_prefix;
+  char *                             app_files_path;
+  char *                             app_prefix;
   unsigned int                       use_secure_connection;
   char *                             secure_connection_key_file;
   char *                             secure_connection_pem_file;

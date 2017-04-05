@@ -45,7 +45,7 @@ int callback_hutch_static_file (const struct _u_request * request, struct _u_res
   char * file_path;
   const char * content_type;
 
-  file_requested = request->http_url + strlen(((struct config_elements *)user_data)->static_files_prefix) + 1;
+  file_requested = request->http_url + strlen(((struct config_elements *)user_data)->app_prefix) + 1;
   
   if (file_requested == NULL || strlen(file_requested) == 0 || 0 == nstrcmp("/", file_requested)) {
     file_requested = "/index.html";
@@ -55,7 +55,7 @@ int callback_hutch_static_file (const struct _u_request * request, struct _u_res
     *strchr(file_requested, '?') = '\0';
   }
   
-  file_path = msprintf("%s%s", ((struct config_elements *)user_data)->static_files_path, file_requested);
+  file_path = msprintf("%s%s", ((struct config_elements *)user_data)->app_files_path, file_requested);
 
   if (access(file_path, F_OK) != -1) {
     f = fopen (file_path, "rb");
@@ -111,7 +111,7 @@ int callback_hutch_options (const struct _u_request * request, struct _u_respons
  * redirects to static files address
  */
 int callback_hutch_root (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  char * url = msprintf("%s/", ((struct config_elements *)user_data)->static_files_prefix);
+  char * url = msprintf("%s/", ((struct config_elements *)user_data)->app_prefix);
   if (url != NULL) {
     response->status = 301;
     ulfius_add_header_to_response(response, "Location", url);
@@ -129,9 +129,9 @@ int callback_hutch_root (const struct _u_request * request, struct _u_response *
 int callback_hutch_server_configuration (const struct _u_request * request, struct _u_response * response, void * user_data) {
   response->json_body = json_pack("{ssssss}", 
                         "api_prefix", 
-                        ((struct config_elements *)user_data)->url_prefix,
+                        ((struct config_elements *)user_data)->api_prefix,
                         "app_prefix",
-                        ((struct config_elements *)user_data)->static_files_prefix,
+                        ((struct config_elements *)user_data)->app_prefix,
                         "hutch_scope",
                         ((struct config_elements *)user_data)->glewlwyd_resource_config->oauth_scope);
   return U_OK;

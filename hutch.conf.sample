@@ -10,14 +10,14 @@
 # port to open for remote commands
 port=4884
 
-# url prefix
-url_prefix="api"
+# api_prefix
+api_prefix="api"
 
-# path to static files for /webapp url
-static_files_path="webapp/dist/"
+# path to static files to access webapp
+app_files_path="webapp/dist/"
 
-# static files prefix
-static_files_prefix = "app"
+# webapp prefix
+app_prefix = "app"
 
 # mime types for webapp files
 static_files_mime_types =
