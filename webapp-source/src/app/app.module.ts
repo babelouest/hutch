@@ -25,6 +25,8 @@ import { GeneratePasswordComponent } from './modal/generate-password.component';
 import { EditSafeComponent } from './modal/edit-safe.component';
 import { EditProfileComponent } from './modal/edit-profile.component';
 import { EditTagsComponent } from './modal/edit-tags.component';
+import { ManageSafeComponent } from './modal/manage-safe.component';
+import { ResetPasswordSafeComponent } from './modal/reset-password-safe.component';
 
 import { WikimediaCommonsService } from './shared/wikimedia-commons.service';
 import { HutchApiService } from './shared/hutch-api.service';
@@ -57,7 +59,9 @@ import { HutchConfigService } from './shared/hutch-config.service';
     GeneratePasswordComponent,
     EditSafeComponent,
     EditProfileComponent,
-    EditTagsComponent
+    EditTagsComponent,
+    ManageSafeComponent,
+    ResetPasswordSafeComponent
   ],
   entryComponents: [
     ConfirmComponent,
@@ -65,7 +69,9 @@ import { HutchConfigService } from './shared/hutch-config.service';
     GeneratePasswordComponent,
     EditSafeComponent,
     EditProfileComponent,
-    EditTagsComponent
+    EditTagsComponent,
+    ManageSafeComponent,
+    ResetPasswordSafeComponent
   ],
   providers: [
     CookieService,

@@ -3,8 +3,6 @@ import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
 
 import { WikimediaCommonsService } from '../shared/wikimedia-commons.service';
 
-// declare function unescape(s: string): string;
-
 export interface EditProfileModel {
   fortune: string;
   picture: string;

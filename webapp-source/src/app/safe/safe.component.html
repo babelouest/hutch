@@ -1,16 +1,19 @@
 <div class="row" *ngIf="unlocked">
   <div class="col-xs-12 input-group text-right" style="padding-right: 10px;">
     <span class="input-group-btn">
-      <button data-toggle="tooltip" title="Refresh" type="button" class="btn btn-default" (click)="refreshSafe()">
+      <button data-toggle="tooltip" [title]="'button_refresh' | translate" type="button" class="btn btn-default" (click)="refreshSafe()">
         <i class="fa fa-refresh"></i>
       </button>
-      <button data-toggle="tooltip" title="Edit" type="button" class="btn btn-default" (click)="editSafe()">
-        <i class="fa fa-pencil"></i>
-      </button>
-      <button data-toggle="tooltip" title="Lock" type="button" class="btn btn-default" (click)="lockSafe()">
+      <button data-toggle="tooltip" [title]="'button_lock' | translate" type="button" class="btn btn-default" (click)="lockSafe()">
         <i class="fa fa-lock"></i>
       </button>
-      <button data-toggle="tooltip" title="Delete" type="button" class="btn btn-default" (click)="deleteSafe()">
+      <button data-toggle="tooltip" [title]="'button_manage' | translate" type="button" class="btn btn-default" (click)="manageSafe()">
+        <i class="fa fa-gear"></i>
+      </button>
+      <button data-toggle="tooltip" [title]="'button_edit' | translate" type="button" class="btn btn-default" (click)="editSafe()">
+        <i class="fa fa-pencil"></i>
+      </button>
+      <button data-toggle="tooltip" [title]="'button_delete' | translate" type="button" class="btn btn-default" (click)="deleteSafe()">
         <i class="fa fa-trash"></i>
       </button>
     </span>
@@ -33,11 +36,11 @@
         <input class="form-control input-medium" 
                [placeholder]="'safe_search_coin' | translate" 
                data-toggle="tooltip" 
-               title="Search value" 
+               [title]="'safe_search_coin' | translate" 
                type="text"
                [(ngModel)]="searchValue" 
                (ngModelChange)="searchCoin()">
-        <button data-toggle="tooltip" title="Add coin" type="button" class="btn btn-default" (click)="addCoin()">
+        <button data-toggle="tooltip" [title]="'button_add_coin' | translate" type="button" class="btn btn-default" (click)="addCoin()">
           <i class="fa fa-plus"></i>
         </button>
       </span>
@@ -75,6 +78,11 @@
     <div class="row">
       <div class="text-center">
         <input type="submit" value="{{ 'button_ok' | translate }}" class="btn btn-default">
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-center">
+        <a href="" (click)="forgotPassword($event)" [innerHtml]="'safe_forgot_password_link' | translate"></a>
       </div>
     </div>
   </form>

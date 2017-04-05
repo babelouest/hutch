@@ -23,9 +23,9 @@ export class HutchCryptoService {
     });
   }
 
-  getKeyFromExport(exportedKey): Promise<any> {
+  getKeyFromExport(exportedKey, canImport = false): Promise<any> {
     return new Promise((resolve) => {
-      window.crypto.subtle.importKey('jwk', exportedKey, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt'])
+      window.crypto.subtle.importKey('jwk', exportedKey, { name: 'AES-GCM' }, canImport, ['encrypt', 'decrypt'])
       .then((key) => {
         resolve(key);
       });
@@ -46,7 +46,7 @@ export class HutchCryptoService {
   }
 
   // Encrypt safe key with the password key
-  encryptData(data, passwordKey): Promise<string> {
+  encryptData(data: any, passwordKey): Promise<string> {
     return new Promise((resolve, reject) => {
       let iv = window.crypto.getRandomValues(new Uint8Array(12));
       window.crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv, tagLength: 128}, passwordKey,

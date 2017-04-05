@@ -9,6 +9,8 @@ import { Safe } from '../shared/safe';
 
 import { ConfirmComponent } from '../modal/confirm.component';
 import { EditSafeComponent } from '../modal/edit-safe.component';
+import { ManageSafeComponent } from '../modal/manage-safe.component';
+import { ResetPasswordSafeComponent } from '../modal/reset-password-safe.component';
 
 import { HutchObserveService } from '../shared/hutch-observe.service';
 import { HutchSafeService } from '../shared/hutch-safe.service';
@@ -152,6 +154,7 @@ export class SafeComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.loadSafe(params['name']);
       this.searchValue = '';
+      this.safePassword = '';
     });
     if (this.safe.name) {
       this.hutchStoreService.getObservable('safe').subscribe((status) => {
@@ -230,5 +233,33 @@ export class SafeComponent implements OnInit {
   deleteCoin(coin) {
     _.remove(this.coinList, {name: coin.name});
     _.remove(this.coinListDisplayed, {name: coin.name});
+  }
+
+  manageSafe() {
+    this.dialogService.addDialog(ManageSafeComponent, {
+      safeName: this.safe.name,
+      safeKey: this.safe.safeKey,
+      key: this.safe.key,
+      coinList: this.coinList
+    })
+    .subscribe((result) => {
+      if (result) {
+        this.refreshSafe();
+      }
+    });
+  }
+
+  forgotPassword(event) {
+    event.preventDefault();
+    this.dialogService.addDialog(ResetPasswordSafeComponent, {
+      safeName: this.safe.name,
+      description: this.safe.description,
+      key: this.safe.key
+    })
+    .subscribe((result) => {
+      if (result) {
+        this.safe.key = result;
+      }
+    });
   }
 }
