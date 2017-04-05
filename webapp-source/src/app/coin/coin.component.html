@@ -139,12 +139,12 @@
                 </div>
                 <div class="col-xs-4" *ngIf="!row.edit">
                   <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" [title]="'button_manage_tag' | translate">
-                      <i class="fa fa-tag" aria-hidden="true"></i>
-                    </button>
                     <button type="button" class="btn btn-default btn-sm" (click)="showPassword(row)" [title]="'button_copy' | translate">
                       <i class="fa fa-eye" aria-hidden="true" *ngIf="!row.show"></i>
                       <i class="fa fa-eye-slash" aria-hidden="true" *ngIf="row.show"></i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" [title]="'button_manage_tag' | translate">
+                      <i class="fa fa-tag" aria-hidden="true"></i>
                     </button>
                     <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" [title]="'button_copy' | translate">
                       <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -173,7 +173,7 @@
               </div>
               <div *ngIf="row.type === 'secret-questions'">
                 <div class="col-xs-4 text-left">
-                  <span class="label label-info" [innerHtml]="'coin_type_secret_question' | translate"></span>
+                  <span class="label label-info" [innerHtml]="'coin_type_secret_questions' | translate"></span>
                   <div>
                     <span *ngFor="let tag of row.tags" class="badge" [innerHtml]="tag"></span>
                   </div>
@@ -254,7 +254,7 @@
                   <option value="url" [innerHtml]="'coin_type_url' | translate"></option>
                   <option value="login" [innerHtml]="'coin_type_login' | translate"></option>
                   <option value="password" [innerHtml]="'coin_type_password' | translate"></option>
-                  <option value="secret-questions" [innerHtml]="'coin_type_secret_question' | translate"></option>
+                  <option value="secret-questions" [innerHtml]="'coin_type_secret_questions' | translate"></option>
                   <option value="text" [innerHtml]="'coin_type_text' | translate"></option>
                 </select>
               </div>
