@@ -119,6 +119,8 @@ export class CoinComponent implements OnInit {
   }
 
   saveRow(row) {
+    delete row.show;
+    delete row.valueVerified;
     delete row.saveValue;
     delete row.edit;
     this.saveCoinInDatabase();
@@ -194,6 +196,7 @@ export class CoinComponent implements OnInit {
 
   saveNewRow() {
     if (this.isNewRowValid()) {
+      delete this.newRow.valueVerified;
       this.coin.rows.push(this.newRow);
       this.newRow = {value: '', valueVerified: '', type: 'login'};
       this.newRowMode = false;
