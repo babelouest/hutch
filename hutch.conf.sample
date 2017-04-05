@@ -1,0 +1,114 @@
+#
+#
+#  Hutch - Password and private data locker
+#
+# Copyright 2017 Nicolas Mora <mail@babelouest.org>
+# Gnu Public License V3 <http://fsf.org/>
+#
+#
+
+# port to open for remote commands
+port=4884
+
+# url prefix
+url_prefix="api"
+
+# path to static files for /webapp url
+static_files_path="webapp/dist/"
+
+# static files prefix
+static_files_prefix = "app"
+
+# mime types for webapp files
+static_files_mime_types =
+(
+  {
+    extension = ".html"
+    type = "text/html"
+  },
+  {
+    extension = ".css"
+    type = "text/css"
+  },
+  {
+    extension = ".js"
+    type = "application/javascript"
+  },
+  {
+    extension = ".png"
+    type = "image/png"
+  },
+  {
+    extension = ".jpg"
+    type = "image/jpeg"
+  },
+  {
+    extension = ".jpeg"
+    type = "image/jpeg"
+  },
+  {
+    extension = ".ttf"
+    type = "font/ttf"
+  },
+  {
+    extension = ".woff"
+    type = "font/woff"
+  },
+  {
+    extension = ".woff2"
+    type = "font/woff2"
+  },
+  {
+    extension = ".map"
+    type = "application/octet-stream"
+  }
+)
+
+# access-control-allow-origin value
+allow_origin="*"
+
+# log mode (console, syslog, file)
+log_mode="console,file"
+
+# log level: NONE, ERROR, WARNING, INFO, DEBUG
+log_level="WARNING"
+
+# output to log file (required if log_mode is file)
+log_file="/tmp/hutch.log"
+
+# admin scope name
+oauth_scope="hutch"
+
+# TLS/SSL configuration values
+use_secure_connection=false
+secure_connection_key_file="cert.key"
+secure_connection_pem_file="cert.pem"
+
+# MariaDB/Mysql database connection
+database =
+{
+  type = "mariadb";
+  host = "locahost";
+  user = "hutch";
+  password = "hutch";
+  dbname = "hutch";
+  port = 0;
+};
+
+# SQLite database connection
+#database =
+#{
+#   type               = "sqlite3";
+#   path               = "/tmp/hutch.db";
+#};
+
+# jwt parameters
+jwt =
+{
+   use_rsa = false
+   rsa_pub_file = "public.pem"
+   
+   use_sha = true
+   sha_secret = "secret"
+   
+}
