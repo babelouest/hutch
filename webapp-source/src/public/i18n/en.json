@@ -7,7 +7,7 @@
   "button_refresh": "Refresh",
   "button_manage": "Manage",
   "button_lock": "Lock",
-  "button_add_coin": "Add coin",
+  "button_add_coin": "Add secret",
   "button_export": "Export",
   "button_import": "Import",
   "button_save": "Save",
@@ -26,12 +26,12 @@
   "safe_enter_password": "Enter your password to unlock the safe:",
   "safe_password_incorrect": "Error, password incorrect",
   "safe_keep_open": "Keep this safe open on this device.<br><strong>Warning! Use this option on a safe and private device only.</strong>",
-  "safe_search_coin": "Search coin",
+  "safe_search_coin": "Search secret",
   "coin_type_url": "URL",
   "coin_type_login": "Login",
   "coin_type_text": "Misc",
   "coin_type_password": "Password",
-  "coin_type_secret_question": "Secret questions",
+  "coin_type_secret_questions": "Secret questions",
   "coin_secret_question_question": "Question #{{index}}:",
   "coin_secret_question_answer": "Answer:",
   "placeholder_value": "Value",
@@ -64,7 +64,7 @@
   "modal_profile_fortune_image": "Select local image",
   "get_random_image_error": "Error loading image, retry",
   "get_random_image_message": "Get a random image from Wikimedia Commons",
-  "get_local_image_message": "Or choose a local image from your computer",
+  "get_local_image_message": "Or choose a local image from your device",
   "modal_safe_add": "Add safe",
   "modal_safe_edit": "Edit safe",
   "modal_safe_name": "Name",
@@ -110,5 +110,4 @@
   "modal_reset_password_safe_message": "Use your safe key file to reset your safe password. If you didn't download your safe key before that, there's nothing we can do...",
   "modal_reset_password_upload_file": "Select your safe key file",
   "modal_reset_password_safe_file_incorrect": "This file does not seem to have the correct key."
-  
 }
