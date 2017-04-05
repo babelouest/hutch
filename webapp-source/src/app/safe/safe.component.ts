@@ -49,6 +49,25 @@ export class SafeComponent implements OnInit {
     this.safe = {name: '', description: '', key: '', safeKey: null, coinList: []};
   }
 
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.searchValue = '';
+      this.safePassword = '';
+      this.passwordError = false;
+      this.keepSafeOpen = false;
+      this.loadSafe(params['name']);
+    });
+    if (this.safe.name) {
+      this.hutchStoreService.getObservable('safe').subscribe((status) => {
+        if (this.safe && status.action === 'add' && status.name === this.safe.name) {
+          this.loadSafe(this.safe.name);
+        } else if (this.safe && (status.action === 'clear' || (status.action === 'delete' && status.name === this.safe.name))) {
+          this.lockSafe();
+        }
+      });
+    }
+  }
+
   searchCoin() {
     if (this.searchValue !== '') {
       this.coinListDisplayed = [];
@@ -147,23 +166,6 @@ export class SafeComponent implements OnInit {
       }
     } else {
       this.router.navigate(['']);
-    }
-  }
-
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.loadSafe(params['name']);
-      this.searchValue = '';
-      this.safePassword = '';
-    });
-    if (this.safe.name) {
-      this.hutchStoreService.getObservable('safe').subscribe((status) => {
-        if (this.safe && status.action === 'add' && status.name === this.safe.name) {
-          this.loadSafe(this.safe.name);
-        } else if (this.safe && (status.action === 'clear' || (status.action === 'delete' && status.name === this.safe.name))) {
-          this.lockSafe();
-        }
-      });
     }
   }
 
