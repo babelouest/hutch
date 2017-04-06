@@ -60,7 +60,6 @@ int main (int argc, char ** argv) {
   config->instance = malloc(sizeof(struct _u_instance));
   config->allow_origin = NULL;
   config->app_files_path = NULL;
-  config->app_prefix = NULL;
   config->glewlwyd_resource_config = malloc(sizeof(struct _glewlwyd_resource_config));
   config->use_secure_connection = 0;
   config->secure_connection_key_file = NULL;
@@ -135,10 +134,9 @@ int main (int argc, char ** argv) {
   ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_delete, (void*)config);
   
   // Other endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", "/", NULL, NULL, NULL, NULL, &callback_hutch_root, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", NULL, "*", NULL, NULL, NULL, &callback_hutch_static_file, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, NULL, NULL, NULL, &callback_hutch_server_configuration, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", NULL, NULL, NULL, &callback_hutch_options, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->app_prefix, "*", NULL, NULL, NULL, &callback_hutch_static_file, (void*)config);
   ulfius_set_default_endpoint(config->instance, NULL, NULL, NULL, &callback_default, (void*)config);
 
   // Set default headers
@@ -187,7 +185,6 @@ void exit_server(struct config_elements ** config, int exit_value) {
     free((*config)->log_file);
     free((*config)->allow_origin);
     free((*config)->app_files_path);
-    free((*config)->app_prefix);
     free((*config)->secure_connection_key_file);
     free((*config)->secure_connection_pem_file);
     free((*config)->glewlwyd_resource_config->oauth_scope);
@@ -388,7 +385,7 @@ int build_config_from_file(struct config_elements * config) {
   config_t cfg;
   config_setting_t * root, * database, * jwt, * mime_type_list, * mime_type;
   const char * cur_prefix, * cur_log_mode, * cur_log_level, * cur_log_file = NULL, * one_log_mode, * cur_allow_origin,
-             * cur_static_files_prefix, * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL,
+             * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL,
              * db_mariadb_password = NULL, * db_mariadb_dbname = NULL, * cur_static_files_path = NULL, * cur_rsa_pub_file = NULL,
              * cur_sha_secret = NULL, * cur_oauth_scope = NULL, * extension = NULL, * mime_type_value = NULL;
   int db_mariadb_port = 0, cur_use_rsa = 0, cur_use_sha = 0, i = 0;
@@ -537,18 +534,6 @@ int build_config_from_file(struct config_elements * config) {
     }
   }
 
-  if (config->app_prefix == NULL) {
-    // Get prefix url
-    if (config_lookup_string(&cfg, "app_prefix", &cur_static_files_prefix)) {
-      config->app_prefix = nstrdup(cur_static_files_prefix);
-      if (config->app_prefix == NULL) {
-        fprintf(stderr, "Error allocating config->app_prefix, exiting\n");
-        config_destroy(&cfg);
-        return 0;
-      }
-    }
-  }
-  
   // Populate mime types u_map
   mime_type_list = config_lookup(&cfg, "app_files_mime_types");
   if (mime_type_list != NULL) {

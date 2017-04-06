@@ -1,13 +1,13 @@
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpModule, Http, JsonpModule } from '@angular/http';
+import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
 
 import { DndModule } from 'ng2-dnd';
 import { BootstrapModalModule } from 'ng2-bootstrap-modal';
 import { CookieService } from 'angular2-cookie/services/cookies.service';
-import { TranslateModule, TranslateLoader, TranslateStaticLoader } from 'ng2-translate/ng2-translate';
+import { TranslateModule } from 'ng2-translate/ng2-translate';
 
 import { routing } from './app.routing';
 import { AppComponent } from './app.component';
@@ -47,12 +47,7 @@ import { HutchConfigService } from './shared/hutch-config.service';
     routing,
     BootstrapModalModule,
     DndModule.forRoot(),
-    TranslateModule.forRoot(),
-    TranslateModule.forRoot({
-      provide: TranslateLoader,
-      useFactory: (createTranslateLoader),
-      deps: [Http]
-    })
+    TranslateModule.forRoot()
   ],
   declarations: [
     AppComponent,
@@ -111,7 +106,4 @@ export class AppModule {
     store.disposeOldHosts();
     delete store.disposeOldHosts;
   }
-}
-export function createTranslateLoader(http: Http) {
-  return new TranslateStaticLoader(http, '/app/i18n', '.json');
 }

@@ -8,7 +8,7 @@ The API backend is fully written in language C, it's based on [Ulfius](https://g
 
 Authentication relies on a [Glewlwyd OAuth2 server](https://github.com/babelouest/glewlwyd), you must have one available first.
 
-Warning, this project is in progress, not finished yet, and most probably full of bugs, use at your own risks.
+Warning, this project is in beta, use at your own risks.
 
 ## Installation
 
@@ -100,6 +100,8 @@ $ sudo cp hutch.service /etc/systemd/system
 $ sudo systemctl enable hutch
 $ sudo sudo systemctl start hutch
 ```
+
+### Install Web application
 
 ## Usage
 

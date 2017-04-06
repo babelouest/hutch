@@ -75,7 +75,6 @@ struct config_elements {
   char *                             log_file;
   char *                             allow_origin;
   char *                             app_files_path;
-  char *                             app_prefix;
   unsigned int                       use_secure_connection;
   char *                             secure_connection_key_file;
   char *                             secure_connection_pem_file;
@@ -140,7 +139,6 @@ int callback_hutch_coin_add (const struct _u_request * request, struct _u_respon
 int callback_hutch_coin_set (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_coin_delete (const struct _u_request * request, struct _u_response * response, void * user_data);
 
-int callback_hutch_root (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_server_configuration (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_options (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_static_file (const struct _u_request * request, struct _u_response * response, void * user_data);

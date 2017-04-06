@@ -45,7 +45,7 @@ int callback_hutch_static_file (const struct _u_request * request, struct _u_res
   char * file_path;
   const char * content_type;
 
-  file_requested = request->http_url + strlen(((struct config_elements *)user_data)->app_prefix) + 1;
+  file_requested = request->http_url + sizeof(char);
   
   if (strchr(file_requested, '#') != NULL) {
     *strchr(file_requested, '#') = '\0';
@@ -111,31 +111,13 @@ int callback_hutch_options (const struct _u_request * request, struct _u_respons
 }
 
 /**
- * root endpoint
- * redirects to static files address
- */
-int callback_hutch_root (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  char * url = msprintf("%s/", ((struct config_elements *)user_data)->app_prefix);
-  if (url != NULL) {
-    response->status = 301;
-    ulfius_add_header_to_response(response, "Location", url);
-    free(url);
-  } else {
-    response->status = 500;
-  }
-  return U_OK;
-};
-
-/**
  * api description endpoint
  * send the location of prefixes
  */
 int callback_hutch_server_configuration (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  response->json_body = json_pack("{ssssss}", 
+  response->json_body = json_pack("{ssss}", 
                         "api_prefix", 
                         ((struct config_elements *)user_data)->api_prefix,
-                        "app_prefix",
-                        ((struct config_elements *)user_data)->app_prefix,
                         "hutch_scope",
                         ((struct config_elements *)user_data)->glewlwyd_resource_config->oauth_scope);
   return U_OK;

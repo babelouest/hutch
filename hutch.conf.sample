@@ -16,9 +16,6 @@ api_prefix="api"
 # path to static files to access webapp
 app_files_path="webapp/dist/"
 
-# webapp prefix
-app_prefix = "app"
-
 # mime types for webapp files
 static_files_mime_types =
 (

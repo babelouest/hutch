@@ -12,7 +12,7 @@ export class HutchConfigService {
 
   get(): Promise<any> {
     if (!this.config) {
-      return this.http.get('/app/config.json')
+      return this.http.get('config.json')
                  .toPromise()
                  .then((result) => {
                    this.config = result.json();
