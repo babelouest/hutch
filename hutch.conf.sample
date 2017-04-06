@@ -61,6 +61,14 @@ static_files_mime_types =
   {
     extension = ".map"
     type = "application/octet-stream"
+  },
+  {
+    extension = ".json"
+    type = "text/json"
+  },
+  {
+    extension = ".ico"
+    type = "image/x-icon"
   }
 )
 
