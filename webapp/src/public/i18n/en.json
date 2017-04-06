@@ -74,6 +74,7 @@
   "modal_safe_add": "Add safe",
   "modal_safe_edit": "Edit safe",
   "modal_safe_name": "Name",
+  "modal_safe_set_parameters": "Set safe parameters",
   "modal_safe_description": "Description",
   "modal_safe_current_password": "Current password",
   "modal_safe_current_password_placeholder": "Leave empty to keep your password",

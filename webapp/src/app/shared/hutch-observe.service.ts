@@ -30,6 +30,14 @@ export class HutchObserveService {
     store.observable.next({ action: 'add', name: name });
   }
 
+  set(storeName: string, name: string, data: any) {
+    let store = _.find(this.storage, {name: storeName});
+    if (store) {
+      store.data[name] = data;
+      store.observable.next({ action: 'set', name: name });
+    }
+  }
+
   delete(storeName: string, name: string) {
     let store = _.find(this.storage, {name: storeName});
     if (store) {
@@ -67,10 +75,10 @@ export class HutchObserveService {
 
   getObservable(storeName: string): Observable<any> {
     let store = _.find(this.storage, {name: storeName});
-    if (store) {
-      return store.observable.asObservable();
-    } else {
-      return undefined;
+    if (!store) {
+      store = new Store(storeName);
+      this.storage.push(store);
     }
+    return store.observable.asObservable();
   }
 }

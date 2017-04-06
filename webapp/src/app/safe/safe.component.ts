@@ -95,7 +95,7 @@ export class SafeComponent implements OnInit {
           this.safe.name = result.name;
           this.safe.description = result.description;
           this.safe.key = result.key;
-          this.hutchStoreService.add('safe', this.safe.name, this.safe);
+          this.hutchStoreService.set('safe', this.safe.name, this.safe);
         });
       }
     });
@@ -175,7 +175,7 @@ export class SafeComponent implements OnInit {
       this.hutchCryptoService.decryptData(this.safe.key, passwordKey).then((exportedKey) => {
         this.hutchCryptoService.getKeyFromExport(exportedKey).then((safeKey) => {
           this.safe.safeKey = safeKey;
-          this.hutchStoreService.add('safe', this.safe.name, this.safe);
+          this.hutchStoreService.set('safe', this.safe.name, this.safe);
           this.unlocked = true;
           this.loadCoins();
           if (this.keepSafeOpen) {
@@ -205,7 +205,7 @@ export class SafeComponent implements OnInit {
       });
       if (promises.length > 0) {
         Observable.forkJoin(promises).subscribe(() => {
-          this.hutchStoreService.add('safe', this.safe.name, this.safe);
+          this.hutchStoreService.set('safe', this.safe.name, this.safe);
           this.loading = false;
         });
       } else {
@@ -229,7 +229,9 @@ export class SafeComponent implements OnInit {
     this.coinList = [];
     this.coinListDisplayed = [];
     this.unlocked = false;
-    this.hutchStoreService.add('safe', this.safe.name, this.safe);
+    if (this.hutchStoreService.get('safe', this.safe.name)) {
+      this.hutchStoreService.set('safe', this.safe.name, this.safe);
+    }
   }
 
   deleteCoin(coin) {

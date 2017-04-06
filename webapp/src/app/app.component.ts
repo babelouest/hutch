@@ -142,7 +142,7 @@ export class AppComponent implements OnInit {
       delete curSafe.safeKey;
       delete curSafe.coinList;
       localStorage.removeItem(curSafe.name);
-      self.hutchStoreService.add('safe', curSafe.name, curSafe);
+      self.hutchStoreService.set('safe', curSafe.name, curSafe);
     });
   }
 }

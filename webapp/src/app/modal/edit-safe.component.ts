@@ -18,7 +18,7 @@ export interface EditSafeModel {
                     <h4 class='modal-title' [innerHtml]='(isNew ? "modal_safe_add" : "modal_safe_edit" ) | translate'></h4>
                   </div>
                   <div class='modal-body'>
-                    <h5>Set safe parameters</h5>
+                    <h5 [innerHtml]='"modal_safe_set_parameters" | translate'></h5>
                     <div class='row'>
                       <div class='col-xs-6'>
                         <label [innerHtml]='"modal_safe_name" | translate'></label>

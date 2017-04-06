@@ -74,6 +74,7 @@
   "modal_safe_add": "Ajouter un coffre",
   "modal_safe_edit": "Modifier un coffre",
   "modal_safe_name": "Nom",
+  "modal_safe_set_parameters": "Veuillez entrer les paramètres du coffre",
   "modal_safe_description": "Description",
   "modal_safe_current_password": "Mot de passe actuel",
   "modal_safe_current_password_placeholder": "Laissez vide pour ne pas changer le mot de passe",
