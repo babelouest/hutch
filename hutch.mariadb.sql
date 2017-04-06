@@ -6,7 +6,7 @@
 -- USE `hutch`;
 
 DROP TABLE IF EXISTS `h_coin_history`;
-DROP TABLE IF EXISTS `h_data_history`;
+DROP TABLE IF EXISTS `h_safe_history`;
 DROP TABLE IF EXISTS `h_profile_history`;
 DROP TABLE IF EXISTS `h_coin`;
 DROP TABLE IF EXISTS `h_safe`;
