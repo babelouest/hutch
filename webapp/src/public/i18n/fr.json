@@ -79,7 +79,7 @@
   "modal_safe_current_password": "Mot de passe actuel",
   "modal_safe_current_password_placeholder": "Laissez vide pour ne pas changer le mot de passe",
   "modal_safe_new_password": "Nouveau mot de passe",
-  "modal_safe_new_password_confirm": "Confirm le nouveau mot de passe",
+  "modal_safe_new_password_confirm": "Confirmer le nouveau mot de passe",
   "modal_safe_password_warning": "Attention! Le mot de passe du coffre est personnel et n'est stocké en clair nulle par sur le serveur distant, il n'est pas possible d'accéder à vos données pour le serveur distant",
   "modal_safe_error": "Une erreur est survenue",
   "modal_tags_title": "Modifier les tags",

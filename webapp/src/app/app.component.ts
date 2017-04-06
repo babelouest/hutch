@@ -54,13 +54,13 @@ export class AppComponent implements OnInit {
     this.oauth2Connect.getStatus().subscribe((status) => {
       if (status === 'connected') {
         this.hutchSafeService.list().then((result) => {
+          let promises = [];
           for (let safe of result) {
             if (localStorage.getItem(safe.name)) {
               try {
                 this.hutchCryptoService.getKeyFromExport(JSON.parse(localStorage.getItem(safe.name))).then((safeKey) => {
                   safe.safeKey = safeKey;
                   this.hutchCoinService.list(safe.name).then((encryptedCoinList) => {
-                    let promises = [];
                     safe.coinList = [];
                     encryptedCoinList.forEach((encryptedCoin) => {
                       promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, safe.safeKey).then((decryptedCoin) => {

@@ -24,7 +24,7 @@
   <h3 [innerHtml]="safe.description"></h3>
 </div>
 
-<div *ngIf="unlocked">
+<div class="container" *ngIf="unlocked">
   <div class="row" style="margin-bottom:10px;">
     <div class="col-md-12 text-center">
       <label class="label label-danger" *ngIf="errorMessage" [innerHtml]="safe.name"></label>
