@@ -56,6 +56,7 @@ webapp/public/__build__/
 webapp/src/*/__build__/
 webapp/__build__/**
 webapp/.webpack.json
+webapp/dist/config.json
 
 # Doc #
 webapp/doc/
