@@ -47,12 +47,16 @@ int callback_hutch_static_file (const struct _u_request * request, struct _u_res
 
   file_requested = request->http_url + strlen(((struct config_elements *)user_data)->app_prefix) + 1;
   
-  if (file_requested == NULL || strlen(file_requested) == 0 || 0 == nstrcmp("/", file_requested)) {
-    file_requested = "/index.html";
+  if (strchr(file_requested, '#') != NULL) {
+    *strchr(file_requested, '#') = '\0';
   }
   
   if (strchr(file_requested, '?') != NULL) {
     *strchr(file_requested, '?') = '\0';
+  }
+  
+  if (file_requested == NULL || strlen(file_requested) == 0 || 0 == nstrcmp("/", file_requested)) {
+    file_requested = "/index.html";
   }
   
   file_path = msprintf("%s%s", ((struct config_elements *)user_data)->app_files_path, file_requested);
