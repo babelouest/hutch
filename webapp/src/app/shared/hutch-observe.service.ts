@@ -1,16 +1,16 @@
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import * as _ from 'lodash';
 
 export class Store {
   name: string;
-  observable: Subject<any>;
+  observable: ReplaySubject<any>;
   data: any;
 
   constructor(name: string) {
     this.name = name;
-    this.observable = new Subject();
+    this.observable = new ReplaySubject();
     this.data = {};
   }
 }
