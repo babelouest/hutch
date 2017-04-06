@@ -17,7 +17,7 @@ api_prefix="api"
 app_files_path="webapp/dist/"
 
 # mime types for webapp files
-static_files_mime_types =
+app_files_mime_types =
 (
   {
     extension = ".html"
@@ -93,7 +93,7 @@ secure_connection_pem_file="cert.pem"
 database =
 {
   type = "mariadb";
-  host = "locahost";
+  host = "localhost";
   user = "hutch";
   password = "hutch";
   dbname = "hutch";
