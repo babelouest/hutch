@@ -62,6 +62,7 @@ int main (int argc, char ** argv) {
   config->app_files_path = NULL;
   config->app_prefix = NULL;
   config->glewlwyd_resource_config = malloc(sizeof(struct _glewlwyd_resource_config));
+  config->use_secure_connection = 0;
   config->secure_connection_key_file = NULL;
   config->secure_connection_pem_file = NULL;
   if (config->instance == NULL || config->glewlwyd_resource_config == NULL) {
@@ -385,9 +386,12 @@ void exit_handler(int signal) {
 int build_config_from_file(struct config_elements * config) {
   
   config_t cfg;
-  config_setting_t * root, * database, * jwt;
-  const char * cur_prefix, * cur_log_mode, * cur_log_level, * cur_log_file = NULL, * one_log_mode, * cur_allow_origin, * cur_static_files_prefix, * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL, * db_mariadb_password = NULL, * db_mariadb_dbname = NULL, * cur_static_files_path = NULL, * cur_rsa_pub_file = NULL, * cur_sha_secret = NULL, * cur_oauth_scope = NULL;
-  int db_mariadb_port = 0, cur_use_rsa = 0, cur_use_sha = 0;
+  config_setting_t * root, * database, * jwt, * mime_type_list, * mime_type;
+  const char * cur_prefix, * cur_log_mode, * cur_log_level, * cur_log_file = NULL, * one_log_mode, * cur_allow_origin,
+             * cur_static_files_prefix, * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL,
+             * db_mariadb_password = NULL, * db_mariadb_dbname = NULL, * cur_static_files_path = NULL, * cur_rsa_pub_file = NULL,
+             * cur_sha_secret = NULL, * cur_oauth_scope = NULL, * extension = NULL, * mime_type_value = NULL;
+  int db_mariadb_port = 0, cur_use_rsa = 0, cur_use_sha = 0, i = 0;
   
   config_init(&cfg);
   
@@ -541,6 +545,19 @@ int build_config_from_file(struct config_elements * config) {
         fprintf(stderr, "Error allocating config->app_prefix, exiting\n");
         config_destroy(&cfg);
         return 0;
+      }
+    }
+  }
+  
+  // Populate mime types u_map
+  mime_type_list = config_lookup(&cfg, "app_files_mime_types");
+  if (mime_type_list != NULL) {
+    for (i=0; i<config_setting_length(mime_type_list); i++) {
+      mime_type = config_setting_get_elem(mime_type_list, i);
+      if (mime_type != NULL) {
+        if (config_setting_lookup_string(mime_type, "extension", &extension) && config_setting_lookup_string(mime_type, "type", &mime_type_value)) {
+          u_map_put(config->mime_types, extension, mime_type_value);
+        }
       }
     }
   }
