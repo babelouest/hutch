@@ -52,7 +52,6 @@ webapp/typings/
 webapp/tsd_typings/
 
 # Dist #
-webapp/dist
 webapp/public/__build__/
 webapp/src/*/__build__/
 webapp/__build__/**
