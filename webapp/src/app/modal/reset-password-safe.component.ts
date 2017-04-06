@@ -22,17 +22,17 @@ export interface ResetPasswordSafeModel {
                      <p class='bg-info' [innerHtml]='"modal_reset_password_safe_message" | translate'></p>
                      <hr>
                      <div class='row' *ngIf="!resetAvailable">
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <h4 [innerHtml]='"modal_reset_password_safe_impossible" | translate' class='bg-warning'></h4>
                        </div>
                      </div>
                      <div class='row' *ngIf="!keyFileValid">
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <h4 [innerHtml]='"modal_reset_password_safe_file_incorrect" | translate' class='bg-error'></h4>
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                           <span [innerHtml]='"modal_reset_password_upload_file" | translate'></span>
                           <input type='file'
                                  id='localFile'
@@ -43,10 +43,10 @@ export interface ResetPasswordSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <label for='newPassword' [innerHtml]='"modal_safe_new_password" | translate'></label>
                        </div>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <input type='password'
                                 class='form-control'
                                 [placeholder]='"modal_safe_new_password" | translate'
@@ -57,10 +57,10 @@ export interface ResetPasswordSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <label for='confirmNewPassword' [innerHtml]='"modal_safe_new_password_confirm" | translate'></label>
                        </div>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <input type='password'
                                 class='form-control'
                                 [placeholder]='"modal_safe_new_password_confirm" | translate'
@@ -71,7 +71,7 @@ export interface ResetPasswordSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <button type='button' (click)='changePassword()' class='btn btn-default' [disabled]='!isNewPasswordValid()'>
                            <i class="fa fa-key" aria-hidden="true"></i>
                            <span [innerHtml]="'button_change_password' | translate"></span>

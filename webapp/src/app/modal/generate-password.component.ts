@@ -13,47 +13,47 @@ export interface GeneratePasswordModel {
                    <div class='modal-body'>
                      <h5 [innerHtml]='"modal_password_message" | translate'></h5>
                      <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_password_low_case" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='checkbox' class='form-control' [(ngModel)]='options.letterLowerCase' >
                       </div>
                      </div>
                      <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_password_upper_case" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='checkbox' class='form-control' [(ngModel)]='options.letterUpperCase' >
                       </div>
                      </div>
                      <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_password_numbers" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='checkbox' class='form-control' [(ngModel)]='options.numbers' >
                       </div>
                      </div>
                      <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_password_special_characters" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='checkbox' class='form-control' [(ngModel)]='options.specialChars' >
                       </div>
                      </div>
                      <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_password_length" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='number' step='1' min='1' class='form-control' [(ngModel)]='options.length' >
                       </div>
                      </div>
                      <div class='row' *ngIf='generatedPassword'>
-                      <div class='col-xs-12'>
+                      <div class='col-md-12'>
                         <h5 class='label label-success' [innerHtml]='"modal_password_generated" | translate'></h5>
                       </div>
                      </div>

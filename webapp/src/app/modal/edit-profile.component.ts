@@ -17,10 +17,10 @@ export interface EditProfileModel {
                   </div>
                   <div class='modal-body'>
                     <div class='row'>
-                      <div class='col-xs-3'>
+                      <div class='col-md-3'>
                         <label [innerHtml]='"modal_profile_fortune_message" | translate'></label>
                       </div>
-                      <div class='col-xs-9'>
+                      <div class='col-md-9'>
                         <input type='text'
                                class='form-control'
                                [(ngModel)]='fortune'
@@ -29,10 +29,10 @@ export interface EditProfileModel {
                     </div>
                     <hr>
                     <div class='row'>
-                      <div class='col-xs-3'>
+                      <div class='col-md-3'>
                         <label [innerHtml]='"modal_profile_fortune_image_label" | translate'></label>
                       </div>
-                      <div class='col-xs-9'>
+                      <div class='col-md-9'>
                         <i class="fa fa-spinner fa-spin" aria-hidden="true" *ngIf='!showImage'></i>
                         <img [src]='picture' id='randomImage' alt='Random Image' *ngIf='showImage'>
                         <i class="fa fa-exclamation-circle" aria-hidden="true" *ngIf='errorImage'></i>

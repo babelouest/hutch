@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-xs-9 pull-left">
+  <div class="col-md-9 pull-left">
     <ul class="nav nav-tabs">
       <li role="presentation" class="nav active" [ngClass]="{active:homeActive}">
         <a href="" [routerLink]="['']" (click)="selectTab($event, false)">{{ 'menu_home' | translate }}</a>
@@ -13,7 +13,7 @@
       </li>
     </ul>
   </div>
-  <div class="col-xs-3" *ngIf="oauth">
+  <div class="col-md-3" *ngIf="oauth">
     <my-oauth2-connect #oauth2
       [serverUri]="oauth.serverUri"
       [clientId]="oauth.clientId"
@@ -42,9 +42,4 @@
     </my-oauth2-connect>
   </div>
 </div>
-
-<main>
-  <div class="container-fluid">
-    <router-outlet></router-outlet>
-  </div>
-</main>
+<router-outlet></router-outlet>

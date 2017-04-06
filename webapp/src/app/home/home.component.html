@@ -1,5 +1,5 @@
-<div class="row">
-  <div class="col-xs-12 input-group text-right" style="padding-right: 10px;">
+<div class="row" *ngIf="connected">
+  <div class="col-md-12 input-group text-right" style="padding-right: 10px;">
     <span class="input-group-btn">
       <button data-toggle="tooltip" [title]="'add_safe' | translate" type="button" class="btn btn-default" (click)="addSafe()" *ngIf="!noProfile">
         <i class="fa fa-plus"></i>
@@ -11,7 +11,7 @@
   </div>
 </div>
 
-<div class="text-center">
+<div class="row text-center">
   <h1>Hutch</h1>
   <div class="well" *ngIf="!loading && !!profile.fortune">
     <img [src]="profile.picture" [alt]="'alt_profile_picture' | translate">

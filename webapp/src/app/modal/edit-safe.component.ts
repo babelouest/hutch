@@ -20,10 +20,10 @@ export interface EditSafeModel {
                   <div class='modal-body'>
                     <h5 [innerHtml]='"modal_safe_set_parameters" | translate'></h5>
                     <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_safe_name" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='text'
                                class='form-control'
                                [disabled]="!isNew"
@@ -32,10 +32,10 @@ export interface EditSafeModel {
                       </div>
                     </div>
                     <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_safe_description" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='text'
                                class='form-control'
                                [(ngModel)]='description'
@@ -44,10 +44,10 @@ export interface EditSafeModel {
                     </div>
                     <hr>
                     <div class='row' *ngIf='!isNew'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_safe_current_password" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='password'
                                class='form-control'
                                [(ngModel)]='currentPassword'
@@ -55,10 +55,10 @@ export interface EditSafeModel {
                       </div>
                     </div>
                     <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_safe_new_password" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='password'
                                class='form-control'
                                [(ngModel)]='password'
@@ -66,10 +66,10 @@ export interface EditSafeModel {
                       </div>
                     </div>
                     <div class='row'>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_safe_new_password_confirm" | translate'></label>
                       </div>
-                      <div class='col-xs-6'>
+                      <div class='col-md-6'>
                         <input type='password'
                                class='form-control'
                                [(ngModel)]='confirmPassword'
@@ -77,12 +77,12 @@ export interface EditSafeModel {
                       </div>
                     </div>
                     <div class='row' style="margin-top: 10px;">
-                      <div class='col-xs-12'>
+                      <div class='col-md-12'>
                         <p class='bg-warning' [innerHtml]='"modal_safe_password_warning" | translate'></p>
                       </div>
                     </div>
                     <div class='row' *ngIf='error'>
-                      <div class='col-xs-12 text-center'>
+                      <div class='col-md-12 text-center'>
                         <label class='label label-danger' [innerHtml]='"modal_safe_error" | translate'></label>
                       </div>
                     </div>

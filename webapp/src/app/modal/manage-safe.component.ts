@@ -25,12 +25,12 @@ export interface ManageSafeModel {
                      <p class='bg-info' [innerHtml]='"modal_manage_safe_message" | translate'></p>
                      <hr>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <h4 [innerHtml]='"modal_manage_safe_export_coins" | translate'></h4>
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <label for="exportWithPassword" class="checkbox-inline">
                            <input type="checkbox" [(ngModel)]="exportWithPassword" name="exportWithPassword" id="exportWithPassword">
                            <span [innerHtml]="'modal_manage_safe_export_coins_with_password' | translate"></span>
@@ -38,10 +38,10 @@ export interface ManageSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <label for='exportPassword' [innerHtml]='"modal_manage_safe_password_label" | translate'></label>
                        </div>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <input type='password'
                                 class='form-control'
                                 [placeholder]='"modal_manage_safe_export_coins_password_input" | translate'
@@ -52,7 +52,7 @@ export interface ManageSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <button type='button' (click)='exportCoins()' class='btn btn-default' [disabled]='!isExportValid()'>
                            <i class="fa fa-cloud-download" aria-hidden="true"></i>
                            <span [innerHtml]="'button_export' | translate"></span>
@@ -61,12 +61,12 @@ export interface ManageSafeModel {
                      </div>
                      <hr>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <h4 [innerHtml]='"modal_manage_safe_import_coins" | translate'></h4>
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                           <span [innerHtml]='"modal_manage_safe_import_file" | translate'></span>
                           <input type='file'
                                  id='localFile'
@@ -76,10 +76,10 @@ export interface ManageSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <label for='importPassword' [innerHtml]='"modal_manage_safe_password_label" | translate'></label>
                        </div>
-                       <div class='col-xs-6 form-group has-feedback'>
+                       <div class='col-md-6 form-group has-feedback'>
                          <input type='password'
                                 class='form-control'
                                 [placeholder]='"modal_manage_safe_import_coins_password_input" | translate'
@@ -103,7 +103,7 @@ export interface ManageSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <button type='button' (click)='importCoins()' class='btn btn-default' [disabled]='!isImportValid()'>
                            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
                            <span [innerHtml]="'button_import' | translate"></span>
@@ -111,7 +111,7 @@ export interface ManageSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <h5 [innerHtml]='"modal_manage_safe_import_success" | translate'
                              *ngIf='importMessage === "success"'
                              class='bg-success'></h5>
@@ -125,15 +125,15 @@ export interface ManageSafeModel {
                      </div>
                      <hr>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <h4 [innerHtml]='"modal_manage_safe_export_key" | translate'></h4>
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <label for='exportSafeKeyPassword' [innerHtml]='"modal_manage_safe_password_safe_label" | translate'></label>
                        </div>
-                       <div class='col-xs-6'>
+                       <div class='col-md-6'>
                          <input type='password'
                                 class='form-control'
                                 [placeholder]='"modal_manage_safe_export_key_password_input" | translate'
@@ -143,14 +143,14 @@ export interface ManageSafeModel {
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <h5 [innerHtml]='"modal_manage_safe_export_safe_key_password_error" | translate'
                              *ngIf='exportSafeKeyMessage === "password-error"'
                              class='bg-error'></h5>
                        </div>
                      </div>
                      <div class='row'>
-                       <div class='col-xs-12'>
+                       <div class='col-md-12'>
                          <button type='button' (click)='exportSafeKey()' class='btn btn-default' [disabled]='!exportSafeKeyPassword'>
                            <i class="fa fa-cloud-download" aria-hidden="true"></i>
                            <span [innerHtml]="'button_export' | translate"></span>

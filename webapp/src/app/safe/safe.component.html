@@ -1,5 +1,5 @@
 <div class="row" *ngIf="unlocked">
-  <div class="col-xs-12 input-group text-right" style="padding-right: 10px;">
+  <div class="col-md-12 input-group text-right" style="padding-right: 10px;">
     <span class="input-group-btn">
       <button data-toggle="tooltip" [title]="'button_refresh' | translate" type="button" class="btn btn-default" (click)="refreshSafe()">
         <i class="fa fa-refresh"></i>
@@ -24,14 +24,14 @@
   <h3 [innerHtml]="safe.description"></h3>
 </div>
 
-<div class="container" *ngIf="unlocked">
+<div *ngIf="unlocked">
   <div class="row" style="margin-bottom:10px;">
-    <div class="col-xs-12 text-center">
+    <div class="col-md-12 text-center">
       <label class="label label-danger" *ngIf="errorMessage" [innerHtml]="safe.name"></label>
     </div>
   </div>
   <div class="row" style="margin-bottom:10px;">
-    <div class="col-xs-12 input-group">
+    <div class="col-md-12 input-group">
       <span class="input-group-btn">
         <input class="form-control input-medium" 
                [placeholder]="'safe_search_coin' | translate" 
@@ -48,7 +48,7 @@
   </div>
 </div>
 
-<div class="row" *ngIf="unlocked">
+<div *ngIf="unlocked">
   <div class="col-md-6" *ngFor="let coin of coinListDisplayed">
     <my-hutch-coin [coin]="coin" [safeKey]="safe.safeKey" [safe]="safe.name" [editCoinMode]="coin.editCoinMode" (onDeleteCoin)="deleteCoin(coin)"></my-hutch-coin>
   </div>
@@ -57,7 +57,7 @@
 <div class="container" *ngIf="!unlocked">
   <form (ngSubmit)="checkPassword()">
     <div class="row">
-      <div class="col-xs-12 text-center">
+      <div class="col-md-12 text-center">
         <h4 for="safePassword" [innerHtml]="'safe_enter_password' | translate"></h4>
     </div>
     <div class="row">
@@ -83,7 +83,7 @@
     </div>
     <br *ngIf="passwordError">
     <div class="row" *ngIf="passwordError">
-      <div class="col-xs-12 text-center">
+      <div class="col-md-12 text-center">
         <label class="label label-danger" [innerHtml]="'safe_password_incorrect' | translate"></label>
       </div>
     </div>

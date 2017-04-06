@@ -51,7 +51,7 @@
           <li class="list-group-item">
             <div class="row" *ngIf="newRowMode">
               <form (ngSubmit)="saveNewRow()">
-                <div class="col-xs-4 text-left">
+                <div class="col-md-4 text-left">
                   <select class="form-control" [(ngModel)]="newRow.type" (ngModelChange)="updateNewRowType()" name="type">
                     <option value="url" [innerHtml]="'coin_type_url' | translate"></option>
                     <option value="login" [innerHtml]="'coin_type_login' | translate"></option>
@@ -60,12 +60,12 @@
                     <option value="text" [innerHtml]="'coin_type_text' | translate"></option>
                   </select>
                 </div>
-                <div class="col-xs-4 text-left">
+                <div class="col-md-4 text-left">
                   <input type="text" name="misc" class="form-control" [(ngModel)]="newRow.value" [placeholder]="'placeholder_value' | translate" *ngIf="newRow.type === 'login' || newRow.type === 'url' || newRow.type === 'text'">
                   <input type="password" name="password" class="form-control" [(ngModel)]="newRow.value" [placeholder]="'placeholder_password' | translate" *ngIf="newRow.type === 'password'">
                   <input type="password" name="passwordVerify" class="form-control" [(ngModel)]="newRow.valueVerified" [placeholder]="'placeholder_password_verify' | translate" *ngIf="newRow.type === 'password'">
                 </div>
-                <div class="col-xs-4 text-left">
+                <div class="col-md-4 text-left">
                   <div class="btn-group pull-right">
                     <button type="button" class="btn btn-default btn-sm" (click)="generatePassword(newRow)" [title]="'button_generate_password' | translate" *ngIf="newRow.type === 'password'">
                       <i class="fa fa-magic" aria-hidden="true"></i>
