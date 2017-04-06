@@ -25,10 +25,10 @@
     <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
     <span class="sr-only" [innerHtml]="'load_profile' | translate"></span>
   </div>
-  <div *ngIf="!profile.fortune">
+  <div *ngIf="!connected">
     <h2 [innerHtml]="'connect_message' | translate" class="text-info"></h2>
   </div>
-  <div *ngIf="noProfile">
+  <div *ngIf="connected && noProfile">
     <h2 [innerHtml]="'set_profile_message' | translate" class="text-info"></h2>
   </div>
 </div>

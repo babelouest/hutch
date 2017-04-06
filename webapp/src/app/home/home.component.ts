@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   profile = { fortune: '', picture: '' };
   loading = true;
   noProfile = false;
+  connected = false;
 
   constructor(private dialogService: DialogService,
               private translate: TranslateService,
@@ -33,8 +34,10 @@ export class HomeComponent implements OnInit {
     this.loadProfile();
     this.oauth2Connect.getStatus().subscribe((status) => {
       if (status === 'connected') {
+        this.connected = true;
         this.loadProfile();
       } else if (status === 'disconnected') {
+        this.connected = false;
         this.profile = { fortune: '', picture: '' };
         this.hutchStoreService.delete('profile', 'profile');
       }
@@ -85,6 +88,7 @@ export class HomeComponent implements OnInit {
       if (result) {
         this.hutchProfileService.setProfile({fortune: result.fortune, picture: result.picture})
         .then(() => {
+          this.noProfile = false;
           this.profile.fortune = result.fortune;
           this.profile.picture = result.picture;
         });
