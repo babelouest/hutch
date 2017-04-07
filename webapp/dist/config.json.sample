@@ -6,6 +6,10 @@
     ],
     "default": "en"
   },
+  "webCryptography": {
+    "algorithm": "AES-GCM",
+    "keyLength": 256
+  },
   "api": {
     "baseUrl": "https://resource.server.url/"
   },

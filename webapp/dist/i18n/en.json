@@ -91,6 +91,7 @@
   "modal_password_upper_case": "Letters upper case",
   "modal_password_numbers": "Numbers",
   "modal_password_special_characters": "Special characters (!, \", #, $, %, &, etc.)",
+  "modal_password_spaces": "Spaces",
   "modal_password_length": "Length",
   "modal_password_generated": "Password generated",
   "modal_why_this_title": "Why this",
