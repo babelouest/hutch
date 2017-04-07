@@ -165,7 +165,8 @@ export class SafeComponent implements OnInit {
         this.coinListDisplayed = [];
       }
     } else {
-      this.router.navigate(['']);
+      console.log('safe ' + name + ' not found', this.hutchStoreService.getAll('safe'));
+      // this.router.navigate(['']);
     }
   }
 
