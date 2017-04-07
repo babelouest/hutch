@@ -129,11 +129,7 @@ export class SafeComponent implements OnInit {
       editCoinMode: true,
       name: name,
       data: '',
-      rows: [
-        { type: 'url', value: 'https://' },
-        { type: 'login', value: '' },
-        { type: 'password', value: '' }
-      ],
+      rows: [],
       displayName: this.translate.instant('safe_new_coin')
     };
 
@@ -144,8 +140,8 @@ export class SafeComponent implements OnInit {
     };
     this.hutchCryptoService.encryptData(saveCoin, this.safe.safeKey).then((encryptedCoin) => {
       this.hutchCoinService.add(this.safe.name, { name: newCoin.name, data: encryptedCoin }).then(() => {
-        this.coinList.push(newCoin);
-        this.coinListDisplayed.push(newCoin);
+        this.coinList.unshift(newCoin);
+        this.coinListDisplayed.unshift(newCoin);
       })
       .catch(() => {
         this.errorMessage = this.translate.instant('coin_save_error');
