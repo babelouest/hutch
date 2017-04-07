@@ -10,6 +10,8 @@ import { HutchCryptoService } from '../shared/hutch-crypto.service';
 import { ConfirmComponent } from '../modal/confirm.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
 
+import * as _ from 'lodash';
+
 @Component({
   selector: 'my-hutch-coin',
   templateUrl: './coin.component.html'
@@ -92,7 +94,15 @@ export class CoinComponent implements OnInit {
 
   addCoinRow() {
     this.newRowMode = true;
-    this.newRow = {value: '', valueVerified: '', type: 'login'};
+    let type = '';
+    if (!_.find(this.coin.rows, { type: 'url' })) {
+      type = 'url';
+    } else if (!_.find(this.coin.rows, { type: 'login' })) {
+      type = 'login';
+    } else if (!_.find(this.coin.rows, { type: 'password' })) {
+      type = 'password';
+    }
+    this.newRow = {value: '', valueVerified: '', type: type};
   }
 
   saveCoinInDatabase() {
