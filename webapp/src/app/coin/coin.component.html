@@ -1,44 +1,50 @@
 <div class="panel-group">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
-      <a data-toggle="collapse" href="#{{coin.name}}" *ngIf="!editCoinMode">
-        <h4 class="panel-title pull-left" [innerHtml]="coin.displayName">
-        </h4>
-      </a>
-      <div class="input-group-btn" *ngIf="editCoinMode">
-        <form (ngSubmit)="saveCoin()">
-          <span class="input-group">
-            <input type="text" class="form-control input-medium" *ngIf="editCoinMode" name="coinName" [(ngModel)]="coin.displayName">
-            <button [title]="'coin_save_name' | translate" type="submit" class="btn btn-default">
-              <i class="fa fa-save" aria-hidden="true"></i>
-            </button>
-            <button [title]="'button_cancel' | translate" (click)="cancelEditCoin()" type="button" class="btn btn-default">
-              <i class="fa fa-close" aria-hidden="true"></i>
-            </button>
-          </span>
-        </form>
-      </div>
-      <div class="btn-group pull-right" *ngIf="!editCoinMode">
-        <button [title]="'button_edit' | translate" (click)="editCoin()" class="btn btn-default">
-          <i class="fa fa-pencil" aria-hidden="true"></i>
-        </button>
-        <button [title]="'button_delete' | translate" (click)="deleteCoin()" class="btn btn-default">
-          <i class="fa fa-trash" aria-hidden="true"></i>
-        </button>
-        <button [title]="'button_add_line' | translate" (click)="addCoinRow()" class="btn btn-default">
-          <i class="fa fa-plus" aria-hidden="true"></i>
-        </button>
-      </div>
-      <div *ngIf="!editCoinMode">
-        <div class="btn-group pull-right" *ngFor="let row of coin.rows">
-          <button [title]="'button_copy_password' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'password'" (click)="copyToClipboard(row.value)" class="btn btn-default">
-            <i class="fa fa-key" aria-hidden="true"></i>
-          </button>
+      <div class="row">
+        <div class="col-md-6">
+          <a data-toggle="collapse" href="#{{coin.name}}" *ngIf="!editCoinMode">
+            <h4 class="panel-title pull-left" [innerHtml]="coin.displayName">
+            </h4>
+          </a>
+          <div class="input-group-btn" *ngIf="editCoinMode">
+            <form (ngSubmit)="saveCoin()">
+              <span class="input-group">
+                <input type="text" class="form-control input-medium" *ngIf="editCoinMode" name="coinName" [(ngModel)]="coin.displayName">
+                <button [title]="'coin_save_name' | translate" type="submit" class="btn btn-default">
+                  <i class="fa fa-save" aria-hidden="true"></i>
+                </button>
+                <button [title]="'button_cancel' | translate" (click)="cancelEditCoin()" type="button" class="btn btn-default">
+                  <i class="fa fa-close" aria-hidden="true"></i>
+                </button>
+              </span>
+            </form>
+          </div>
         </div>
-        <div class="btn-group pull-right" *ngFor="let row of coin.rows">
-          <button [title]="'button_copy_login' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'login'" (click)="copyToClipboard(row.value)" class="btn btn-default">
-            <i class="fa fa-user" aria-hidden="true"></i>
-          </button>
+        <div class="col-md-6">
+          <div class="btn-group pull-right align-baseline" *ngIf="!editCoinMode">
+            <button [title]="'button_edit' | translate" (click)="editCoin()" class="btn btn-default">
+              <i class="fa fa-pencil" aria-hidden="true"></i>
+            </button>
+            <button [title]="'button_delete' | translate" (click)="deleteCoin()" class="btn btn-default">
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+            <button [title]="'button_add_line' | translate" (click)="addCoinRow()" class="btn btn-default">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div *ngIf="!editCoinMode">
+            <div class="btn-group pull-right" *ngFor="let row of coin.rows">
+              <button [title]="'button_copy_password' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'password'" (click)="copyToClipboard(row.value)" class="btn btn-default">
+                <i class="fa fa-key" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div class="btn-group pull-right" *ngFor="let row of coin.rows">
+              <button [title]="'button_copy_login' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'login'" (click)="copyToClipboard(row.value)" class="btn btn-default">
+                <i class="fa fa-user" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

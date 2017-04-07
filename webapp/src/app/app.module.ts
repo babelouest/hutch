@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 import { DndModule } from 'ng2-dnd';
 import { BootstrapModalModule } from 'ng2-bootstrap-modal';
@@ -77,7 +76,6 @@ import { HutchConfigService } from './shared/hutch-config.service';
     ResetPasswordSafeComponent
   ],
   providers: [
-    {provide: LocationStrategy, useClass: HashLocationStrategy},
     CookieService,
     WikimediaCommonsService,
     HutchConfigService,

@@ -194,6 +194,7 @@ export class SafeComponent implements OnInit {
 
   loadCoins() {
     this.loading = true;
+    this.searchValue = '';
     this.hutchCoinService.list(this.safe.name).then((result) => {
       let promises = [];
       this.safe.coinList = [];
@@ -201,11 +202,13 @@ export class SafeComponent implements OnInit {
         promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.safe.safeKey).then((decryptedCoin) => {
           decryptedCoin.name = encryptedCoin.name;
           this.safe.coinList.push(decryptedCoin);
+          console.log('add coin', decryptedCoin);
         }));
       });
       if (promises.length > 0) {
         Observable.forkJoin(promises).subscribe(() => {
           this.hutchStoreService.set('safe', this.safe.name, this.safe);
+          this.coinListDisplayed = this.safe.coinList;
           this.loading = false;
         });
       } else {

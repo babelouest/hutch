@@ -9,8 +9,11 @@ import { EditProfileComponent } from '../modal/edit-profile.component';
 import { HutchProfileService } from '../shared/hutch-profile.service';
 import { HutchSafeService } from '../shared/hutch-safe.service';
 import { HutchObserveService } from '../shared/hutch-observe.service';
+import { HutchConfigService } from '../shared/hutch-config.service';
 
 import { Oauth2ConnectObservable } from '../oauth2-connect/oauth2-connect.service';
+
+import * as _ from 'lodash';
 
 @Component({
   selector: 'my-home',
@@ -21,13 +24,24 @@ export class HomeComponent implements OnInit {
   loading = true;
   noProfile = false;
   connected = false;
+  // To avoid compilator warning
+  oauth: any = false;
+  curLang: string;
+  langs: any;
 
   constructor(private dialogService: DialogService,
               private translate: TranslateService,
               private hutchProfileService: HutchProfileService,
               private hutchSafeService: HutchSafeService,
               private hutchStoreService: HutchObserveService,
-              private oauth2Connect: Oauth2ConnectObservable) {
+              private oauth2Connect: Oauth2ConnectObservable,
+              private config: HutchConfigService) {
+    this.config.get().then(curConfig => {
+      this.translate.setDefaultLang(curConfig.lang.default);
+      this.curLang = curConfig.lang.default;
+      this.langs = curConfig.lang.available;
+      this.oauth = curConfig.oauth2Connect;
+    });
   }
 
   ngOnInit() {
@@ -103,4 +117,19 @@ export class HomeComponent implements OnInit {
       message: this.translate.instant('modal_why_this_message')
     });
   }
+
+  changeLang() {
+    this.translate.use(this.curLang);
+  }
+
+  lockAll() {
+    let self = this;
+    _.each(this.hutchStoreService.getAll('safe'), function (curSafe) {
+      delete curSafe.safeKey;
+      delete curSafe.coinList;
+      localStorage.removeItem(curSafe.name);
+      self.hutchStoreService.set('safe', curSafe.name, curSafe);
+    });
+  }
+
 }
