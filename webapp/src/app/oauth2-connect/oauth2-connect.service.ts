@@ -10,16 +10,14 @@
  */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 @Injectable()
 export class Oauth2ConnectObservable {
-  token: Subject<string>;
-  status: Subject<string>;
+  token = new ReplaySubject<string>(1);
+  status = new ReplaySubject<string>(1);
 
   constructor() {
-    this.token = new Subject();
-    this.status = new Subject();
   }
 
   getToken(): Observable<string> {
