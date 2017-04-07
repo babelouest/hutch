@@ -1,8 +1,11 @@
 export class Row {
   value: any;
+  saveValue?: any;
   valueVerified: string;
   type: string;
   tags?: string[];
+  edit?: boolean;
+  show?: boolean;
 }
 
 export class CoinDisplayed {
