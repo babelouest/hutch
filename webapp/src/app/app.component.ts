@@ -42,22 +42,31 @@ export class AppComponent implements OnInit {
                   safe.safeKey = safeKey;
                   this.hutchCoinService.list(safe.name).then((encryptedCoinList) => {
                     safe.coinList = [];
-                    let promises = [];
-                    encryptedCoinList.forEach((encryptedCoin) => {
-                      promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, safe.safeKey).then((decryptedCoin) => {
-                        decryptedCoin.name = encryptedCoin.name;
-                        safe.coinList.push(decryptedCoin);
-                      }));
-                    });
-                    Observable.forkJoin(promises).subscribe(() => {
+                    if (encryptedCoinList.length > 0) {
+                      let promises = [];
+                      encryptedCoinList.forEach((encryptedCoin) => {
+                        promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, safe.safeKey).then((decryptedCoin) => {
+                          decryptedCoin.name = encryptedCoin.name;
+                          safe.coinList.push(decryptedCoin);
+                        }));
+                      });
+                      Observable.forkJoin(promises).subscribe(() => {
+                        this.hutchStoreService.add('safe', safe.name, safe);
+                      });
+                    } else {
                       this.hutchStoreService.add('safe', safe.name, safe);
-                    });
+                    }
                   })
                   .catch(() => {
+                    this.hutchStoreService.add('safe', safe.name, safe);
                   });
+                })
+                .catch(() => {
+                  this.hutchStoreService.add('safe', safe.name, safe);
                 });
               } catch (e) {
                 localStorage.removeItem(safe.name);
+                this.hutchStoreService.add('safe', safe.name, safe);
               }
             } else {
               this.hutchStoreService.add('safe', safe.name, safe);
