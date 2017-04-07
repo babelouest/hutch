@@ -2,11 +2,15 @@
   <div>
     <div class="col-md-4 text-left">
       <span class="label label-info" [innerHtml]="'coin_type_' + row.type.replace('-', '_') | translate"></span>
+      <a href="" class="btn btn-default btn-xs" (click)="showPassword($event)" [title]="'button_show_password' | translate" *ngIf="row.type === 'password' && !row.edit">
+        <i class="fa fa-eye" aria-hidden="true" *ngIf="!row.show"></i>
+        <i class="fa fa-eye-slash" aria-hidden="true" *ngIf="row.show"></i>
+      </a>
       <div>
         <span *ngFor="let tag of row.tags" class="badge" [innerHtml]="tag"></span>
       </div>
     </div>
-    <form (ngSubmit)="saveRow(row)">
+    <form (ngSubmit)="saveRow()">
       <div class="col-md-4 text-left">
         <a href="{{row.value}}" title="{{row.value}}" target="_blank" *ngIf="!row.edit && row.type === 'url'" [innerHtml]="row.value"></a>
         <span [innerHtml]="row.value"
@@ -15,7 +19,7 @@
         <input type="text"
                name="value"
                [(ngModel)]="row.value"
-               *ngIf="row.edit && (row.type === 'login' || row.type === 'text')"
+               *ngIf="row.edit && (row.type === 'login' || row.type === 'text' || row.type === 'url')"
                class="form-control"
                [placeholder]="'coin_value' | translate">
         <input type="password"
@@ -31,36 +35,32 @@
       </div>
       <div class="col-md-4" *ngIf="!row.edit">
         <div class="btn-group pull-right">
-          <button type="button" class="btn btn-default btn-sm" (click)="showPassword(row)" [title]="'button_show_password' | translate" *ngIf="row.type === 'password'">
-            <i class="fa fa-eye" aria-hidden="true" *ngIf="!row.show"></i>
-            <i class="fa fa-eye-slash" aria-hidden="true" *ngIf="row.show"></i>
-          </button>
-          <button type="button" class="btn btn-default btn-sm" (click)="addSecretQuestion(row)" [title]="'button_add_secret_question' | translate" *ngIf="row.type === 'secret-questions'">
+          <button type="button" class="btn btn-default btn-sm" (click)="addSecretQuestion()" [title]="'button_add_secret_question' | translate" *ngIf="row.type === 'secret-questions'">
             <i class="fa fa-plus" aria-hidden="true"></i>
           </button>
           <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" [title]="'button_copy' | translate" *ngIf="row.type !== 'secret-questions'">
             <i class="fa fa-clipboard" aria-hidden="true"></i>
           </button>
-          <button type="button" class="btn btn-default btn-sm" (click)="editRow(row)" [title]="'button_edit' | translate" *ngIf="row.type !== 'secret-questions'">
+          <button type="button" class="btn btn-default btn-sm" (click)="editRow()" [title]="'button_edit' | translate" *ngIf="row.type !== 'secret-questions'">
             <i class="fa fa-pencil" aria-hidden="true"></i>
           </button>
           <button type="button" class="btn btn-default btn-sm" (click)="deleteRow()" [title]="'button_delete' | translate">
             <i class="fa fa-trash" aria-hidden="true"></i>
           </button>
-          <button type="button" class="btn btn-default btn-sm" (click)="editTags(row)" [title]="'button_manage_tag' | translate">
+          <button type="button" class="btn btn-default btn-sm" (click)="editTags()" [title]="'button_manage_tag' | translate">
             <i class="fa fa-tag" aria-hidden="true"></i>
           </button>
         </div>
       </div>
       <div class="col-md-4" *ngIf="row.edit">
         <div class="btn-group pull-right">
-          <button type="button" class="btn btn-default btn-sm" (click)="generatePassword(row)" title="Generate a random password" *ngIf="row.type === 'password'">
+          <button type="button" class="btn btn-default btn-sm" (click)="generatePassword()" title="Generate a random password" *ngIf="row.type === 'password'">
             <i class="fa fa-magic" aria-hidden="true"></i>
           </button>
-          <button type="submit" class="btn btn-default btn-sm" [disabled]="!isRowValid(row)" title="Save value">
+          <button type="submit" class="btn btn-default btn-sm" [disabled]="!isRowValid()" title="Save value">
             <i class="fa fa-save" aria-hidden="true"></i>
           </button>
-          <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow(row)" title="Cancel edit">
+          <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow()" title="Cancel edit">
             <i class="fa fa-close" aria-hidden="true"></i>
           </button>
         </div>
@@ -90,7 +90,7 @@
               <button type="button" class="btn btn-default btn-sm" (click)="editSecretQuestion(secretQuestion)" [title]="'button_edit' | translate">
                 <i class="fa fa-pencil" aria-hidden="true"></i>
               </button>
-              <button type="button" class="btn btn-default btn-sm" (click)="deleteSecretQuestion(row, i)" [title]="'button_delete' | translate">
+              <button type="button" class="btn btn-default btn-sm" (click)="deleteSecretQuestion(i)" [title]="'button_delete' | translate">
                 <i class="fa fa-trash" aria-hidden="true"></i>
               </button>
             </div>
@@ -100,7 +100,7 @@
               <button type="submit" class="btn btn-default btn-sm" [title]="'button_save' | translate">
                 <i class="fa fa-save" aria-hidden="true"></i>
               </button>
-              <button type="button" class="btn btn-default btn-sm" (click)="cancelEditSecretQuestion(secretQuestion, row, i)" [title]="'button_cancel' | translate">
+              <button type="button" class="btn btn-default btn-sm" (click)="cancelEditSecretQuestion(secretQuestion, i)" [title]="'button_cancel' | translate">
                 <i class="fa fa-close" aria-hidden="true"></i>
               </button>
             </div>

@@ -47,7 +47,8 @@ export class RowComponent implements OnInit {
       });
   }
 
-  showPassword() {
+  showPassword(event) {
+    event.preventDefault();
     if (!this.row.show) {
       this.dialogService.addDialog(ConfirmComponent, {
         title: this.translate.instant('coin_show_password'),
