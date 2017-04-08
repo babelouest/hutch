@@ -21,6 +21,7 @@ export class HutchCryptoService {
   alg = '';
   keyLength: number;
   crytoSubtle: any;
+  isWebkit = false;
 
   constructor(private configService: HutchConfigService) {
     this.crytoSubtle = false;
@@ -42,6 +43,7 @@ export class HutchCryptoService {
           } else if (!window.crypto.subtle && (<any> window.crypto).webkitSubtle) {
             // iOS webkit workaround
             this.crytoSubtle = (<any> window.crypto).webkitSubtle;
+            this.isWebkit = true;
           }
         }
       }
@@ -71,7 +73,15 @@ export class HutchCryptoService {
   getKeyFromExport(exportedKey, canImport = false): Promise<any> {
     return new Promise((resolve, reject) => {
       if (this.cryptoAvailable()) {
-        this.crytoSubtle.importKey('jwk', exportedKey, { name: this.alg }, canImport, ['encrypt', 'decrypt'])
+        let compatKey: any;
+        if (this.isWebkit) {
+          compatKey = this.convertStringToArrayBufferView(JSON.stringify(exportedKey));
+        } else {
+          compatKey = exportedKey;
+        }
+        this.crytoSubtle.importKey('jwk',
+                                   compatKey,
+                                   { name: this.alg }, canImport, ['encrypt', 'decrypt'])
         .then((key) => {
           resolve(key);
         });
@@ -102,7 +112,7 @@ export class HutchCryptoService {
   encryptData(data: any, passwordKey): Promise<string> {
     return new Promise((resolve, reject) => {
       if (this.cryptoAvailable()) {
-        let iv = window.crypto.getRandomValues(new Uint8Array(12));
+        let iv = window.crypto.getRandomValues(new Uint8Array(16)); // TODO: Depends on the algo
         this.crytoSubtle.encrypt({ name: this.alg, iv: iv, tagLength: 128}, passwordKey,
         this.convertStringToArrayBufferView(unescape(encodeURIComponent(JSON.stringify(data)))))
         .then((result) => {
