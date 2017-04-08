@@ -24,8 +24,6 @@ export class HomeComponent implements OnInit {
   loading = true;
   noProfile = false;
   connected = false;
-  // To avoid compilator warning
-  oauth: any = false;
   curLang: string;
   langs: any;
 
@@ -40,7 +38,6 @@ export class HomeComponent implements OnInit {
       this.translate.setDefaultLang(curConfig.lang.default);
       this.curLang = curConfig.lang.default;
       this.langs = curConfig.lang.available;
-      this.oauth = curConfig.oauth2Connect;
     });
   }
 
