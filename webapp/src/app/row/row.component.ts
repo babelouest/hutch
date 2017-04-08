@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Clipboard } from 'ts-clipboard';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
 
@@ -7,6 +6,8 @@ import { Row } from '../shared/coin';
 import { ConfirmComponent } from '../modal/confirm.component';
 import { EditTagsComponent } from '../modal/edit-tags.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
+
+declare var Clipboard: any;
 
 @Component({
   selector: 'my-hutch-row',
@@ -22,10 +23,15 @@ export class RowComponent implements OnInit {
   }
 
   ngOnInit() {
+    new Clipboard('.btn-copy', {
+      text: function(trigger) {
+        return trigger.getAttribute('data-hutch-clipboard');
+      }
+    });
   }
 
-  copyToClipboard(value) {
-    Clipboard.copy(value);
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   editRow() {

@@ -11,8 +11,8 @@
       </div>
     </div>
     <form (ngSubmit)="saveRow()">
-      <div class="col-md-4 text-left">
-        <a href="{{row.value}}" title="{{row.value}}" target="_blank" *ngIf="!row.edit && row.type === 'url'" [innerHtml]="row.value"></a>
+      <div class="col-md-3 text-left">
+        <a href="{{row.value}}" title="{{row.value}}" target="_blank" *ngIf="!row.edit && row.type === 'url'" [innerHtml]=""></a>
         <span [innerHtml]="row.value"
               *ngIf="!row.edit && (row.type === 'login' || row.type === 'text' || (row.show && row.type === 'password'))"></span>
         <span *ngIf="!row.edit && !row.show && row.type === 'password'">********</span>
@@ -33,12 +33,12 @@
                *ngIf="row.edit && row.type === 'password'"
                class="form-control">
       </div>
-      <div class="col-md-4" *ngIf="!row.edit">
+      <div class="col-md-5" *ngIf="!row.edit">
         <div class="btn-group pull-right">
           <button type="button" class="btn btn-default btn-sm" (click)="addSecretQuestion()" [title]="'button_add_secret_question' | translate" *ngIf="row.type === 'secret-questions'">
             <i class="fa fa-plus" aria-hidden="true"></i>
           </button>
-          <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(row.value)" [title]="'button_copy' | translate" *ngIf="row.type !== 'secret-questions'">
+          <button type="button" class="btn btn-default btn-sm btn-copy" [attr.data-hutch-clipboard]="row.value" [title]="'button_copy' | translate" *ngIf="row.type !== 'secret-questions'">
             <i class="fa fa-clipboard" aria-hidden="true"></i>
           </button>
           <button type="button" class="btn btn-default btn-sm" (click)="editRow()" [title]="'button_edit' | translate" *ngIf="row.type !== 'secret-questions'">
@@ -84,7 +84,7 @@
           </div>
           <div class="col-md-4" *ngIf="!secretQuestion.edit">
             <div class="btn-group pull-right">
-              <button type="button" class="btn btn-default btn-sm" (click)="copyToClipboard(secretQuestion.answer)" [title]="'button_copy' | translate">
+              <button type="button" class="btn btn-default btn-sm btn-copy" [attr.data-hutch-clipboard]="secretQuestion.answer" [title]="'button_copy' | translate">
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
               </button>
               <button type="button" class="btn btn-default btn-sm" (click)="editSecretQuestion(secretQuestion)" [title]="'button_edit' | translate">

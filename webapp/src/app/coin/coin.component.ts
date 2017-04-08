@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
-import { Clipboard } from 'ts-clipboard';
 
 import { CoinDisplayed, Row } from '../shared/coin';
 import { HutchCoinService } from '../shared/hutch-coin.service';
@@ -11,6 +10,8 @@ import { ConfirmComponent } from '../modal/confirm.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
 
 import * as _ from 'lodash';
+
+declare var Clipboard: any;
 
 @Component({
   selector: 'my-hutch-coin',
@@ -34,6 +35,11 @@ export class CoinComponent implements OnInit {
   }
 
   ngOnInit() {
+    new Clipboard('.btn-copy', {
+      text: function(trigger) {
+        return trigger.getAttribute('data-hutch-clipboard');
+      }
+    });
   }
 
   deleteCoin() {
@@ -120,10 +126,6 @@ export class CoinComponent implements OnInit {
     } else {
       return '';
     }
-  }
-
-  copyToClipboard(value) {
-    Clipboard.copy(value);
   }
 
   updateRows() {
