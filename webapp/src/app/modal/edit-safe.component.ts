@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
 
 import { HutchCryptoService } from '../shared/hutch-crypto.service';
+import { HutchObserveService } from '../shared/hutch-observe.service';
 
 export interface EditSafeModel {
   isNew: boolean;
@@ -118,7 +119,9 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
   password: string;
   confirmPassword: string;
 
-  constructor(dialogService: DialogService, private hutchCryptoService: HutchCryptoService) {
+  constructor(dialogService: DialogService,
+              private hutchCryptoService: HutchCryptoService,
+              private hutchStoreService: HutchObserveService) {
     super(dialogService);
   }
 
@@ -177,6 +180,9 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
 
   isValid() {
     if (this.isNew) {
+      if (this.hutchStoreService.get('safe', this.name)) {
+        return false;
+      }
       return this.name &&
              this.password &&
              this.password.length >= 8 &&
