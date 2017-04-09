@@ -7,7 +7,7 @@
     "default": "en"
   },
   "webCryptography": {
-    "algorithm": "AES-GCM",
+    "algorithm": "AES-CBC",
     "keyLength": 256
   },
   "api": {
