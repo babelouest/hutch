@@ -2,6 +2,11 @@
  * Algorithms available for hutch are AES-GCM, AES-CTR, AES-CBC
  *
  * Algorithm recommended by https://github.com/diafygi/webcrypto-examples is AES-GCM, with key length of 256 bits
+ *
+ * But (as of April 9, 2017), AES-GCM isn't implemented in Webkit version of Safari I've tested:
+ * An Iphone 6s, an iPad Mini and a MacBook Air
+ * Although Firefox and Chrome seemed fine
+ * But anyway, it's configurable so do as you want
  */
 import { Injectable } from '@angular/core';
 
@@ -62,6 +67,9 @@ export class HutchCryptoService {
         .then((safeKey) => {
           this.crytoSubtle.exportKey('jwk', safeKey).then((key) => {
             resolve(key);
+          })
+          .catch((error) => {
+            reject(error);
           });
         });
       } else {
@@ -84,6 +92,9 @@ export class HutchCryptoService {
                                    { name: this.alg }, canImport, ['encrypt', 'decrypt'])
         .then((key) => {
           resolve(key);
+        })
+        .catch((error) => {
+          reject(error);
         });
       } else {
         reject('web crypto not available');
@@ -100,7 +111,13 @@ export class HutchCryptoService {
           this.crytoSubtle.importKey('raw', hashedPassword, { name: this.alg }, false, ['encrypt', 'decrypt'])
           .then((key) => {
             resolve(key);
+          })
+          .catch((error) => {
+            reject(error);
           });
+        })
+        .catch((error) => {
+          reject(error);
         });
       } else {
         reject('web crypto not available');
