@@ -85,6 +85,8 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
   ngOnInit() {
     if (this.picture) {
       this.showImage = true;
+    } else {
+      this.getNewImage();
     }
   }
 
