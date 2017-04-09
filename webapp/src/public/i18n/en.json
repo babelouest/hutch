@@ -73,6 +73,7 @@
   "get_random_image_error": "Error loading image, retry",
   "get_random_image_message": "Get a random image from Wikimedia Commons",
   "get_local_image_message": "Or choose a local image from your device",
+  "file_too_large_message": "File is too large, 400Kb maximum",
   "modal_safe_add": "Add safe",
   "modal_safe_edit": "Edit safe",
   "modal_safe_name": "Name",

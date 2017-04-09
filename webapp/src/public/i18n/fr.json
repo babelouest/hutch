@@ -73,6 +73,7 @@
   "get_random_image_error": "Erreur lors du chargement de l'image, réessayer",
   "get_random_image_message": "Prendre une image au hasard sur Wikimedia Commons",
   "get_local_image_message": "Ou choisissez une image locale sur votre machine",
+  "file_too_large_message": "Fichier trop gros, 400Kb maximum",
   "modal_safe_add": "Ajouter un coffre",
   "modal_safe_edit": "Modifier un coffre",
   "modal_safe_name": "Nom",

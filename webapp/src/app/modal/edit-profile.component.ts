@@ -35,8 +35,8 @@ export interface EditProfileModel {
                           <label [innerHtml]='"modal_profile_fortune_image_label" | translate'></label>
                         </div>
                         <div class='col-md-9'>
-                          <i class="fa fa-spinner fa-spin" aria-hidden="true" *ngIf='!showImage'></i>
-                          <img [src]='picture' id='randomImage' alt='Random Image' *ngIf='showImage'>
+                          <i class="fa fa-spinner fa-spin" aria-hidden="true" *ngIf='!showImage && !fileTooLarge'></i>
+                          <img [src]='picture' id='randomImage' alt='Image' *ngIf='showImage' style='width:100%;max-width:200px'>
                           <i class="fa fa-exclamation-circle" aria-hidden="true" *ngIf='errorImage'></i>
                           <span *ngIf='errorImage' [innerHtml]='"get_random_image_error" | translate'></span>
                           <hr>
@@ -48,6 +48,7 @@ export interface EditProfileModel {
                           </button>
                           <hr>
                           <span [innerHtml]='"get_local_image_message" | translate'></span>
+                          <h4 class='bg-warning' *ngIf='fileTooLarge' [innerHtml]='"file_too_large_message" | translate'></h4>
                           <input type='file'
                                  id='localFile'
                                  name='localFile'
@@ -80,6 +81,7 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
   picture: string;
   showImage = false;
   errorImage = false;
+  fileTooLarge = false;
 
   constructor(dialogService: DialogService, private wikimediaCommonsService: WikimediaCommonsService) {
     super(dialogService);
@@ -110,6 +112,7 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
   getNewImage() {
     this.showImage = false;
     this.errorImage = false;
+    this.fileTooLarge = false;
     this.wikimediaCommonsService.getRandomFile().then((result) => {
       this.wikimediaCommonsService.getFileUrlThumbnail(result).then((url) => {
         this.wikimediaCommonsService.getImageData(url)
@@ -139,16 +142,23 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
   }
 
   fileChange(event) {
+    this.fileTooLarge = false;
     let self = this;
     let fileList: FileList = event.target.files;
     if (fileList.length > 0) {
       let file: File = fileList[0];
-      let fr = new FileReader();
-      fr.onload = function(ev2: any) {
-        self.picture = ev2.target.result;
-      };
+      if (file.size > (400 * 1024)) {
+        this.fileTooLarge = true;
+        this.showImage = false;
+        self.picture = '';
+      } else {
+        let fr = new FileReader();
+        fr.onload = function(ev2: any) {
+          self.picture = ev2.target.result;
+        };
 
-      fr.readAsDataURL(file);
+        fr.readAsDataURL(file);
+      }
     }
   }
 }

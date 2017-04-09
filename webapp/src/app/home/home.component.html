@@ -25,7 +25,7 @@
 <div class="row text-center">
   <h1>Hutch</h1>
   <div class="well" *ngIf="!loading && !!profile.fortune">
-    <img [src]="profile.picture" [alt]="'alt_profile_picture' | translate">
+    <img [src]="profile.picture" [alt]="'alt_profile_picture' | translate" style="width:100%;max-width:200px">
     <hr>
     <h3 [innerHtml]="profile.fortune" class="text-success"></h3>
     <hr>
