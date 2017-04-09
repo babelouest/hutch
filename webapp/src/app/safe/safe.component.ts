@@ -68,6 +68,8 @@ export class SafeComponent implements OnInit {
           this.lockSafe();
         }
       });
+    } else {
+      this.router.navigate(['']);
     }
   }
 
@@ -198,9 +200,9 @@ export class SafeComponent implements OnInit {
   loadCoins() {
     this.loading = true;
     this.searchValue = '';
+    this.safe.coinList = [];
     this.hutchCoinService.list(this.safe.name).then((result) => {
       let promises = [];
-      this.safe.coinList = [];
       result.forEach((encryptedCoin) => {
         promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.safe.safeKey).then((decryptedCoin) => {
           decryptedCoin.name = encryptedCoin.name;
@@ -230,6 +232,7 @@ export class SafeComponent implements OnInit {
   lockSafe() {
     delete this.safe.safeKey;
     delete this.safe.coinList;
+    this.safe.coinList = [];
     localStorage.removeItem('hutch-safe-' + this.safe.name);
     this.coinList = [];
     this.coinListDisplayed = [];

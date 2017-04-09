@@ -42,7 +42,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadProfile();
     this.oauth2Connect.getStatus().subscribe((status) => {
       if (status === 'connected') {
         this.connected = true;
