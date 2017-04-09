@@ -26,6 +26,7 @@ import * as _ from 'lodash';
 
 export class SafeComponent implements OnInit {
   safe: Safe;
+  safeName = '';
   searchValue: string;
   loading = false;
 
@@ -37,6 +38,7 @@ export class SafeComponent implements OnInit {
   keepSafeOpen = false;
   safePassword = '';
   errorMessage = '';
+  safeFound = true;
 
   constructor(private router: Router,
               private route: ActivatedRoute,
@@ -51,17 +53,18 @@ export class SafeComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(params => {
+      this.safeName = params['name'];
       this.searchValue = '';
       this.safePassword = '';
       this.passwordError = false;
       this.keepSafeOpen = false;
-      this.loadSafe(params['name']);
+      this.loadSafe();
     });
     if (this.safe.name) {
       this.hutchStoreService.getObservable('safe').subscribe((status) => {
-        if (this.safe && status.action === 'add' && status.name === this.safe.name) {
-          this.loadSafe(this.safe.name);
-        } else if (this.safe && (status.action === 'clear' || (status.action === 'delete' && status.name === this.safe.name))) {
+        if ((this.safe && status.action === 'add' || this.safe && status.action === 'set') && status.name === this.safeName) {
+          this.loadSafe();
+        } else if (this.safe && (status.action === 'clear' || (status.action === 'delete' && status.name === this.safeName))) {
           this.lockSafe();
         }
       });
@@ -77,7 +80,7 @@ export class SafeComponent implements OnInit {
         }
       }
     } else {
-      this.coinListDisplayed = this.coinList;
+      this.coinListDisplayed = this.coinList.slice();
     }
   }
 
@@ -140,8 +143,8 @@ export class SafeComponent implements OnInit {
     };
     this.hutchCryptoService.encryptData(saveCoin, this.safe.safeKey).then((encryptedCoin) => {
       this.hutchCoinService.add(this.safe.name, { name: newCoin.name, data: encryptedCoin }).then(() => {
-        this.coinList.push(newCoin);
-        this.coinListDisplayed.push(newCoin);
+        this.coinList.unshift(newCoin);
+        this.coinListDisplayed.unshift(newCoin);
       })
       .catch(() => {
         this.errorMessage = this.translate.instant('coin_save_error');
@@ -149,23 +152,23 @@ export class SafeComponent implements OnInit {
     });
   }
 
-  loadSafe(name) {
+  loadSafe() {
     this.safe = {name: '', description: '', key: '', safeKey: null, coinList: []};
     this.coinList = [];
     this.coinListDisplayed = [];
-    if (this.hutchStoreService.get('safe', name)) {
-      this.safe = this.hutchStoreService.get('safe', name);
+    if (this.hutchStoreService.get('safe', this.safeName)) {
+      this.safe = this.hutchStoreService.get('safe', this.safeName);
       if (!!this.safe.safeKey) {
         this.unlocked = true;
         this.coinList = this.safe.coinList;
-        this.coinListDisplayed = this.safe.coinList;
+        this.coinListDisplayed = this.safe.coinList.slice();
       } else {
         this.unlocked = false;
         this.coinList = [];
         this.coinListDisplayed = [];
       }
     } else {
-      this.router.navigate(['']);
+      this.safeFound = false;
     }
   }
 
@@ -179,7 +182,7 @@ export class SafeComponent implements OnInit {
           this.unlocked = true;
           this.loadCoins();
           if (this.keepSafeOpen) {
-            localStorage.setItem(this.safe.name, JSON.stringify(exportedKey));
+            localStorage.setItem('hutch-safe-' + this.safe.name, JSON.stringify(exportedKey));
           }
           this.safePassword = '';
           this.keepSafeOpen = false;
@@ -202,13 +205,12 @@ export class SafeComponent implements OnInit {
         promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.safe.safeKey).then((decryptedCoin) => {
           decryptedCoin.name = encryptedCoin.name;
           this.safe.coinList.push(decryptedCoin);
-          console.log('add coin', decryptedCoin);
         }));
       });
       if (promises.length > 0) {
         Observable.forkJoin(promises).subscribe(() => {
           this.hutchStoreService.set('safe', this.safe.name, this.safe);
-          this.coinListDisplayed = this.safe.coinList;
+          this.coinListDisplayed = this.safe.coinList.slice();
           this.loading = false;
         });
       } else {
@@ -228,7 +230,7 @@ export class SafeComponent implements OnInit {
   lockSafe() {
     delete this.safe.safeKey;
     delete this.safe.coinList;
-    localStorage.removeItem(this.safe.name);
+    localStorage.removeItem('hutch-safe-' + this.safe.name);
     this.coinList = [];
     this.coinListDisplayed = [];
     this.unlocked = false;

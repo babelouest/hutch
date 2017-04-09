@@ -35,12 +35,12 @@
           </div>
           <div *ngIf="!editCoinMode">
             <div class="btn-group pull-right" *ngFor="let row of coin.rows">
-              <button [title]="'button_copy_password' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'password'" (click)="copyToClipboard(row.value)" class="btn btn-default">
+              <button [title]="'button_copy_password' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'password'" [attr.data-hutch-clipboard]="row.value" class="btn btn-default btn-copy">
                 <i class="fa fa-key" aria-hidden="true"></i>
               </button>
             </div>
             <div class="btn-group pull-right" *ngFor="let row of coin.rows">
-              <button [title]="'button_copy_login' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'login'" (click)="copyToClipboard(row.value)" class="btn btn-default">
+              <button [title]="'button_copy_login' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'login'" [attr.data-hutch-clipboard]="row.value" class="btn btn-default btn-copy">
                 <i class="fa fa-user" aria-hidden="true"></i>
               </button>
             </div>

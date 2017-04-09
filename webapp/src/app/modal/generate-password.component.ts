@@ -38,6 +38,14 @@ export interface GeneratePasswordModel {
                      </div>
                      <div class='row'>
                       <div class='col-md-6'>
+                        <label [innerHtml]='"modal_password_spaces" | translate'></label>
+                      </div>
+                      <div class='col-md-6'>
+                        <input type='checkbox' class='form-control' [(ngModel)]='options.spaces' >
+                      </div>
+                     </div>
+                     <div class='row'>
+                      <div class='col-md-6'>
                         <label [innerHtml]='"modal_password_special_characters" | translate'></label>
                       </div>
                       <div class='col-md-6'>
@@ -88,12 +96,14 @@ export class GeneratePasswordComponent extends DialogComponent<GeneratePasswordM
     letterUpperCase: true,
     numbers: true,
     specialChars: true,
+    spaces: true,
     length: 32
   };
   lettersLowerCaseAvailable = 'abcdefghijklmnopqrstuvwxyz';
   lettersUpperCaseAvailable = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   numbersAvailable = '0123456789';
-  specialCharsAvailable = ' !"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~';
+  specialCharsAvailable = '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~';
+  spaces = ' ';
   generatedPassword = '';
 
   constructor(dialogService: DialogService) {
@@ -114,6 +124,9 @@ export class GeneratePasswordComponent extends DialogComponent<GeneratePasswordM
     }
     if (this.options.specialChars) {
       allCharsAvailable += this.specialCharsAvailable;
+    }
+    if (this.options.spaces) {
+      allCharsAvailable += this.spaces;
     }
     let array = new Uint32Array(this.options.length);
     window.crypto.getRandomValues(array);

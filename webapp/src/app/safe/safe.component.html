@@ -54,7 +54,7 @@
   </div>
 </div>
 
-<div class="container" *ngIf="!unlocked">
+<div class="container" *ngIf="!unlocked && safeFound">
   <form (ngSubmit)="checkPassword()">
     <div class="row">
       <div class="col-md-12 text-center">
@@ -88,4 +88,8 @@
       </div>
     </div>
   </form>
+</div>
+
+<div class="container" *ngIf="!unlocked && !safeFound">
+  <h2 class="label label-danger" [innerHtml]="'safe_not_found' | translate"></h2>
 </div>

@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Clipboard } from 'ts-clipboard';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
 
@@ -7,6 +6,8 @@ import { Row } from '../shared/coin';
 import { ConfirmComponent } from '../modal/confirm.component';
 import { EditTagsComponent } from '../modal/edit-tags.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
+
+declare var Clipboard: any;
 
 @Component({
   selector: 'my-hutch-row',
@@ -22,17 +23,22 @@ export class RowComponent implements OnInit {
   }
 
   ngOnInit() {
+    new Clipboard('.btn-copy', {
+      text: function(trigger) {
+        return trigger.getAttribute('data-hutch-clipboard');
+      }
+    });
   }
 
-  copyToClipboard(value) {
-    Clipboard.copy(value);
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  editRow(row) {
-    row.edit = true;
-    row.saveValue = row.value;
-    if (row.type === 'password') {
-      row.valueVerified = row.value;
+  editRow() {
+    this.row.edit = true;
+    this.row.saveValue = this.row.value;
+    if (this.row.type === 'password') {
+      this.row.valueVerified = this.row.value;
     }
   }
 
@@ -47,52 +53,54 @@ export class RowComponent implements OnInit {
       });
   }
 
-  showPassword(row) {
-    if (!row.show) {
+  showPassword(event) {
+    event.preventDefault();
+    if (!this.row.show) {
       this.dialogService.addDialog(ConfirmComponent, {
         title: this.translate.instant('coin_show_password'),
         message: this.translate.instant('coin_show_password_confirm')})
         .subscribe((result) => {
           if (result) {
-            row.show = true;
+            this.row.show = true;
           }
         });
     } else {
-      row.show = false;
+      this.row.show = false;
     }
   }
 
-  isRowValid(row) {
-    return row.value &&
-           (row.type !== 'password' ||
-            (row.value === row.valueVerified)
+  isRowValid() {
+    return this.row.value &&
+           (this.row.type !== 'password' ||
+            (this.row.value === this.row.valueVerified)
            );
   }
 
-  addSecretQuestion(row) {
-    row.value.push({edit: true, question: '', answer: ''});
+  addSecretQuestion() {
+    this.row.value.push({edit: true, question: '', answer: ''});
   }
 
-  cancelEditRow(row) {
-    row.value = row.saveValue;
-    delete row.saveValue;
-    delete row.edit;
+  cancelEditRow() {
+    this.row.value = this.row.saveValue;
+    delete this.row.saveValue;
+    delete this.row.edit;
   }
 
-  saveRow(row) {
-    delete row.show;
-    delete row.valueVerified;
-    delete row.saveValue;
-    delete row.edit;
+  saveRow() {
+    delete this.row.show;
+    delete this.row.valueVerified;
+    delete this.row.saveValue;
+    delete this.row.edit;
     this.saveCoinInDatabase();
   }
 
-  generatePassword(row) {
+  generatePassword() {
     this.dialogService.addDialog(GeneratePasswordComponent)
       .subscribe((result) => {
         if (result) {
-          row.value = result;
-          row.valueVerified = result;
+          this.row.value = result;
+          this.row.valueVerified = result;
+          this.saveRow();
         }
       });
   }
@@ -103,36 +111,36 @@ export class RowComponent implements OnInit {
     secretQuestion.saveAnswer = secretQuestion.answer;
   }
 
-  editTags(row) {
-    this.dialogService.addDialog(EditTagsComponent, { tags: (row.tags ? row.tags : []) })
+  editTags() {
+    this.dialogService.addDialog(EditTagsComponent, { tags: (this.row.tags ? this.row.tags : []) })
       .subscribe((result) => {
         if (result) {
-          row.tags = result;
+          this.row.tags = result;
           this.saveCoinInDatabase();
         }
       });
   }
 
-  deleteSecretQuestion(row, index) {
+  deleteSecretQuestion(index) {
     this.dialogService.addDialog(ConfirmComponent, {
       title: this.translate.instant('coin_delete_secret_question'),
       message: this.translate.instant('coin_delete_secret_question_confirm')})
       .subscribe((result) => {
         if (result) {
-          row.value.splice(index, 1);
+          this.row.value.splice(index, 1);
           this.saveCoinInDatabase();
         }
       });
   }
 
-  cancelEditSecretQuestion(secretQuestion, row, index) {
+  cancelEditSecretQuestion(secretQuestion, index) {
     if (secretQuestion.saveAnswer) {
       secretQuestion.answer = secretQuestion.saveAnswer;
       secretQuestion.question = secretQuestion.saveQuestion;
       delete secretQuestion.saveQuestion;
       delete secretQuestion.saveAnswer;
     } else {
-      row.value.splice(index, 1);
+      this.row.value.splice(index, 1);
     }
     delete secretQuestion.edit;
   }
