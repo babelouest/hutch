@@ -7,13 +7,13 @@
             <option *ngFor="let lang of langs" [value]="lang.code" [innerHtml]="lang.display"></option>
           </select>
           <span class="input-group-btn">
-            <button data-toggle="tooltip" [title]="'add_safe' | translate" type="button" class="btn btn-default" (click)="addSafe()" *ngIf="!noProfile && connected">
-              <i class="fa fa-plus"></i>
-            </button>
             <button data-toggle="tooltip" [title]="'edit_profile' | translate" type="button" class="btn btn-default" (click)="editProfile()" *ngIf="connected">
               <i class="fa fa-user"></i>
             </button>
-            <button type="button" (click)="lockAll()" class="btn btn-default" [title]="'lock_all_safe' | translate" *ngIf="connected">
+            <button data-toggle="tooltip" [title]="'add_safe' | translate" type="button" class="btn btn-default" (click)="addSafe()" *ngIf="!noProfile && connected">
+              <i class="fa fa-plus"></i>
+            </button>
+            <button type="button" (click)="lockAll()" class="btn btn-default" [title]="'lock_all_safe' | translate" *ngIf="!noProfile && connected">
               <i class="fa fa-lock" aria-hidden="true"></i>
             </button>
           </span>
