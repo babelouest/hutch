@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, isDevMode } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
 
 import { HutchCryptoService } from '../shared/hutch-crypto.service';
@@ -132,22 +132,38 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
       this.hutchCryptoService.getKeyFromPassword(this.password)
       .then((passwordKey) => {
         // Generate an export of a random key for the safe
-        this.hutchCryptoService.generateSafeKey().then((safeKey) => {
+        this.hutchCryptoService.generateSafeKey()
+        .then((safeKey) => {
           this.hutchCryptoService.encryptData(safeKey, passwordKey)
           .then((encryptedSafeKey) => {
             this.key = encryptedSafeKey;
             this.result = {isNew: this.isNew, name: this.name, description: this.description, key: this.key};
             this.close();
+          })
+          .catch((error) => {
+            if (isDevMode()) {
+              console.log('Hutch debug', error);
+            }
           });
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         });
       })
-      .catch(() => {
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
         this.error = true;
       });
     } else {
       if (this.currentPassword) {
-        this.hutchCryptoService.getKeyFromPassword(this.currentPassword).then((passwordKey) => {
-          this.hutchCryptoService.decryptData(this.key, passwordKey).then((exportedKey) => {
+        this.hutchCryptoService.getKeyFromPassword(this.currentPassword)
+        .then((passwordKey) => {
+          this.hutchCryptoService.decryptData(this.key, passwordKey)
+          .then((exportedKey) => {
             // Regenerate key from new password
             this.hutchCryptoService.getKeyFromPassword(this.password)
             .then((newPasswordKey) => {
@@ -156,15 +172,31 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
                 this.key = encryptedSafeKey;
                 this.result = {isNew: this.isNew, name: this.name, description: this.description, key: this.key};
                 this.close();
+              })
+              .catch((error) => {
+                if (isDevMode()) {
+                  console.log('Hutch debug', error);
+                }
               });
             })
-            .catch(() => {
+            .catch((error) => {
+              if (isDevMode()) {
+                console.log('Hutch debug', error);
+              }
               this.error = true;
             });
           })
-          .catch(() => {
+          .catch((error) => {
+            if (isDevMode()) {
+              console.log('Hutch debug', error);
+            }
             this.error = true;
           });
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         });
       } else {
         this.result = {isNew: this.isNew, name: this.name, description: this.description, key: this.key};

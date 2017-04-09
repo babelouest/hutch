@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, isDevMode } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { DialogService } from 'ng2-bootstrap-modal';
@@ -143,14 +143,24 @@ export class SafeComponent implements OnInit {
       displayName: newCoin.displayName,
       rows: newCoin.rows
     };
-    this.hutchCryptoService.encryptData(saveCoin, this.safe.safeKey).then((encryptedCoin) => {
-      this.hutchCoinService.add(this.safe.name, { name: newCoin.name, data: encryptedCoin }).then(() => {
+    this.hutchCryptoService.encryptData(saveCoin, this.safe.safeKey)
+    .then((encryptedCoin) => {
+      this.hutchCoinService.add(this.safe.name, { name: newCoin.name, data: encryptedCoin })
+      .then(() => {
         this.coinList.unshift(newCoin);
         this.coinListDisplayed.unshift(newCoin);
       })
-      .catch(() => {
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
         this.errorMessage = this.translate.instant('coin_save_error');
       });
+    })
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
     });
   }
 
@@ -162,7 +172,7 @@ export class SafeComponent implements OnInit {
       this.safe = this.hutchStoreService.get('safe', this.safeName);
       if (!!this.safe.safeKey) {
         this.unlocked = true;
-        this.coinList = this.safe.coinList;
+        this.coinList = this.safe.coinList || [];
         this.coinListDisplayed = this.safe.coinList.slice();
       } else {
         this.unlocked = false;
@@ -176,9 +186,12 @@ export class SafeComponent implements OnInit {
 
   checkPassword() {
     this.passwordError = false;
-    this.hutchCryptoService.getKeyFromPassword(this.safePassword).then((passwordKey) => {
-      this.hutchCryptoService.decryptData(this.safe.key, passwordKey).then((exportedKey) => {
-        this.hutchCryptoService.getKeyFromExport(exportedKey).then((safeKey) => {
+    this.hutchCryptoService.getKeyFromPassword(this.safePassword)
+    .then((passwordKey) => {
+      this.hutchCryptoService.decryptData(this.safe.key, passwordKey)
+      .then((exportedKey) => {
+        this.hutchCryptoService.getKeyFromExport(exportedKey)
+        .then((safeKey) => {
           this.safe.safeKey = safeKey;
           this.hutchStoreService.set('safe', this.safe.name, this.safe);
           this.unlocked = true;
@@ -188,12 +201,29 @@ export class SafeComponent implements OnInit {
           }
           this.safePassword = '';
           this.keepSafeOpen = false;
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
+          this.passwordError = true;
+          this.unlocked = false;
         });
       })
-      .catch(() => {
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
         this.passwordError = true;
         this.unlocked = false;
       });
+    })
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
+      this.passwordError = true;
+      this.unlocked = false;
     });
   }
 
@@ -201,12 +231,19 @@ export class SafeComponent implements OnInit {
     this.loading = true;
     this.searchValue = '';
     this.safe.coinList = [];
-    this.hutchCoinService.list(this.safe.name).then((result) => {
+    this.hutchCoinService.list(this.safe.name)
+    .then((result) => {
       let promises = [];
       result.forEach((encryptedCoin) => {
-        promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.safe.safeKey).then((decryptedCoin) => {
+        promises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.safe.safeKey)
+        .then((decryptedCoin) => {
           decryptedCoin.name = encryptedCoin.name;
           this.safe.coinList.push(decryptedCoin);
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         }));
       });
       if (promises.length > 0) {
@@ -219,7 +256,10 @@ export class SafeComponent implements OnInit {
         this.loading = false;
       }
     })
-    .catch(() => {
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
     });
   }
 

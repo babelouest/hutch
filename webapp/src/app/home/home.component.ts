@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, isDevMode } from '@angular/core';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
 
@@ -56,12 +56,16 @@ export class HomeComponent implements OnInit {
 
   loadProfile() {
     if (!this.hutchStoreService.get('profile', 'profile')) {
-      this.hutchProfileService.getProfile().then((result) => {
+      this.hutchProfileService.getProfile()
+      .then((result) => {
         this.profile = result;
         this.hutchStoreService.add('profile', 'profile', this.profile);
         this.loading = false;
       })
       .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
         if (error.status === 404) {
           this.noProfile = true;
         }
@@ -82,8 +86,22 @@ export class HomeComponent implements OnInit {
     })
     .subscribe((result) => {
       if (result) {
-        this.hutchSafeService.add({name: result.name, description: result.description, key: result.key }).then(() => {
-          this.hutchStoreService.add('safe', result.name, {name: result.name, description: result.description, key: result.key });
+        this.hutchSafeService.add({name: result.name, description: result.description, key: result.key })
+        .then(() => {
+          this.hutchStoreService.add('safe',
+                                     result.name,
+                                     {
+                                       name: result.name,
+                                       description: result.description,
+                                       key: result.key,
+                                       coinList: []
+                                     }
+                                    );
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         });
       }
     });
@@ -101,6 +119,11 @@ export class HomeComponent implements OnInit {
           this.noProfile = false;
           this.profile.fortune = result.fortune;
           this.profile.picture = result.picture;
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         });
       }
     });

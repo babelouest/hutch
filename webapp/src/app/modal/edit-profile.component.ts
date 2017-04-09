@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, isDevMode } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
 
 import { WikimediaCommonsService } from '../shared/wikimedia-commons.service';
@@ -113,8 +113,10 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
     this.showImage = false;
     this.errorImage = false;
     this.fileTooLarge = false;
-    this.wikimediaCommonsService.getRandomFile().then((result) => {
-      this.wikimediaCommonsService.getFileUrlThumbnail(result).then((url) => {
+    this.wikimediaCommonsService.getRandomFile()
+    .then((result) => {
+      this.wikimediaCommonsService.getFileUrlThumbnail(result)
+      .then((url) => {
         this.wikimediaCommonsService.getImageData(url)
         .map(function (res) {
           let binary = '';
@@ -130,12 +132,18 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
           this.showImage = true;
         });
       })
-      .catch(() => {
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
         this.errorImage = true;
         this.showImage = false;
       });
     })
-    .catch(() => {
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
       this.errorImage = true;
       this.showImage = false;
     });

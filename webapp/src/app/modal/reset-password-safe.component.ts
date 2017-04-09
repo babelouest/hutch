@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, isDevMode } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
 
 import { HutchCryptoService } from '../shared/hutch-crypto.service';
@@ -143,21 +143,31 @@ export class ResetPasswordSafeComponent extends DialogComponent<ResetPasswordSaf
               )
             ), true
           ).then((safeKey) => {
-            self.hutchCryptoService.decryptData(self.coinList[0].data, safeKey).then(() => {
+            self.hutchCryptoService.decryptData(self.coinList[0].data, safeKey)
+            .then(() => {
               self.safeKey = safeKey;
               self.keyFileValid = true;
               self.resetPossible = true;
             })
-            .catch(() => {
+            .catch((error) => {
+              if (isDevMode()) {
+                console.log('Hutch debug', error);
+              }
               self.keyFileValid = false;
               self.resetPossible = false;
             });
           })
-          .catch(() => {
+          .catch((error) => {
+            if (isDevMode()) {
+              console.log('Hutch debug', error);
+            }
             self.keyFileValid = false;
             self.resetPossible = false;
           });
-        } catch (e) {
+        } catch (error) {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
           self.keyFileValid = false;
           self.resetPossible = false;
         }
@@ -171,16 +181,38 @@ export class ResetPasswordSafeComponent extends DialogComponent<ResetPasswordSaf
   }
 
   changePassword() {
-    this.hutchCryptoService.getKeyFromPassword(this.newPassword).then((passwordKey) => {
-      window.crypto.subtle.exportKey('jwk', this.safeKey).then((exportedKey) => {
-        this.hutchCryptoService.encryptData(exportedKey, passwordKey).then((encryptedSafeKey) => {
+    this.hutchCryptoService.getKeyFromPassword(this.newPassword)
+    .then((passwordKey) => {
+      window.crypto.subtle.exportKey('jwk', this.safeKey)
+      .then((exportedKey) => {
+        this.hutchCryptoService.encryptData(exportedKey, passwordKey)
+        .then((encryptedSafeKey) => {
           this.hutchSafeService.set(this.safeName, { description: this.description, key: encryptedSafeKey })
-              .then(() => {
-                this.result = encryptedSafeKey;
-                this.close();
-              });
+          .then(() => {
+            this.result = encryptedSafeKey;
+            this.close();
+          })
+          .catch((error) => {
+            if (isDevMode()) {
+              console.log('Hutch debug', error);
+            }
+          });
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         });
+      }, (error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
       });
+    })
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
     });
   }
 }

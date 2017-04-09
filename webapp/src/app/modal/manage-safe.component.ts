@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, isDevMode } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
 import { Observable } from 'rxjs/Observable';
 
@@ -219,7 +219,17 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
           downloadAnchor.setAttribute('href', fileData);
           downloadAnchor.setAttribute('download', this.safeName + '.bin');
           downloadAnchor.click();
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         });
+      })
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
       });
     } else {
       fileData = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.coinList));
@@ -253,8 +263,10 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
   checkImportPassword() {
     if (this.importPassword) {
       this.importPasswordChecking = true;
-      this.hutchCryptoService.getKeyFromPassword(this.importPassword).then((key) => {
-        this.hutchCryptoService.decryptData(this.importFileContent, key).then((decryptedData) => {
+      this.hutchCryptoService.getKeyFromPassword(this.importPassword)
+      .then((key) => {
+        this.hutchCryptoService.decryptData(this.importFileContent, key)
+        .then((decryptedData) => {
           this.importPasswordValid = true;
           this.importPasswordChecking = false;
           this.importedCoinList = decryptedData;
@@ -268,6 +280,11 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
           this.importPasswordValid = false;
           this.importPasswordChecking = false;
         });
+      })
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
       });
     } else {
       return false;
@@ -290,12 +307,19 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
       for (let i = 0; i < array.length; i++) {
         newCoin.name += charsAvailable[array[i] % charsAvailable.length];
       }
-      promises.push(this.hutchCryptoService.encryptData(newCoin, this.safeKey).then((encryptedCoin) => {
-        this.hutchCoinService.add(this.safeName, { name: newCoin.name, data: encryptedCoin }).then(() => {
+      promises.push(this.hutchCryptoService.encryptData(newCoin, this.safeKey)
+      .then((encryptedCoin) => {
+        this.hutchCoinService.add(this.safeName, { name: newCoin.name, data: encryptedCoin })
+        .then(() => {
         })
         .catch(() => {
           this.importMessage = 'error';
         });
+      })
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
       }));
     });
     Observable.forkJoin(promises).subscribe(() => {
@@ -306,10 +330,14 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
 
   exportSafeKey() {
     this.exportSafeKeyMessage = '';
-    this.hutchCryptoService.getKeyFromPassword(this.exportSafeKeyPassword).then((passwordKey) => {
-      this.hutchCryptoService.decryptData(this.key, passwordKey).then((exportedKey) => {
-        this.hutchCryptoService.getKeyFromExport(exportedKey, true).then((safeKey) => {
-          window.crypto.subtle.exportKey('jwk', safeKey).then((key) => {
+    this.hutchCryptoService.getKeyFromPassword(this.exportSafeKeyPassword)
+    .then((passwordKey) => {
+      this.hutchCryptoService.decryptData(this.key, passwordKey)
+      .then((exportedKey) => {
+        this.hutchCryptoService.getKeyFromExport(exportedKey, true)
+        .then((safeKey) => {
+          window.crypto.subtle.exportKey('jwk', safeKey)
+          .then((key) => {
             let fileData = 'data:application/octet-stream,' +
                             this.hutchCryptoService.arrayBufferToBase64(
                               this.hutchCryptoService.convertStringToArrayBufferView(
@@ -320,12 +348,29 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
             downloadAnchor.setAttribute('href', fileData);
             downloadAnchor.setAttribute('download', this.safeName + '-safekey.bin');
             downloadAnchor.click();
+          }, (error) => {
+            if (isDevMode()) {
+              console.log('Hutch debug', error);
+            }
           });
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         });
       })
-      .catch(() => {
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
         this.exportSafeKeyMessage = 'password-error';
       });
+    })
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
     });
   }
 }

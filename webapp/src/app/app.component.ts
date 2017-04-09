@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, isDevMode } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { HutchSafeService } from './shared/hutch-safe.service';
@@ -38,24 +38,43 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.oauth2Connect.getStatus().subscribe((status) => {
       if (status === 'connected') {
-        this.hutchSafeService.list().then((result) => {
+        this.hutchSafeService.list()
+        .then((result) => {
           for (let safe of result) {
             safe.coinList = [];
             this.hutchStoreService.add('safe', safe.name, safe);
             if (localStorage.getItem('hutch-safe-' + safe.name)) {
               try {
-                this.hutchCryptoService.getKeyFromExport(JSON.parse(localStorage.getItem('hutch-safe-' + safe.name))).then((safeKey) => {
+                this.hutchCryptoService.getKeyFromExport(JSON.parse(localStorage.getItem('hutch-safe-' + safe.name)))
+                .then((safeKey) => {
                   safe.safeKey = safeKey;
-                  this.hutchCoinService.list(safe.name).then((encryptedCoinList) => {
+                  this.hutchCoinService.list(safe.name)
+                  .then((encryptedCoinList) => {
                     if (encryptedCoinList.length > 0) {
                       encryptedCoinList.forEach((encryptedCoin) => {
-                        this.hutchCryptoService.decryptData(encryptedCoin.data, safe.safeKey).then((decryptedCoin) => {
+                        this.hutchCryptoService.decryptData(encryptedCoin.data, safe.safeKey)
+                        .then((decryptedCoin) => {
                           decryptedCoin.name = encryptedCoin.name;
                           safe.coinList.push(decryptedCoin);
+                        })
+                        .catch((error) => {
+                          if (isDevMode()) {
+                            console.log('Hutch debug', error);
+                          }
                         });
                       });
                     }
+                  })
+                  .catch((error) => {
+                    if (isDevMode()) {
+                      console.log('Hutch debug', error);
+                    }
                   });
+                })
+                .catch((error) => {
+                  if (isDevMode()) {
+                    console.log('Hutch debug', error);
+                  }
                 });
               } catch (e) {
                 localStorage.removeItem('hutch-safe-' + safe.name);
@@ -80,7 +99,10 @@ export class AppComponent implements OnInit {
             }
           });
         })
-        .catch(() => {
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
         });
       } else if (status === 'disconnected') {
         this.safeList = [];

@@ -1,4 +1,4 @@
-import { Injectable }    from '@angular/core';
+import { Injectable, isDevMode }    from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
 
 import { Oauth2ConnectObservable } from '../oauth2-connect/oauth2-connect.service';
@@ -16,8 +16,14 @@ export class HutchApiService {
   private hutchApiBasehUrl = '';
 
   constructor(private http: Http, private oauth2Connect: Oauth2ConnectObservable, private config: HutchConfigService) {
-    this.config.get().then(curConfig => {
+    this.config.get()
+    .then(curConfig => {
       this.hutchApiBasehUrl = curConfig.api.baseUrl;
+    })
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
     });
     this.oauth2Connect.getToken().subscribe((token) => {
       this.headers.set('Authorization', 'Bearer ' + token);
@@ -45,6 +51,13 @@ export class HutchApiService {
                    } else {
                      return '';
                    }
+                 })
+                 .catch((error) => {
+                   if (error.status === 401) {
+                     // Token expired or disabled
+                     this.headers.delete('Authorization');
+                   }
+                   return error;
                  });
     } else {
       return Promise.reject('Error, not connected');

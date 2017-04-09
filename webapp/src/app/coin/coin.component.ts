@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, isDevMode } from '@angular/core';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
 
@@ -48,8 +48,14 @@ export class CoinComponent implements OnInit {
       message: this.translate.instant('coin_delete_coin_confirm', { name: this.coin.displayName })})
       .subscribe((result) => {
         if (result) {
-          this.hutchCoinService.delete(this.safe, this.coin.name).then(() => {
+          this.hutchCoinService.delete(this.safe, this.coin.name)
+          .then(() => {
             this.onDeleteCoin.emit(this.coin);
+          })
+          .catch((error) => {
+            if (isDevMode()) {
+              console.log('Hutch debug', error);
+            }
           });
         }
       });
@@ -113,10 +119,22 @@ export class CoinComponent implements OnInit {
 
   saveCoinInDatabase() {
     let saveCoin = { displayName: this.coin.displayName, rows: this.coin.rows };
-    return this.hutchCryptoService.encryptData(saveCoin, this.safeKey).then((data) => {
-      this.hutchCoinService.set(this.safe, this.coin.name, { data: data }).then(() => {
+    return this.hutchCryptoService.encryptData(saveCoin, this.safeKey)
+    .then((data) => {
+      this.hutchCoinService.set(this.safe, this.coin.name, { data: data })
+      .then(() => {
         // TODO: Display message
+      })
+      .catch((error) => {
+        if (isDevMode()) {
+          console.log('Hutch debug', error);
+        }
       });
+    })
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
     });
   }
 

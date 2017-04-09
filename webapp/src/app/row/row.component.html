@@ -12,7 +12,7 @@
     </div>
     <form (ngSubmit)="saveRow()">
       <div class="col-md-3 text-left">
-        <a href="{{row.value}}" title="{{row.value}}" target="_blank" *ngIf="!row.edit && row.type === 'url'" [innerHtml]=""></a>
+        <a href="{{row.value}}" title="{{row.value}}" target="_blank" *ngIf="!row.edit && row.type === 'url'" [innerHtml]="row.value"></a>
         <span [innerHtml]="row.value"
               *ngIf="!row.edit && (row.type === 'login' || row.type === 'text' || (row.show && row.type === 'password'))"></span>
         <span *ngIf="!row.edit && !row.show && row.type === 'password'">********</span>
