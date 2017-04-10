@@ -1,4 +1,6 @@
 import { Component, OnInit, isDevMode } from '@angular/core';
+import { Router } from '@angular/router';
+import { CookieService } from 'angular2-cookie/core';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
 import { ToastrService } from 'toastr-ng2';
@@ -30,6 +32,8 @@ export class HomeComponent implements OnInit {
 
   constructor(private dialogService: DialogService,
               private translate: TranslateService,
+              private router: Router,
+              private cookieService: CookieService,
               private toastrService: ToastrService,
               private hutchProfileService: HutchProfileService,
               private hutchSafeService: HutchSafeService,
@@ -37,10 +41,48 @@ export class HomeComponent implements OnInit {
               private oauth2Connect: Oauth2ConnectObservable,
               private config: HutchConfigService) {
     this.config.get().then(curConfig => {
-      this.translate.setDefaultLang(curConfig.lang.default);
-      this.curLang = curConfig.lang.default;
       this.langs = curConfig.lang.available;
+      this.translate.setDefaultLang(curConfig.lang.default);
+      this.curLang = this.getCurrentLang(this.langs, curConfig.lang.default);
+      this.translate.use(this.curLang);
     });
+  }
+
+  getCurrentLang(langsAvailable: any[], defaultLang: string): string {
+    // First check hutchStoreService
+    // Else check the url for a lang=xx parameter
+    // Else check the cookies
+    // Else check browser
+    // Else get config default
+    let lang = '';
+    if (this.hutchStoreService.get('profile', 'lang')) {
+      lang = this.hutchStoreService.get('profile', 'lang');
+    } else {
+      let params = this.router.parseUrl(this.router.url);
+      if (params['lang']) {
+        lang = params['lang'];
+        this.hutchStoreService.add('profile', 'lang', lang);
+        this.cookieService.put('lang', lang);
+        this.router.navigate(['']);
+      } else if (this.cookieService.get('lang')) {
+        lang = this.cookieService.get('lang');
+        this.hutchStoreService.add('profile', 'lang', lang);
+      } else if (this.translate.getBrowserCultureLang() && _.find(langsAvailable, {code: this.translate.getBrowserCultureLang()})) {
+        lang = this.translate.getBrowserCultureLang();
+      } else {
+        lang = defaultLang;
+        this.hutchStoreService.add('profile', 'lang', lang);
+        this.cookieService.put('lang', lang);
+      }
+    }
+    return lang;
+  }
+
+  changeLang() {
+    this.translate.use(this.curLang);
+    this.hutchStoreService.add('profile', 'lang', this.curLang);
+    this.cookieService.put('lang', this.curLang);
+    console.log('Put cookie', 'lang', this.curLang);
   }
 
   ngOnInit() {
@@ -143,10 +185,6 @@ export class HomeComponent implements OnInit {
       title: this.translate.instant('modal_why_this_title'),
       message: this.translate.instant('modal_why_this_message')
     });
-  }
-
-  changeLang() {
-    this.translate.use(this.curLang);
   }
 
   lockAll() {
