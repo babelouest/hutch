@@ -54,13 +54,13 @@
       </div>
       <div class="col-md-4" *ngIf="row.edit">
         <div class="btn-group pull-right">
-          <button type="button" class="btn btn-default btn-sm" (click)="generatePassword()" title="Generate a random password" *ngIf="row.type === 'password'">
+          <button type="button" class="btn btn-default btn-sm" (click)="generatePassword()" [title]="'button_generate_password' | translate" *ngIf="row.type === 'password'">
             <i class="fa fa-magic" aria-hidden="true"></i>
           </button>
-          <button type="submit" class="btn btn-default btn-sm" [disabled]="!isRowValid()" title="Save value">
+          <button type="submit" class="btn btn-default btn-sm" [disabled]="!isRowValid()" [title]="'button_save' | translate">
             <i class="fa fa-save" aria-hidden="true"></i>
           </button>
-          <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow()" title="Cancel edit">
+          <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow()" [title]="'button_cancel' | translate">
             <i class="fa fa-close" aria-hidden="true"></i>
           </button>
         </div>
@@ -97,6 +97,9 @@
           </div>
           <div class="col-md-4" *ngIf="secretQuestion.edit">
             <div class="btn-group pull-right">
+              <button type="button" class="btn btn-default btn-sm" (click)="generateAnswer(secretQuestion)" [title]="'button_generate_answer' | translate">
+                <i class="fa fa-magic" aria-hidden="true"></i>
+              </button>
               <button type="submit" class="btn btn-default btn-sm" [title]="'button_save' | translate">
                 <i class="fa fa-save" aria-hidden="true"></i>
               </button>

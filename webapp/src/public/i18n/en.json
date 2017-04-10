@@ -18,6 +18,7 @@
   "button_copy": "Copy to clipboard",
   "button_manage_tag": "Manage tags",
   "button_generate_password": "Generate a random password",
+  "button_generate_answer": "Generate a random answer",
   "button_generate": "Generate",
   "button_change_password": "Change password",
   "button_show_password": "Show password",
@@ -149,5 +150,7 @@
   "toaster_error_safe_create": "Error creating safe",
   "toaster_error_safe_export": "Error while exporting safe",
   "toaster_error_safe_key_export": "Error while exporting safe key",
-  "toaster_error_reset_safe_password": "Error reset safe password"
+  "toaster_error_reset_safe_password": "Error reset safe password",
+  "toaster_success_answer_generated": "Secret answer generated",
+  "toaster_error_anser_generated": "Error generating secret answer"
 }

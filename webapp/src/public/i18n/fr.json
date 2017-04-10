@@ -18,6 +18,7 @@
   "button_copy": "Copier dans le presse-papier",
   "button_manage_tag": "Gérer les tags",
   "button_generate_password": "Générer un mot de passe",
+  "button_generate_answer": "Générer une réponse",
   "button_generate": "Générer",
   "button_change_password": "Changer le mot de passe",
   "button_show_password": "Voir le mot de passe",
@@ -149,5 +150,7 @@
   "toaster_error_safe_create": "Erreur lors de la création du coffre",
   "toaster_error_safe_export": "Erreur lors de l'export du coffre",
   "toaster_error_safe_key_export": "Erreur lors de l'export de la clé du coffre",
-  "toaster_error_reset_safe_password": "Erreur lors de la réinitialisation du mot de passe pour le coffre"
+  "toaster_error_reset_safe_password": "Erreur lors de la réinitialisation du mot de passe pour le coffre",
+  "toaster_success_answer_generated": "Réponse secrète générée",
+  "toaster_error_anser_generated": "Erreur lors de la génération de la réponse secrète"
 }

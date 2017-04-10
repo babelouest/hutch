@@ -1,8 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, isDevMode } from '@angular/core';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
+import { ToastrService } from 'toastr-ng2';
 
 import { Row } from '../shared/coin';
+import { HutchRandomWordService } from '../shared/hutch-random-word.service';
+
 import { ConfirmComponent } from '../modal/confirm.component';
 import { EditTagsComponent } from '../modal/edit-tags.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
@@ -19,7 +22,9 @@ export class RowComponent implements OnInit {
   @Output() onUpdate: EventEmitter<any> = new EventEmitter();
 
   constructor(private translate: TranslateService,
-              private dialogService: DialogService) {
+              private dialogService: DialogService,
+              private toastrService: ToastrService,
+              private hutchRandomWordService: HutchRandomWordService) {
   }
 
   ngOnInit() {
@@ -154,5 +159,18 @@ export class RowComponent implements OnInit {
 
   saveCoinInDatabase() {
     this.onUpdate.emit({type: 'update'});
+  }
+
+  generateAnswer(secretQuestion) {
+    this.hutchRandomWordService.get(2).then((results) => {
+      secretQuestion.answer = results.join(' ');
+      this.toastrService.success(this.translate.instant('toaster_success_answer_generated'), this.translate.instant('toaster_title'));
+    })
+    .catch((error) => {
+      if (isDevMode()) {
+        console.log('Hutch debug', error);
+      }
+      this.toastrService.error(this.translate.instant('toaster_error_anser_generated'), this.translate.instant('toaster_title'));
+    });
   }
 }

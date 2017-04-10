@@ -39,6 +39,7 @@ import { HutchCoinService } from './shared/hutch-coin.service';
 import { HutchCryptoService } from './shared/hutch-crypto.service';
 import { HutchObserveService } from './shared/hutch-observe.service';
 import { HutchConfigService } from './shared/hutch-config.service';
+import { HutchRandomWordService } from './shared/hutch-random-word.service';
 
 @NgModule({
   imports: [
@@ -90,6 +91,7 @@ import { HutchConfigService } from './shared/hutch-config.service';
     HutchCoinService,
     HutchCryptoService,
     HutchObserveService,
+    HutchRandomWordService,
     Oauth2ConnectObservable
   ],
   bootstrap: [AppComponent]
