@@ -173,4 +173,25 @@ export class RowComponent implements OnInit {
       this.toastrService.error(this.translate.instant('toaster_error_anser_generated'), this.translate.instant('toaster_title'));
     });
   }
+
+  downloadFile() {
+    let fileData = 'data:application/octet-stream,' + this.row.value.data;
+    let downloadAnchor = document.getElementById('downloadAnchor');
+    downloadAnchor.setAttribute('href', fileData);
+    downloadAnchor.setAttribute('download', this.row.value.name);
+    downloadAnchor.click();
+  }
+
+  fileChange(event) {
+    let self = this;
+    let fileList: FileList = event.target.files;
+    if (fileList.length > 0) {
+      let file: File = fileList[0];
+      let fr = new FileReader();
+      fr.onload = function(ev2: any) {
+        self.row.value = { name: event.target.value, data: ev2.target.result };
+      };
+      fr.readAsText(file);
+    }
+  }
 }

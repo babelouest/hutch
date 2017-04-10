@@ -183,4 +183,17 @@ export class CoinComponent implements OnInit {
   exportCoin() {
     this.dialogService.addDialog(ExportCoinComponent, { coin: { displayName: this.coin.displayName, rows: this.coin.rows } });
   }
+
+  fileChange(event) {
+    let self = this;
+    let fileList: FileList = event.target.files;
+    if (fileList.length > 0) {
+      let file: File = fileList[0];
+      let fr = new FileReader();
+      fr.onload = function(ev2: any) {
+        self.newRow.value = { name: event.target.value, data: ev2.target.result };
+      };
+      fr.readAsText(file);
+    }
+  }
 }

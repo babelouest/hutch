@@ -51,12 +51,11 @@ export interface EditProfileModel {
                           <hr>
                           <span [innerHtml]='"get_local_image_message" | translate'></span>
                           <h4 class='bg-warning' *ngIf='fileTooLarge' [innerHtml]='"file_too_large_message" | translate'></h4>
-                          <input type='file'
-                                 id='localFile'
-                                 name='localFile'
-                                 (change)="fileChange($event)"
-                                  [placeholder]='"modal_profile_fortune_image" | translate'
-                                 accept=".jpg,.jpg,.png,.gif,.bmp" />
+                            <input type='file'
+                                   name='file'
+                                   (change)='fileChange($event)'
+                                   accept='.jpg,.jpg,.png,.gif,.bmp'
+                                   class='upload'/>
                         </div>
                       </div>
                     </div>

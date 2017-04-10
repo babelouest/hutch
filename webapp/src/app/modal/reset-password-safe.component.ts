@@ -36,12 +36,15 @@ export interface ResetPasswordSafeModel {
                      <div class='row'>
                        <div class='col-md-12'>
                           <span [innerHtml]='"modal_reset_password_upload_file" | translate'></span>
-                          <input type='file'
-                                 id='localFile'
-                                 (change)="fileChange($event)"
-                                  [placeholder]='"modal_reset_password_upload_file" | translate'
-                                 accept=".bin"
-                                 [disabled]="!resetAvailable"/>
+                          <div class='fileUpload btn btn-default'>
+                            <span [innerHtml]='"button_upload" | translate'></span>
+                            <input type='file'
+                                   name='file'
+                                   (change)='fileChange($event)'
+                                   accept='.bin'
+                                   class='upload'
+                                   [disabled]='!resetAvailable'/>
+                          </div>
                        </div>
                      </div>
                      <div class='row'>

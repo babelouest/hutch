@@ -1,5 +1,6 @@
 <div class="row">
   <div>
+    <a id="downloadAnchor" style="display:none" *ngIf="row.type === 'file'"></a>
     <div class="col-md-4 text-left">
       <span class="label label-info" [innerHtml]="'coin_type_' + row.type.replace('-', '_') | translate"></span>
       <a href="" class="btn btn-default btn-xs" (click)="showPassword($event)" [title]="'button_show_password' | translate" *ngIf="row.type === 'password' && !row.edit">
@@ -32,13 +33,21 @@
                [(ngModel)]="row.valueVerified"
                *ngIf="row.edit && row.type === 'password'"
                class="form-control">
+        <span [innerHtml]="row.value.name" *ngIf="row.type === 'file'"></span>
+        <div class="fileUpload btn btn-default" *ngIf="row.edit && row.type === 'file'">
+          <span [innerHtml]="'button_upload' | translate"></span>
+          <input type="file" name="file" (change)="fileChange($event)" class="upload" />
+        </div>
       </div>
       <div class="col-md-5" *ngIf="!row.edit">
         <div class="btn-group pull-right">
           <button type="button" class="btn btn-default btn-sm" (click)="addSecretQuestion()" [title]="'button_add_secret_question' | translate" *ngIf="row.type === 'secret-questions'">
             <i class="fa fa-plus" aria-hidden="true"></i>
           </button>
-          <button type="button" class="btn btn-default btn-sm btn-copy" [attr.data-hutch-clipboard]="row.value" [title]="'button_copy' | translate" *ngIf="row.type !== 'secret-questions'">
+          <button type="button" class="btn btn-default btn-sm" (click)="downloadFile()" [title]="'button_download' | translate" *ngIf="row.type === 'file'">
+            <i class="fa fa-cloud-download" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-default btn-sm btn-copy" [attr.data-hutch-clipboard]="row.value" [title]="'button_copy' | translate" *ngIf="row.type !== 'secret-questions' && row.type !== 'file'">
             <i class="fa fa-clipboard" aria-hidden="true"></i>
           </button>
           <button type="button" class="btn btn-default btn-sm" (click)="editRow()" [title]="'button_edit' | translate" *ngIf="row.type !== 'secret-questions'">

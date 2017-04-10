@@ -70,11 +70,14 @@ export interface ManageSafeModel {
                      <div class='row'>
                        <div class='col-md-12'>
                           <span [innerHtml]='"modal_manage_safe_import_file" | translate'></span>
-                          <input type='file'
-                                 id='localFile'
-                                 (change)="fileChange($event)"
-                                  [placeholder]='"modal_manage_safe_import_file_placeholder" | translate'
-                                 accept=".json,.bin" />
+                          <div class='fileUpload btn btn-default'>
+                            <span [innerHtml]='"button_upload" | translate'></span>
+                            <input type='file'
+                                   name='file'
+                                   (change)='fileChange($event)'
+                                   accept='.json,.bin'
+                                   class='upload'/>
+                          </div>
                        </div>
                      </div>
                      <div class='row'>
