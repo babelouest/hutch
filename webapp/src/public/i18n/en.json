@@ -86,6 +86,12 @@
   "modal_safe_password_warning": "Warning! The password safe is personal and is not stored anywhere on the server, there is no way for the server to access your data decrypted.",
   "modal_safe_error": "An error occured",
   "modal_safe_name_exist": "Name already exists",
+  "modal_safe_password_strength": "Password strength",
+  "modal_safe_password_strength_forbidden": "Forbidden: 8 chars minimum",
+  "modal_safe_password_strength_weak": "Weak: Too easily guessable",
+  "modal_safe_password_strength_low": "Low: Easily guessable",
+  "modal_safe_password_strength_medium": "Medium, not easily guessable",
+  "modal_safe_password_strength_hard": "High: difficult to find",
   "modal_tags_title": "Edit tags",
   "modal_tags_message": "Enter a list of tags separated by a comma",
   "modal_tags_placeholder": "New tag",
@@ -121,5 +127,12 @@
   "modal_reset_password_safe_title": "Reset password",
   "modal_reset_password_safe_message": "Use your safe key file to reset your safe password. If you didn't download your safe key before that, there's nothing we can do...",
   "modal_reset_password_upload_file": "Select your safe key file",
-  "modal_reset_password_safe_file_incorrect": "This file does not seem to have the correct key."
+  "modal_reset_password_safe_file_incorrect": "This file does not seem to have the correct key.",
+  "toaster_title": "Hutch",
+  "toaster_error_load_profile": "Error while loading profile",
+  "toaster_add_safe_success": "Safe added",
+  "toaster_add_safe_error": "Error while adding safe",
+  "toaster_set_profile_success": "Profile set",
+  "toaster_set_profile_error": "Error setting profile",
+  "toaster_lock_all_safe": "All safe are locked"
 }

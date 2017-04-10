@@ -86,6 +86,12 @@
   "modal_safe_password_warning": "Attention! Le mot de passe du coffre est personnel et n'est stocké en clair nulle par sur le serveur distant, il n'est pas possible d'accéder à vos données pour le serveur distant",
   "modal_safe_error": "Une erreur est survenue",
   "modal_safe_name_exist": "Le nom est déja utilisé",
+  "modal_safe_password_strength": "Force du mot de passe",
+  "modal_safe_password_strength_forbidden": "Interdit: 8 caractères minimum",
+  "modal_safe_password_strength_weak": "Faible: trop facile à trouver",
+  "modal_safe_password_strength_low": "Bas: Facile à trouver",
+  "modal_safe_password_strength_medium": "Moyen: Relativement difficile à trouver",
+  "modal_safe_password_strength_hard": "Haut: Difficile à trouver",
   "modal_tags_title": "Modifier les tags",
   "modal_tags_message": "Entrez une liste de tags séparés par des virgules",
   "modal_tags_placeholder": "Nouveau tag",
@@ -121,5 +127,12 @@
   "modal_reset_password_safe_title": "Réinitialisation du mot de passe",
   "modal_reset_password_safe_message": "Vous devez utiliser votre export de clé pour réinitialiser vore mot de passe. Si vous n'avez pas préalablement sauvegardé vore export de clé, nous ne pouvons rien faire...",
   "modal_reset_password_upload_file": "Selectionnez votre fichie de clé",
-  "modal_reset_password_safe_file_incorrect": "Ce fichier ne semble pas contenir la bonne clé."
+  "modal_reset_password_safe_file_incorrect": "Ce fichier ne semble pas contenir la bonne clé.",
+  "toaster_title": "Hutch",
+  "toaster_error_load_profile": "Erreur lors du chargement du profil",
+  "toaster_add_safe_success": "Coffre ajouté",
+  "toaster_add_safe_error": "Erreur lors de l'ajout du coffre",
+  "toaster_set_profile_success": "Profil modifié",
+  "toaster_set_profile_error": "Erreur lors de la sauvegarde du profil",
+  "toaster_lock_all_safe": "Tous les coffres sont verouillés"
 }
