@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
+import { ToastrModule } from 'toastr-ng2';
 
 import { DndModule } from 'ng2-dnd';
 import { BootstrapModalModule } from 'ng2-bootstrap-modal';
@@ -47,7 +48,8 @@ import { HutchConfigService } from './shared/hutch-config.service';
     routing,
     BootstrapModalModule,
     DndModule.forRoot(),
-    TranslateModule.forRoot()
+    TranslateModule.forRoot(),
+    ToastrModule.forRoot()
   ],
   declarations: [
     AppComponent,

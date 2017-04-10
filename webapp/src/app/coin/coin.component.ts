@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, isDevMode } from '@angular/core';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
+import { ToastrService } from 'toastr-ng2';
 
 import { CoinDisplayed, Row } from '../shared/coin';
 import { HutchCoinService } from '../shared/hutch-coin.service';
@@ -30,6 +31,7 @@ export class CoinComponent implements OnInit {
 
   constructor(private translate: TranslateService,
               private dialogService: DialogService,
+              private toastrService: ToastrService,
               private hutchCryptoService: HutchCryptoService,
               private hutchCoinService: HutchCoinService) {
   }
@@ -50,9 +52,11 @@ export class CoinComponent implements OnInit {
         if (result) {
           this.hutchCoinService.delete(this.safe, this.coin.name)
           .then(() => {
+            this.toastrService.success(this.translate.instant('toaster_success_coin_delete'), this.translate.instant('toaster_title'));
             this.onDeleteCoin.emit(this.coin);
           })
           .catch((error) => {
+            this.toastrService.error(this.translate.instant('toaster_error_coin_delete'), this.translate.instant('toaster_title'));
             if (isDevMode()) {
               console.log('Hutch debug', error);
             }
@@ -123,15 +127,17 @@ export class CoinComponent implements OnInit {
     .then((data) => {
       this.hutchCoinService.set(this.safe, this.coin.name, { data: data })
       .then(() => {
-        // TODO: Display message
+        this.toastrService.success(this.translate.instant('toaster_success_coin_save'), this.translate.instant('toaster_title'));
       })
       .catch((error) => {
+        this.toastrService.error(this.translate.instant('toaster_error_coin_save'), this.translate.instant('toaster_title'));
         if (isDevMode()) {
           console.log('Hutch debug', error);
         }
       });
     })
     .catch((error) => {
+      this.toastrService.error(this.translate.instant('toaster_error_coin_save'), this.translate.instant('toaster_title'));
       if (isDevMode()) {
         console.log('Hutch debug', error);
       }

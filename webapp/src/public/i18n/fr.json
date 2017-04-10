@@ -65,7 +65,6 @@
   "safe_new_coin": "Nouveau secret",
   "safe_forgot_password_link": "Mot de passe oublié?",
   "safe_not_found": "Coffre nn trouvé",
-  "coin_save_error": "Erreur lors de la sauvegarde du secrt",
   "modal_edit_profile_title": "Modifier le profil",
   "modal_profile_fortune_message": "Message d'accueil",
   "modal_profile_fortune_image_label": "Image d'accueil",
@@ -134,5 +133,12 @@
   "toaster_add_safe_error": "Erreur lors de l'ajout du coffre",
   "toaster_set_profile_success": "Profil modifié",
   "toaster_set_profile_error": "Erreur lors de la sauvegarde du profil",
-  "toaster_lock_all_safe": "Tous les coffres sont verouillés"
+  "toaster_lock_all_safe": "Tous les coffres sont verouillés",
+  "toaster_success_coin_save": "Secret enregistré",
+  "toaster_error_safe_save": "Erreur lors de la sauvegarde du coffre",
+  "toaster_error_safe_delete": "Erreur lors de la suppression du coffre",
+  "toaster_error_coin_save": "Erreur lors de la sauvegarde du secret",
+  "toaster_error_coin_list": "Erreur lors de la récupération de la liste des secrets",
+  "toaster_success_coin_delete": "Secret supprimé",
+  "toaster_error_coin_delete": "Erreur lors de lla suppression du secret"
 }

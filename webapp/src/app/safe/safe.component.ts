@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
 import { Observable } from 'rxjs/Observable';
+import { ToastrService } from 'toastr-ng2';
 
 import { Safe } from '../shared/safe';
 
@@ -43,6 +44,7 @@ export class SafeComponent implements OnInit {
   constructor(private router: Router,
               private route: ActivatedRoute,
               private translate: TranslateService,
+              private toastrService: ToastrService,
               private dialogService: DialogService,
               private hutchStoreService: HutchObserveService,
               private hutchCryptoService: HutchCryptoService,
@@ -101,6 +103,12 @@ export class SafeComponent implements OnInit {
           this.safe.description = result.description;
           this.safe.key = result.key;
           this.hutchStoreService.set('safe', this.safe.name, this.safe);
+        })
+        .catch((error) => {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
+          this.toastrService.error(this.translate.instant('toaster_error_safe_save'), this.translate.instant('toaster_title'));
         });
       }
     });
@@ -116,6 +124,12 @@ export class SafeComponent implements OnInit {
           .then(() => {
             this.hutchStoreService.delete('safe', this.safe.name);
             this.router.navigate(['']);
+          })
+          .catch((error) => {
+            if (isDevMode()) {
+              console.log('Hutch debug', error);
+            }
+            this.toastrService.error(this.translate.instant('toaster_error_safe_delete'), this.translate.instant('toaster_title'));
           });
         }
       });
@@ -149,12 +163,13 @@ export class SafeComponent implements OnInit {
       .then(() => {
         this.coinList.unshift(newCoin);
         this.coinListDisplayed.unshift(newCoin);
+        this.toastrService.success(this.translate.instant('toaster_success_coin_save'), this.translate.instant('toaster_title'));
       })
       .catch((error) => {
         if (isDevMode()) {
           console.log('Hutch debug', error);
         }
-        this.errorMessage = this.translate.instant('coin_save_error');
+        this.toastrService.error(this.translate.instant('toaster_error_coin_save'), this.translate.instant('toaster_title'));
       });
     })
     .catch((error) => {
@@ -241,6 +256,7 @@ export class SafeComponent implements OnInit {
           this.safe.coinList.push(decryptedCoin);
         })
         .catch((error) => {
+          this.toastrService.error(this.translate.instant('toaster_error_coin_list'), this.translate.instant('toaster_title'));
           if (isDevMode()) {
             console.log('Hutch debug', error);
           }
@@ -257,6 +273,7 @@ export class SafeComponent implements OnInit {
       }
     })
     .catch((error) => {
+      this.toastrService.error(this.translate.instant('toaster_error_coin_list'), this.translate.instant('toaster_title'));
       if (isDevMode()) {
         console.log('Hutch debug', error);
       }

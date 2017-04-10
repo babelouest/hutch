@@ -65,7 +65,6 @@
   "safe_new_coin": "New secret",
   "safe_forgot_password_link": "Forgot password?",
   "safe_not_found": "Safe not found",
-  "coin_save_error": "Error saving secret",
   "modal_edit_profile_title": "Edit profile",
   "modal_profile_fortune_message": "Fortune message",
   "modal_profile_fortune_image_label": "Fortune image",
@@ -134,5 +133,12 @@
   "toaster_add_safe_error": "Error while adding safe",
   "toaster_set_profile_success": "Profile set",
   "toaster_set_profile_error": "Error setting profile",
-  "toaster_lock_all_safe": "All safe are locked"
+  "toaster_lock_all_safe": "All safe are locked",
+  "toaster_error_safe_save": "Error while saving safe",
+  "toaster_error_safe_delete": "Error deleting safe",
+  "toaster_success_coin_save": "Secret saved",
+  "toaster_error_coin_save": "Error saving secret",
+  "toaster_error_coin_list": "Error getting secret list",
+  "toaster_success_coin_delete": "Secret deleted",
+  "toaster_error_coin_delete": "Error deleting secret",
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit, isDevMode } from '@angular/core';
 import { DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
+import { ToastrService } from 'toastr-ng2';
 
 import { MessageComponent } from '../modal/message.component';
 import { EditSafeComponent } from '../modal/edit-safe.component';
@@ -29,6 +30,7 @@ export class HomeComponent implements OnInit {
 
   constructor(private dialogService: DialogService,
               private translate: TranslateService,
+              private toastrService: ToastrService,
               private hutchProfileService: HutchProfileService,
               private hutchSafeService: HutchSafeService,
               private hutchStoreService: HutchObserveService,
@@ -63,11 +65,13 @@ export class HomeComponent implements OnInit {
         this.loading = false;
       })
       .catch((error) => {
-        if (isDevMode()) {
-          console.log('Hutch debug', error);
-        }
         if (error.status === 404) {
           this.noProfile = true;
+        } else {
+          if (isDevMode()) {
+            console.log('Hutch debug', error);
+          }
+          this.toastrService.error(this.translate.instant('toaster_error_load_profile'), this.translate.instant('toaster_title'));
         }
         this.loading = false;
       });
@@ -97,8 +101,10 @@ export class HomeComponent implements OnInit {
                                        coinList: []
                                      }
                                     );
+          this.toastrService.success(this.translate.instant('toaster_add_safe_success'), this.translate.instant('toaster_title'));
         })
         .catch((error) => {
+          this.toastrService.error(this.translate.instant('toaster_add_safe_error'), this.translate.instant('toaster_title'));
           if (isDevMode()) {
             console.log('Hutch debug', error);
           }
@@ -119,8 +125,10 @@ export class HomeComponent implements OnInit {
           this.noProfile = false;
           this.profile.fortune = result.fortune;
           this.profile.picture = result.picture;
+          this.toastrService.success(this.translate.instant('toaster_set_profile_success'), this.translate.instant('toaster_title'));
         })
         .catch((error) => {
+          this.toastrService.error(this.translate.instant('toaster_set_prfile_error'), this.translate.instant('toaster_title'));
           if (isDevMode()) {
             console.log('Hutch debug', error);
           }
@@ -146,9 +154,10 @@ export class HomeComponent implements OnInit {
     _.each(this.hutchStoreService.getAll('safe'), function (curSafe) {
       delete curSafe.safeKey;
       delete curSafe.coinList;
-      localStorage.removeItem(curSafe.name);
+      localStorage.removeItem('hutch-safe-' + curSafe.name);
       self.hutchStoreService.set('safe', curSafe.name, curSafe);
     });
+    this.toastrService.success(this.translate.instant('toaster_lock_all_safe'), this.translate.instant('toaster_title'));
   }
 
 }

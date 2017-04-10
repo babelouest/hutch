@@ -3,9 +3,10 @@
  *
  * Algorithm recommended by https://github.com/diafygi/webcrypto-examples is AES-GCM, with key length of 256 bits
  *
- * But (as of April 9, 2017), AES-GCM isn't implemented in Webkit version of Safari I've tested:
+ * But (as of April 9, 2017), AES-GCM nor AES-CTR aren't implemented in Webkit version of Safari I've tested:
  * An Iphone 6s, an iPad Mini and a MacBook Air
  * Although Firefox and Chrome seemed fine
+ * So I suggest AES-CBC for compatibility with most browsers
  * But anyway, it's configurable so do as you want
  */
 import { Injectable } from '@angular/core';
