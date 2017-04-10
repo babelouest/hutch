@@ -63,10 +63,16 @@ export class HutchCryptoService {
   generateSafeKey(): Promise<any> {
     return new Promise((resolve, reject) => {
       if (this.cryptoAvailable()) {
-        this.crytoSubtle.generateKey({ name: this.alg, length: 256 }, true, ['encrypt', 'decrypt'])
+        this.crytoSubtle.generateKey({ name: this.alg, length: this.keyLength }, true, ['encrypt', 'decrypt'])
         .then((safeKey) => {
           this.crytoSubtle.exportKey('jwk', safeKey).then((key) => {
-            resolve(key);
+            let compatKey: any;
+            if (this.isWebkit) {
+              compatKey = JSON.parse(this.convertArrayBufferViewtoString(key));
+            } else {
+              compatKey = key;
+            }
+            resolve(compatKey);
           })
           .catch((error) => {
             reject(error);
@@ -129,11 +135,22 @@ export class HutchCryptoService {
   encryptData(data: any, passwordKey): Promise<string> {
     return new Promise((resolve, reject) => {
       if (this.cryptoAvailable()) {
-        let iv = window.crypto.getRandomValues(new Uint8Array(16)); // TODO: Depends on the algo
-        this.crytoSubtle.encrypt({ name: this.alg, iv: iv, tagLength: 128}, passwordKey,
+        let salt: any;
+        let payload: any;
+        if (this.alg === 'AES-CTR') {
+          salt = window.crypto.getRandomValues(new Uint8Array(16));
+          payload = { name: this.alg, counter: salt, length: 128};
+        } else if (this.alg === 'AES-CBC') {
+          salt = window.crypto.getRandomValues(new Uint8Array(16));
+          payload = { name: this.alg, iv: salt, tagLength: 128};
+        } else if (this.alg === 'AES-GCM') {
+          salt = window.crypto.getRandomValues(new Uint8Array(12));
+          payload = { name: this.alg, iv: salt, tagLength: 128};
+        }
+        this.crytoSubtle.encrypt(payload, passwordKey,
         this.convertStringToArrayBufferView(unescape(encodeURIComponent(JSON.stringify(data)))))
         .then((result) => {
-          resolve(this.arrayBufferToBase64(result) + '.' + this.arrayBufferToBase64(iv));
+          resolve(this.arrayBufferToBase64(result) + '.' + this.arrayBufferToBase64(salt));
         }, (error) => {
           reject(error);
         });
@@ -149,7 +166,9 @@ export class HutchCryptoService {
         let splitted = data.split('.');
         this.crytoSubtle.decrypt({ name: this.alg,
                                        iv: this.base64ToArrayBuffer(splitted[1]),
-                                       tagLength: 128
+                                       counter: this.base64ToArrayBuffer(splitted[1]),
+                                       tagLength: 128,
+                                       length: 128
                                      },
                                      passwordKey,
                                      this.base64ToArrayBuffer(splitted[0]))
