@@ -1,5 +1,7 @@
 import { Component, OnInit, isDevMode } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
+import { TranslateService } from 'ng2-translate/ng2-translate';
+import { ToastrService } from 'toastr-ng2';
 
 import { HutchCryptoService } from '../shared/hutch-crypto.service';
 import { HutchSafeService } from '../shared/hutch-safe.service';
@@ -106,7 +108,9 @@ export class ResetPasswordSafeComponent extends DialogComponent<ResetPasswordSaf
   constructor(dialogService: DialogService,
               private hutchCryptoService: HutchCryptoService,
               private hutchSafeService: HutchSafeService,
-              private hutchCoinService: HutchCoinService) {
+              private hutchCoinService: HutchCoinService,
+              private translate: TranslateService,
+              private toastrService: ToastrService) {
     super(dialogService);
   }
 
@@ -193,23 +197,27 @@ export class ResetPasswordSafeComponent extends DialogComponent<ResetPasswordSaf
             this.close();
           })
           .catch((error) => {
+            this.toastrService.error(this.translate.instant('toaster_error_reset_safe_password'), this.translate.instant('toaster_title'));
             if (isDevMode()) {
               console.log('Hutch debug', error);
             }
           });
         })
         .catch((error) => {
+          this.toastrService.error(this.translate.instant('toaster_error_reset_safe_password'), this.translate.instant('toaster_title'));
           if (isDevMode()) {
             console.log('Hutch debug', error);
           }
         });
       }, (error) => {
+        this.toastrService.error(this.translate.instant('toaster_error_reset_safe_password'), this.translate.instant('toaster_title'));
         if (isDevMode()) {
           console.log('Hutch debug', error);
         }
       });
     })
     .catch((error) => {
+      this.toastrService.error(this.translate.instant('toaster_error_reset_safe_password'), this.translate.instant('toaster_title'));
       if (isDevMode()) {
         console.log('Hutch debug', error);
       }

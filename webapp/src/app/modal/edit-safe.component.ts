@@ -1,6 +1,7 @@
 import { Component, isDevMode } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
 import { TranslateService } from 'ng2-translate/ng2-translate';
+import { ToastrService } from 'toastr-ng2';
 
 import { HutchCryptoService } from '../shared/hutch-crypto.service';
 import { HutchObserveService } from '../shared/hutch-observe.service';
@@ -156,7 +157,8 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
   constructor(dialogService: DialogService,
               private translate: TranslateService,
               private hutchCryptoService: HutchCryptoService,
-              private hutchStoreService: HutchObserveService) {
+              private hutchStoreService: HutchObserveService,
+              private toastrService: ToastrService) {
     super(dialogService);
   }
 
@@ -176,18 +178,21 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
             this.close();
           })
           .catch((error) => {
+            this.toastrService.error(this.translate.instant('toaster_error_safe_create'), this.translate.instant('toaster_title'));
             if (isDevMode()) {
               console.log('Hutch debug', error);
             }
           });
         })
         .catch((error) => {
+          this.toastrService.error(this.translate.instant('toaster_error_safe_create'), this.translate.instant('toaster_title'));
           if (isDevMode()) {
             console.log('Hutch debug', error);
           }
         });
       })
       .catch((error) => {
+        this.toastrService.error(this.translate.instant('toaster_error_safe_create'), this.translate.instant('toaster_title'));
         if (isDevMode()) {
           console.log('Hutch debug', error);
         }
@@ -209,12 +214,14 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
                 this.close();
               })
               .catch((error) => {
+                this.toastrService.error(this.translate.instant('toaster_error_safe_create'), this.translate.instant('toaster_title'));
                 if (isDevMode()) {
                   console.log('Hutch debug', error);
                 }
               });
             })
             .catch((error) => {
+              this.toastrService.error(this.translate.instant('toaster_error_safe_create'), this.translate.instant('toaster_title'));
               if (isDevMode()) {
                 console.log('Hutch debug', error);
               }
@@ -222,6 +229,7 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
             });
           })
           .catch((error) => {
+            this.toastrService.error(this.translate.instant('toaster_error_safe_create'), this.translate.instant('toaster_title'));
             if (isDevMode()) {
               console.log('Hutch debug', error);
             }
@@ -229,6 +237,7 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
           });
         })
         .catch((error) => {
+          this.toastrService.error(this.translate.instant('toaster_error_safe_create'), this.translate.instant('toaster_title'));
           if (isDevMode()) {
             console.log('Hutch debug', error);
           }

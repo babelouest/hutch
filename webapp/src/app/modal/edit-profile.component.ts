@@ -1,5 +1,7 @@
 import { Component, OnInit, isDevMode } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
+import { TranslateService } from 'ng2-translate/ng2-translate';
+import { ToastrService } from 'toastr-ng2';
 
 import { WikimediaCommonsService } from '../shared/wikimedia-commons.service';
 
@@ -83,7 +85,10 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
   errorImage = false;
   fileTooLarge = false;
 
-  constructor(dialogService: DialogService, private wikimediaCommonsService: WikimediaCommonsService) {
+  constructor(dialogService: DialogService,
+              private translate: TranslateService,
+              private wikimediaCommonsService: WikimediaCommonsService,
+              private toastrService: ToastrService) {
     super(dialogService);
   }
 
@@ -133,6 +138,7 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
         });
       })
       .catch((error) => {
+        this.toastrService.error(this.translate.instant('toaster_error_get_wiki_image'), this.translate.instant('toaster_title'));
         if (isDevMode()) {
           console.log('Hutch debug', error);
         }
@@ -141,6 +147,7 @@ export class EditProfileComponent extends DialogComponent<EditProfileModel, Edit
       });
     })
     .catch((error) => {
+      this.toastrService.error(this.translate.instant('toaster_error_get_wiki_image'), this.translate.instant('toaster_title'));
       if (isDevMode()) {
         console.log('Hutch debug', error);
       }

@@ -1,6 +1,8 @@
 import { Component, isDevMode } from '@angular/core';
 import { DialogComponent, DialogService } from 'ng2-bootstrap-modal';
 import { Observable } from 'rxjs/Observable';
+import { TranslateService } from 'ng2-translate/ng2-translate';
+import { ToastrService } from 'toastr-ng2';
 
 import { HutchCryptoService } from '../shared/hutch-crypto.service';
 import { HutchCoinService } from '../shared/hutch-coin.service';
@@ -191,8 +193,10 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
   exportSafeKeyMessage = '';
 
   constructor(dialogService: DialogService,
+              private translate: TranslateService,
               private hutchCryptoService: HutchCryptoService,
-              private hutchCoinService: HutchCoinService) {
+              private hutchCoinService: HutchCoinService,
+              private toastrService: ToastrService) {
     super(dialogService);
   }
 
@@ -221,12 +225,14 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
           downloadAnchor.click();
         })
         .catch((error) => {
+          this.toastrService.error(this.translate.instant('toaster_error_safe_export'), this.translate.instant('toaster_title'));
           if (isDevMode()) {
             console.log('Hutch debug', error);
           }
         });
       })
       .catch((error) => {
+        this.toastrService.error(this.translate.instant('toaster_error_safe_export'), this.translate.instant('toaster_title'));
         if (isDevMode()) {
           console.log('Hutch debug', error);
         }
@@ -317,6 +323,7 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
         });
       })
       .catch((error) => {
+        this.toastrService.error(this.translate.instant('toaster_error_coin_save'), this.translate.instant('toaster_title'));
         if (isDevMode()) {
           console.log('Hutch debug', error);
         }
@@ -349,18 +356,21 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
             downloadAnchor.setAttribute('download', this.safeName + '-safekey.bin');
             downloadAnchor.click();
           }, (error) => {
+            this.toastrService.error(this.translate.instant('toaster_error_safe_key_export'), this.translate.instant('toaster_title'));
             if (isDevMode()) {
               console.log('Hutch debug', error);
             }
           });
         })
         .catch((error) => {
+          this.toastrService.error(this.translate.instant('toaster_error_safe_key_export'), this.translate.instant('toaster_title'));
           if (isDevMode()) {
             console.log('Hutch debug', error);
           }
         });
       })
       .catch((error) => {
+        this.toastrService.error(this.translate.instant('toaster_error_safe_key_export'), this.translate.instant('toaster_title'));
         if (isDevMode()) {
           console.log('Hutch debug', error);
         }
@@ -368,6 +378,7 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
       });
     })
     .catch((error) => {
+      this.toastrService.error(this.translate.instant('toaster_error_safe_key_export'), this.translate.instant('toaster_title'));
       if (isDevMode()) {
         console.log('Hutch debug', error);
       }
