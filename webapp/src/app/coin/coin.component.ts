@@ -9,6 +9,7 @@ import { HutchCryptoService } from '../shared/hutch-crypto.service';
 
 import { ConfirmComponent } from '../modal/confirm.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
+import { ExportCoinComponent } from '../modal/export-coin.component';
 
 import * as _ from 'lodash';
 
@@ -179,4 +180,7 @@ export class CoinComponent implements OnInit {
     this.saveCoinInDatabase();
   }
 
+  exportCoin() {
+    this.dialogService.addDialog(ExportCoinComponent, { coin: { displayName: this.coin.displayName, rows: this.coin.rows } });
+  }
 }

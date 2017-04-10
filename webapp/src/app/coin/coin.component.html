@@ -23,6 +23,9 @@
         </div>
         <div class="col-md-6">
           <div class="btn-group pull-right align-baseline" *ngIf="!editCoinMode">
+            <button [title]="'button_export' | translate" (click)="exportCoin()" class="btn btn-default">
+              <i class="fa fa-cloud-download" aria-hidden="true"></i>
+            </button>
             <button [title]="'button_edit' | translate" (click)="editCoin()" class="btn btn-default">
               <i class="fa fa-pencil" aria-hidden="true"></i>
             </button>

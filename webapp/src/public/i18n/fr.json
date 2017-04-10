@@ -140,5 +140,14 @@
   "toaster_error_coin_save": "Erreur lors de la sauvegarde du secret",
   "toaster_error_coin_list": "Erreur lors de la récupération de la liste des secrets",
   "toaster_success_coin_delete": "Secret supprimé",
-  "toaster_error_coin_delete": "Erreur lors de lla suppression du secret"
+  "toaster_error_coin_delete": "Erreur lors de lla suppression du secret",
+  "modal_export_coin_title": "Exporter le secret",
+  "modal_export_coin_label": "Exporter le secret '{{name}}'",
+  "modal_export_coin_with_password": "Utiliser un mot de passe",
+  "toaster_error_coin_export": "Erreur lors de l'export du secret",
+  "toaster_error_get_wiki_image": "Erreur lors de la récupération d'une image sur Wikimedia Commons",
+  "toaster_error_safe_create": "Erreur lors de la création du coffre",
+  "toaster_error_safe_export": "Erreur lors de l'export du coffre",
+  "toaster_error_safe_key_export": "Erreur lors de l'export de la clé du coffre",
+  "toaster_error_reset_safe_password": "Erreur lors de la réinitialisation du mot de passe pour le coffre"
 }

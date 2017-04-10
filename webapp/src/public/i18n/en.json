@@ -141,4 +141,13 @@
   "toaster_error_coin_list": "Error getting secret list",
   "toaster_success_coin_delete": "Secret deleted",
   "toaster_error_coin_delete": "Error deleting secret",
+  "modal_export_coin_title": "Export coin",
+  "modal_export_coin_label": "Export coin '{{name}}'",
+  "modal_export_coin_with_password": "Use password",
+  "toaster_error_coin_export": "Error exporting secret",
+  "toaster_error_get_wiki_image": "Error getting Wikimedia Commons image",
+  "toaster_error_safe_create": "Error creating safe",
+  "toaster_error_safe_export": "Error while exporting safe",
+  "toaster_error_safe_key_export": "Error while exporting safe key",
+  "toaster_error_reset_safe_password": "Error reset safe password"
 }

@@ -9,7 +9,7 @@ export class Row {
 }
 
 export class CoinDisplayed {
-  name: string;
+  name?: string;
   rows: Array<Row>;
   displayName: string;
 }

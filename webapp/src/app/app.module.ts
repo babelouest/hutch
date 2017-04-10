@@ -29,6 +29,7 @@ import { EditProfileComponent } from './modal/edit-profile.component';
 import { EditTagsComponent } from './modal/edit-tags.component';
 import { ManageSafeComponent } from './modal/manage-safe.component';
 import { ResetPasswordSafeComponent } from './modal/reset-password-safe.component';
+import { ExportCoinComponent } from './modal/export-coin.component';
 
 import { WikimediaCommonsService } from './shared/wikimedia-commons.service';
 import { HutchApiService } from './shared/hutch-api.service';
@@ -65,7 +66,8 @@ import { HutchConfigService } from './shared/hutch-config.service';
     EditProfileComponent,
     EditTagsComponent,
     ManageSafeComponent,
-    ResetPasswordSafeComponent
+    ResetPasswordSafeComponent,
+    ExportCoinComponent
   ],
   entryComponents: [
     ConfirmComponent,
@@ -75,7 +77,8 @@ import { HutchConfigService } from './shared/hutch-config.service';
     EditProfileComponent,
     EditTagsComponent,
     ManageSafeComponent,
-    ResetPasswordSafeComponent
+    ResetPasswordSafeComponent,
+    ExportCoinComponent
   ],
   providers: [
     CookieService,
