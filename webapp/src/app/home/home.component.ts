@@ -140,6 +140,7 @@ export class HomeComponent implements OnInit {
                                        name: result.name,
                                        description: result.description,
                                        key: result.key,
+                                       safeKey: result.safeKey,
                                        coinList: []
                                      }
                                     );

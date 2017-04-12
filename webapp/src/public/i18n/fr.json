@@ -28,6 +28,8 @@
   "button_upload": "Téléverser",
   "button_none": "Aucun",
   "button_select": "Selectionner",
+  "button_change": "Changer",
+  "button_change_key": "Le coffre est compromis, changer la clé principale",
   "menu_home": "Accueil",
   "load_profile": "Chargement du profil",
   "alt_profile_picture": "Image de votre profil",
@@ -128,7 +130,7 @@
   "modal_manage_safe_import_error": "Erreur lors de l'import des secrets",
   "modal_manage_safe_password_safe_label": "Entrer le mot de passe du coffre:",
   "modal_manage_safe_import_data_error": "Vos données d'import semblent invalides",
-  "modal_manage_safe_export_key_password_input": "Entrer le mot de passe du coffre",
+  "modal_manage_safe_export_key_password_input": "Entrer le mot de passe actuel du coffre",
   "modal_manage_safe_export_safe_key_password_error": "Mot de passe incorrect",
   "modal_reset_password_safe_impossible": "La réinitialisation du mot de passe est impossible pour ce coffre.",
   "modal_reset_password_safe_title": "Réinitialisation du mot de passe",
@@ -160,6 +162,9 @@
   "toaster_error_reset_safe_password": "Erreur lors de la réinitialisation du mot de passe pour le coffre",
   "toaster_success_answer_generated": "Réponse secrète générée",
   "toaster_error_anser_generated": "Erreur lors de la génération de la réponse secrète",
+  "toaster_safe_key_changed": "Clé du coffre changé avec succès",
   "choose_icon_modal_title": "Choisir un icône",
-  "choose_icon_modal_message": "Sélectionnez un icône dans la liste ci-dessous:"
+  "choose_icon_modal_message": "Sélectionnez un icône dans la liste ci-dessous:",
+  "modal_change_safe_key_title": "Changer la clé du coffre",
+  "modal_change_safe_key_message": "Si vous pensez que ce coffre est compromis, par exemple en l'ayant laissé ouvert sur une autre machine, vous pouvez changer sa clé. Tous les secrets seront ré-encodés avec cette nouvelle clé, et la clé sera protégée par un nouveau mot de passe."
 }

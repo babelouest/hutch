@@ -13,6 +13,7 @@ export interface EditSafeModel {
   name: string;
   description: string;
   key: string;
+  safeKey?: any;
 }
 @Component({
     selector: 'my-hutch-confirm',
@@ -147,6 +148,7 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
   name: string;
   description: string;
   key: string;
+  safeKey?: any;
 
   currentPassword: string;
   password: string;
@@ -170,11 +172,11 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
       .then((passwordKey) => {
         // Generate an export of a random key for the safe
         this.hutchCryptoService.generateSafeKey()
-        .then((safeKey) => {
-          this.hutchCryptoService.encryptData(safeKey, passwordKey)
+        .then((result) => {
+          this.hutchCryptoService.encryptData(result.exportKey, passwordKey)
           .then((encryptedSafeKey) => {
             this.key = encryptedSafeKey;
-            this.result = {isNew: this.isNew, name: this.name, description: this.description, key: this.key};
+            this.result = { isNew: this.isNew, name: this.name, description: this.description, key: this.key, safeKey: result.key };
             this.close();
           })
           .catch((error) => {

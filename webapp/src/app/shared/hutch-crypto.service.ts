@@ -73,7 +73,7 @@ export class HutchCryptoService {
             } else {
               compatKey = key;
             }
-            resolve(compatKey);
+            resolve({ key: safeKey, exportKey: compatKey });
           })
           .catch((error) => {
             reject(error);
@@ -133,7 +133,7 @@ export class HutchCryptoService {
   }
 
   // Encrypt safe key with the password key
-  encryptData(data: any, passwordKey): Promise<string> {
+  encryptData(data: any, key): Promise<string> {
     return new Promise((resolve, reject) => {
       if (this.cryptoAvailable()) {
         let salt: any;
@@ -148,7 +148,7 @@ export class HutchCryptoService {
           salt = window.crypto.getRandomValues(new Uint8Array(12));
           payload = { name: this.alg, iv: salt, tagLength: 128};
         }
-        this.crytoSubtle.encrypt(payload, passwordKey,
+        this.crytoSubtle.encrypt(payload, key,
         this.convertStringToArrayBufferView(unescape(encodeURIComponent(JSON.stringify(data)))))
         .then((result) => {
           resolve(this.arrayBufferToBase64(result) + '.' + this.arrayBufferToBase64(salt));
@@ -161,7 +161,7 @@ export class HutchCryptoService {
     });
   }
 
-  decryptData(data: string, passwordKey): Promise<any> {
+  decryptData(data: string, key): Promise<any> {
     return new Promise((resolve, reject) => {
       if (this.cryptoAvailable()) {
         let splitted = data.split('.');
@@ -171,7 +171,7 @@ export class HutchCryptoService {
                                        tagLength: 128,
                                        length: 128
                                      },
-                                     passwordKey,
+                                     key,
                                      this.base64ToArrayBuffer(splitted[0]))
         .then((result) => {
           try {

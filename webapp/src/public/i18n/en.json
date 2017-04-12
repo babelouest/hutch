@@ -28,6 +28,8 @@
   "button_upload": "Upload",
   "button_none": "None",
   "button_select": "Select",
+  "button_change": "Change",
+  "button_change_key": "Safe is compromised, change safe master key",
   "menu_home": "Home",
   "load_profile": "Loading profile",
   "alt_profile_picture": "Profile picture",
@@ -128,7 +130,7 @@
   "modal_manage_safe_import_error": "Error during secrets import",
   "modal_manage_safe_password_safe_label": "Enter safe password:",
   "modal_manage_safe_import_data_error": "Your import data seems invalid",
-  "modal_manage_safe_export_key_password_input": "Enter safe password",
+  "modal_manage_safe_export_key_password_input": "Enter current safe password",
   "modal_manage_safe_export_safe_key_password_error": "Wrong safe password",
   "modal_reset_password_safe_impossible": "Password reset is not possible for this safe.",
   "modal_reset_password_safe_title": "Reset password",
@@ -160,6 +162,9 @@
   "toaster_error_reset_safe_password": "Error reset safe password",
   "toaster_success_answer_generated": "Secret answer generated",
   "toaster_error_anser_generated": "Error generating secret answer",
+  "toaster_safe_key_changed": "Safe key changed succesfully",
   "choose_icon_modal_title": "Choose an icon",
-  "choose_icon_modal_message": "Select an icon in the list below:"
+  "choose_icon_modal_message": "Select an icon in the list below:",
+  "modal_change_safe_key_title": "Change safe master key",
+  "modal_change_safe_key_message": "If you think your safe has been compromised in some way, like keeping it open in another device, you can change the master key. This will re-encrypt all the secrets with a newly generated key, and this new key will be protected by a new password."
 }

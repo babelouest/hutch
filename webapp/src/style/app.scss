@@ -15,3 +15,10 @@
     opacity: 0;
     filter: alpha(opacity=0);
 }
+.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-body{
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}

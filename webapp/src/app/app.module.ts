@@ -31,6 +31,7 @@ import { ManageSafeComponent } from './modal/manage-safe.component';
 import { ResetPasswordSafeComponent } from './modal/reset-password-safe.component';
 import { ExportCoinComponent } from './modal/export-coin.component';
 import { ChooseIconComponent } from './modal/choose-icon.component';
+import { ChangeSafeKeyComponent } from './modal/change-safe-key.component';
 
 import { WikimediaCommonsService } from './shared/wikimedia-commons.service';
 import { HutchApiService } from './shared/hutch-api.service';
@@ -71,7 +72,8 @@ import { HutchIconListService } from './shared/hutch-icon-list.service';
     ManageSafeComponent,
     ResetPasswordSafeComponent,
     ExportCoinComponent,
-    ChooseIconComponent
+    ChooseIconComponent,
+    ChangeSafeKeyComponent
   ],
   entryComponents: [
     ConfirmComponent,
@@ -83,7 +85,8 @@ import { HutchIconListService } from './shared/hutch-icon-list.service';
     ManageSafeComponent,
     ResetPasswordSafeComponent,
     ExportCoinComponent,
-    ChooseIconComponent
+    ChooseIconComponent,
+    ChangeSafeKeyComponent
   ],
   providers: [
     CookieService,

@@ -162,6 +162,7 @@ export interface ManageSafeModel {
                          </button>
                        </div>
                      </div>
+                     <hr>
                    </div>
                    <div class='modal-footer'>
                      <button type='button'
@@ -387,4 +388,5 @@ export class ManageSafeComponent extends DialogComponent<ManageSafeModel, boolea
       }
     });
   }
+
 }
