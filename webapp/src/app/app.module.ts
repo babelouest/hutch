@@ -30,6 +30,7 @@ import { EditTagsComponent } from './modal/edit-tags.component';
 import { ManageSafeComponent } from './modal/manage-safe.component';
 import { ResetPasswordSafeComponent } from './modal/reset-password-safe.component';
 import { ExportCoinComponent } from './modal/export-coin.component';
+import { ChooseIconComponent } from './modal/choose-icon.component';
 
 import { WikimediaCommonsService } from './shared/wikimedia-commons.service';
 import { HutchApiService } from './shared/hutch-api.service';
@@ -40,6 +41,7 @@ import { HutchCryptoService } from './shared/hutch-crypto.service';
 import { HutchObserveService } from './shared/hutch-observe.service';
 import { HutchConfigService } from './shared/hutch-config.service';
 import { HutchRandomWordService } from './shared/hutch-random-word.service';
+import { HutchIconListService } from './shared/hutch-icon-list.service';
 
 @NgModule({
   imports: [
@@ -68,7 +70,8 @@ import { HutchRandomWordService } from './shared/hutch-random-word.service';
     EditTagsComponent,
     ManageSafeComponent,
     ResetPasswordSafeComponent,
-    ExportCoinComponent
+    ExportCoinComponent,
+    ChooseIconComponent
   ],
   entryComponents: [
     ConfirmComponent,
@@ -79,7 +82,8 @@ import { HutchRandomWordService } from './shared/hutch-random-word.service';
     EditTagsComponent,
     ManageSafeComponent,
     ResetPasswordSafeComponent,
-    ExportCoinComponent
+    ExportCoinComponent,
+    ChooseIconComponent
   ],
   providers: [
     CookieService,
@@ -92,7 +96,8 @@ import { HutchRandomWordService } from './shared/hutch-random-word.service';
     HutchCryptoService,
     HutchObserveService,
     HutchRandomWordService,
-    Oauth2ConnectObservable
+    Oauth2ConnectObservable,
+    HutchIconListService
   ],
   bootstrap: [AppComponent]
 })

@@ -10,6 +10,7 @@ import { HutchCryptoService } from '../shared/hutch-crypto.service';
 import { ConfirmComponent } from '../modal/confirm.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
 import { ExportCoinComponent } from '../modal/export-coin.component';
+import { ChooseIconComponent } from '../modal/choose-icon.component';
 
 import * as _ from 'lodash';
 
@@ -123,7 +124,7 @@ export class CoinComponent implements OnInit {
   }
 
   saveCoinInDatabase() {
-    let saveCoin = { displayName: this.coin.displayName, rows: this.coin.rows };
+    let saveCoin = { displayName: this.coin.displayName, icon: this.coin.icon, rows: this.coin.rows };
     return this.hutchCryptoService.encryptData(saveCoin, this.safeKey)
     .then((data) => {
       this.hutchCoinService.set(this.safe, this.coin.name, { data: data })
@@ -195,5 +196,14 @@ export class CoinComponent implements OnInit {
       };
       fr.readAsText(file);
     }
+  }
+
+  changeIcon() {
+    this.dialogService.addDialog(ChooseIconComponent)
+      .subscribe((result) => {
+        if (result) {
+          this.coin.icon = result;
+        }
+      });
   }
 }

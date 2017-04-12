@@ -10,6 +10,7 @@ export class Row {
 
 export class CoinDisplayed {
   name?: string;
+  icon?: string;
   rows: Array<Row>;
   displayName: string;
 }

@@ -4,19 +4,29 @@
       <div class="row">
         <div class="col-md-6">
           <a data-toggle="collapse" href="#{{coin.name}}" *ngIf="!editCoinMode">
-            <h4 class="panel-title pull-left" [innerHtml]="coin.displayName">
+            <h4 class="panel-title pull-left">
+			  <i class="fa" [ngClass]='coin.icon' aria-hidden="true" *ngIf="coin.icon"></i>
+			  <span [innerHtml]="coin.displayName"></span>
             </h4>
           </a>
           <div class="input-group-btn" *ngIf="editCoinMode">
             <form (ngSubmit)="saveCoin()">
               <span class="input-group">
+                <span class="input-group-btn">
+                  <button [title]="'coin_set_icon' | translate" (click)="changeIcon()" type="button" class="btn btn-default">
+                    <i class="fa" [ngClass]='coin.icon' aria-hidden="true" *ngIf="coin.icon"></i>
+                    <i class="fa fa-font-awesome" aria-hidden="true" *ngIf="!coin.icon"></i>
+                  </button>
+                </span>
                 <input type="text" class="form-control input-medium" *ngIf="editCoinMode" name="coinName" [(ngModel)]="coin.displayName">
-                <button [title]="'coin_save_name' | translate" type="submit" class="btn btn-default">
-                  <i class="fa fa-save" aria-hidden="true"></i>
-                </button>
-                <button [title]="'button_cancel' | translate" (click)="cancelEditCoin()" type="button" class="btn btn-default">
-                  <i class="fa fa-close" aria-hidden="true"></i>
-                </button>
+                <span class="input-group-btn">
+                  <button [title]="'coin_save_name' | translate" type="submit" class="btn btn-default">
+                    <i class="fa fa-save" aria-hidden="true"></i>
+                  </button>
+                  <button [title]="'button_cancel' | translate" (click)="cancelEditCoin()" type="button" class="btn btn-default">
+                    <i class="fa fa-close" aria-hidden="true"></i>
+                  </button>
+                </span>
               </span>
             </form>
           </div>

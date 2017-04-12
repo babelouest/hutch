@@ -26,6 +26,8 @@
   "button_add_secret_question": "Add secret question",
   "button_download": "Download",
   "button_upload": "Upload",
+  "button_none": "None",
+  "button_select": "Select",
   "menu_home": "Home",
   "load_profile": "Loading profile",
   "alt_profile_picture": "Profile picture",
@@ -44,10 +46,12 @@
   "coin_secret_question_answer": "Answer:",
   "coin_value": "Value",
   "coin_value_copy": "Value copied to the clipboard for the next 20 seconds",
+  "coin_set_icon": "Set icon",
   "placeholder_value": "Value",
   "placeholder_password": "Password",
   "placeholder_password_verify": "Verify password",
   "placeholder_file": "Select file",
+  "placeholder_search": "Search",
   "lock_all_safe": "Lock all safe",
   "log_out": "Log out",
   "log_in": "Log in",
@@ -117,6 +121,7 @@
   "modal_manage_safe_password_label": "Enter password:",
   "modal_manage_safe_export_coins_password_input": "Export password",
   "modal_manage_safe_import_coins": "Import secrets",
+  "modal_manage_safe_import_file": "Select an import file",
   "modal_manage_safe_import_coins_password_input": "Import password",
   "modal_manage_safe_export_key": "Export safe key",
   "modal_manage_safe_import_success": "Secrets succefsully imported",
@@ -154,5 +159,7 @@
   "toaster_error_safe_key_export": "Error while exporting safe key",
   "toaster_error_reset_safe_password": "Error reset safe password",
   "toaster_success_answer_generated": "Secret answer generated",
-  "toaster_error_anser_generated": "Error generating secret answer"
+  "toaster_error_anser_generated": "Error generating secret answer",
+  "choose_icon_modal_title": "Choose an icon",
+  "choose_icon_modal_message": "Select an icon in the list below:"
 }
