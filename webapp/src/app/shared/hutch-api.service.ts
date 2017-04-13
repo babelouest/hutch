@@ -26,7 +26,11 @@ export class HutchApiService {
       }
     });
     this.oauth2Connect.getToken().subscribe((token) => {
-      this.headers.set('Authorization', 'Bearer ' + token);
+      if (token) {
+        this.headers.set('Authorization', 'Bearer ' + token);
+      } else {
+        this.headers.delete('Authorization');
+      }
     });
   }
 

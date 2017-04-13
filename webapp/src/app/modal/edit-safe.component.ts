@@ -176,7 +176,13 @@ export class EditSafeComponent extends DialogComponent<EditSafeModel, EditSafeMo
           this.hutchCryptoService.encryptData(result.exportKey, passwordKey)
           .then((encryptedSafeKey) => {
             this.key = encryptedSafeKey;
-            this.result = { isNew: this.isNew, name: this.name, description: this.description, key: this.key, safeKey: result.key };
+            this.result = {
+              isNew: this.isNew,
+              name: this.name,
+              description: this.description,
+              key: this.key,
+              safeKey: result.key
+            };
             this.close();
           })
           .catch((error) => {

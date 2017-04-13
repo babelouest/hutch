@@ -260,8 +260,8 @@ export class Oauth2ConnectComponent implements OnInit {
    * Erase the tokens and clear the storage
    */
   logOut() {
-    this.signOut();
     this.removeStorage();
+    this.signOut();
   }
 
   /**
@@ -272,7 +272,7 @@ export class Oauth2ConnectComponent implements OnInit {
     this.refreshToken = '';
     this.expiresIn = 0;
     clearTimeout(this.timer);
-    this.oauth2ConnectObservable.setStatus('disconnected');
     this.oauth2ConnectObservable.setToken(this.accessToken);
+    this.oauth2ConnectObservable.setStatus('disconnected');
   }
 }

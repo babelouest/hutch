@@ -32,7 +32,7 @@
     <h4><a [innerHtml]="'profile_why_this_message' | translate" [title]="'profile_why_this_title' | translate" href="" (click)="showWhyProfileModal($event)"></a></h4>
   </div>
 
-  <div class="well" *ngIf="loading">
+  <div class="well" *ngIf="loading && connected">
     <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
     <span class="sr-only" [innerHtml]="'load_profile' | translate"></span>
   </div>

@@ -105,8 +105,10 @@ export class AppComponent implements OnInit {
           }
         });
       } else if (status === 'disconnected') {
+        delete this.safeList;
         this.safeList = [];
         this.router.navigate(['']);
+        this.selectTab(null, null);
       }
     });
   }

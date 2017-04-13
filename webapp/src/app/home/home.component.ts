@@ -82,7 +82,6 @@ export class HomeComponent implements OnInit {
     this.translate.use(this.curLang);
     this.hutchStoreService.add('profile', 'lang', this.curLang);
     this.cookieService.put('lang', this.curLang);
-    console.log('Put cookie', 'lang', this.curLang);
   }
 
   ngOnInit() {
@@ -140,7 +139,6 @@ export class HomeComponent implements OnInit {
                                        name: result.name,
                                        description: result.description,
                                        key: result.key,
-                                       safeKey: result.safeKey,
                                        coinList: []
                                      }
                                     );

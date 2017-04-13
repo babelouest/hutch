@@ -338,7 +338,6 @@ export class SafeComponent implements OnInit {
     })
     .subscribe((result) => {
       if (result) {
-        console.log(result);
         this.safe.key = result.key;
         this.safe.safeKey = result.safeKey;
         this.hutchStoreService.set('safe', this.safe.name, this.safe);
