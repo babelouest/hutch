@@ -6,6 +6,7 @@ import { ToastrService } from 'toastr-ng2';
 import { CoinDisplayed, Row } from '../shared/coin';
 import { HutchCoinService } from '../shared/hutch-coin.service';
 import { HutchCryptoService } from '../shared/hutch-crypto.service';
+import { HutchConfigService } from '../shared/hutch-config.service';
 
 import { ConfirmComponent } from '../modal/confirm.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
@@ -30,12 +31,14 @@ export class CoinComponent implements OnInit {
   saveName: string;
   newRowMode = false;
   newRow: Row;
+  fileMaxSize = 0;
 
   constructor(private translate: TranslateService,
               private dialogService: DialogService,
               private toastrService: ToastrService,
               private hutchCryptoService: HutchCryptoService,
-              private hutchCoinService: HutchCoinService) {
+              private hutchCoinService: HutchCoinService,
+              private hutchConfigService: HutchConfigService) {
   }
 
   ngOnInit() {
@@ -43,6 +46,9 @@ export class CoinComponent implements OnInit {
       text: function(trigger) {
         return trigger.getAttribute('data-hutch-clipboard');
       }
+    });
+    this.hutchConfigService.get().then((config) => {
+      this.fileMaxSize = config.api.maxLength;
     });
   }
 
@@ -192,9 +198,20 @@ export class CoinComponent implements OnInit {
       let file: File = fileList[0];
       let fr = new FileReader();
       fr.onload = function(ev2: any) {
-        self.newRow.value = { name: event.target.value, data: ev2.target.result };
+        if (ev2.target.result.length < self.fileMaxSize) {
+          self.newRow.value = {
+            name: event.target.value,
+            data: self.hutchCryptoService.arrayBufferToBase64(
+                    self.hutchCryptoService.convertStringToArrayBufferView(
+                      ev2.target.result
+                    )
+                  )
+          };
+        } else {
+          self.toastrService.error(self.translate.instant('toaster_error_file_too_large'), self.translate.instant('toaster_title'));
+        }
       };
-      fr.readAsText(file);
+      fr.readAsBinaryString(file);
     }
   }
 

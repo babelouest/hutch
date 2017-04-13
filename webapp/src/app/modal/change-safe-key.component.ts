@@ -17,6 +17,7 @@ export interface ChangeSafeKeyModel {
   description: string;
   key: string;
   safeKey?: any;
+  exportKey?: any;
 }
 @Component({
     selector: 'my-hutch-message',
@@ -125,9 +126,6 @@ export class ChangeSafeKeyComponent extends DialogComponent<ChangeSafeKeyModel, 
   description: string;
   key: string;
   safeKey: any;
-  newKey: string;
-  currentSafekey: any;
-  newSafeKey: any;
 
   currentPasswordError = false;
   currentPassword = '';
@@ -159,7 +157,7 @@ export class ChangeSafeKeyComponent extends DialogComponent<ChangeSafeKeyModel, 
         .then((exportedKey) => {
           this.hutchCryptoService.getKeyFromExport(exportedKey)
           .then((safeKey) => {
-            this.currentSafekey = safeKey;
+            this.safeKey = safeKey;
           })
           .catch((error) => {
             if (isDevMode()) {
@@ -185,16 +183,14 @@ export class ChangeSafeKeyComponent extends DialogComponent<ChangeSafeKeyModel, 
       // Generate an export of a random key for the safe
       this.hutchCryptoService.generateSafeKey()
       .then((generatedKey) => {
-        this.newSafeKey = generatedKey.key;
         this.hutchCryptoService.encryptData(generatedKey.exportKey, passwordKey)
         .then((encryptedSafeKey) => {
-          this.newKey = encryptedSafeKey;
           this.hutchCoinService.list(this.safeName).then((coinList) => {
             // Decrypt each coin
             let coinListDecrypted = [];
             let coinListDecryptedPromises = [];
             _.each((coinList), (encryptedCoin) => {
-              coinListDecryptedPromises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.currentSafekey)
+              coinListDecryptedPromises.push(this.hutchCryptoService.decryptData(encryptedCoin.data, this.safeKey)
               .then((decryptedCoin) => {
                 coinListDecrypted.push({ name: encryptedCoin.name, data: decryptedCoin });
               }));
@@ -204,7 +200,7 @@ export class ChangeSafeKeyComponent extends DialogComponent<ChangeSafeKeyModel, 
               let coinListReencrypted = [];
               let coinListReencryptedPromises = [];
               _.each((coinListDecrypted), (coin) => {
-                coinListReencryptedPromises.push(this.hutchCryptoService.encryptData(coin.data, this.newSafeKey)
+                coinListReencryptedPromises.push(this.hutchCryptoService.encryptData(coin.data, generatedKey.key)
                 .then((encrypytedCoin) => {
                   let charsAvailable = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
                   let array = new Uint32Array(128);
@@ -219,7 +215,7 @@ export class ChangeSafeKeyComponent extends DialogComponent<ChangeSafeKeyModel, 
               });
               Observable.forkJoin(coinListReencryptedPromises).subscribe(() => {
                 // Update safe key in database
-                this.hutchSafeService.set(this.safeName, { description: this.description, key: this.newKey })
+                this.hutchSafeService.set(this.safeName, { description: this.description, key: encryptedSafeKey })
                 .then(() => {
                   // Add new coins
                   let promises = [];
@@ -233,7 +229,13 @@ export class ChangeSafeKeyComponent extends DialogComponent<ChangeSafeKeyModel, 
                       deletePromises.push(this.hutchCoinService.delete(this.safeName, coin.name));
                     });
                     Observable.forkJoin(deletePromises).subscribe(() => {
-                      this.result = { safeName: this.safeName, description: this.description, key: this.key, safeKey: this.newSafeKey };
+                      this.result = {
+                        safeName: this.safeName,
+                        description: this.description,
+                        key: encryptedSafeKey,
+                        safeKey: generatedKey.key,
+                        exportKey: generatedKey.exportKey
+                      };
                       this.toastrService.success(this.translate.instant('toaster_safe_key_changed'),
                                                  this.translate.instant('toaster_title'));
                       this.currentPassword = '';

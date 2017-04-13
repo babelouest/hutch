@@ -57,7 +57,7 @@ export class HutchApiService {
                      // Token expired or disabled
                      this.headers.delete('Authorization');
                    }
-                   return error;
+                   throw error;
                  });
     } else {
       return Promise.reject('Error, not connected');

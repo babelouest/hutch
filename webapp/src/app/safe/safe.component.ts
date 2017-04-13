@@ -226,10 +226,7 @@ export class SafeComponent implements OnInit {
           this.unlocked = false;
         });
       })
-      .catch((error) => {
-        if (isDevMode()) {
-          console.log('Hutch debug', error);
-        }
+      .catch(() => {
         this.passwordError = true;
         this.unlocked = false;
       });
@@ -341,12 +338,13 @@ export class SafeComponent implements OnInit {
     })
     .subscribe((result) => {
       if (result) {
+        console.log(result);
         this.safe.key = result.key;
         this.safe.safeKey = result.safeKey;
         this.hutchStoreService.set('safe', this.safe.name, this.safe);
         this.refreshSafe();
         if (localStorage.getItem('hutch-safe-' + this.safe.name)) {
-          localStorage.setItem('hutch-safe-' + this.safe.name, JSON.stringify(result.safeKey));
+          localStorage.setItem('hutch-safe-' + this.safe.name, JSON.stringify(result.exportKey));
         }
       }
     });

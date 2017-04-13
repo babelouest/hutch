@@ -161,10 +161,11 @@
   "toaster_error_safe_key_export": "Error while exporting safe key",
   "toaster_error_reset_safe_password": "Error reset safe password",
   "toaster_success_answer_generated": "Secret answer generated",
-  "toaster_error_anser_generated": "Error generating secret answer",
+  "toaster_error_answer_generated": "Error generating secret answer",
   "toaster_safe_key_changed": "Safe key changed succesfully",
   "choose_icon_modal_title": "Choose an icon",
   "choose_icon_modal_message": "Select an icon in the list below:",
   "modal_change_safe_key_title": "Change safe master key",
-  "modal_change_safe_key_message": "If you think your safe has been compromised in some way, like keeping it open in another device, you can change the master key. This will re-encrypt all the secrets with a newly generated key, and this new key will be protected by a new password."
+  "modal_change_safe_key_message": "If you think your safe has been compromised in some way, like keeping it open in another device, you can change the master key. This will re-encrypt all the secrets with a newly generated key, and this new key will be protected by a new password.",
+  "toaster_error_file_too_large": "Error, file is too large"
 }

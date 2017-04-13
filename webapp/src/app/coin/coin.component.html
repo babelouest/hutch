@@ -84,6 +84,7 @@
                   <input type="text" name="misc" class="form-control" [(ngModel)]="newRow.value" [placeholder]="'placeholder_value' | translate" *ngIf="newRow.type === 'login' || newRow.type === 'url' || newRow.type === 'text'">
                   <input type="password" name="password" class="form-control" [(ngModel)]="newRow.value" [placeholder]="'placeholder_password' | translate" *ngIf="newRow.type === 'password'">
                   <input type="password" name="passwordVerify" class="form-control" [(ngModel)]="newRow.valueVerified" [placeholder]="'placeholder_password_verify' | translate" *ngIf="newRow.type === 'password'">
+                  <span [innerHtml]="newRow.value.name" *ngIf="newRow.type === 'file'"></span>
                   <div class="fileUpload btn btn-default" *ngIf="newRow.type === 'file'">
                     <span [innerHtml]="'button_upload' | translate"></span>
                     <input type="file" name="file" (change)="fileChange($event)" class="upload" />

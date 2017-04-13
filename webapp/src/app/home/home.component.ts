@@ -193,6 +193,7 @@ export class HomeComponent implements OnInit {
     _.each(this.hutchStoreService.getAll('safe'), function (curSafe) {
       delete curSafe.safeKey;
       delete curSafe.coinList;
+      curSafe.coinList = [];
       localStorage.removeItem('hutch-safe-' + curSafe.name);
       self.hutchStoreService.set('safe', curSafe.name, curSafe);
     });

@@ -11,7 +11,8 @@
     "keyLength": 256
   },
   "api": {
-    "baseUrl": "https://resource.server.url/"
+    "baseUrl": "https://resource.server.url/",
+    "maxLength": 16777215
   },
   "oauth2Connect": {
       "serverUri": "https://oauth.server.url/",

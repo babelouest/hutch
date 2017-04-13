@@ -26,6 +26,7 @@ declare function unescape(s: string): string;
 export class HutchCryptoService {
   alg = '';
   keyLength: number;
+  dataMaxLength: number;
   crytoSubtle: any;
   isWebkit = false;
 
@@ -43,6 +44,7 @@ export class HutchCryptoService {
           config.webCryptography.keyLength === 256)) {
         this.alg = config.webCryptography.algorithm;
         this.keyLength = config.webCryptography.keyLength;
+        this.dataMaxLength = config.api.maxLength;
         if (window.crypto) {
           if (window.crypto.subtle) {
             this.crytoSubtle = window.crypto.subtle;
@@ -151,7 +153,12 @@ export class HutchCryptoService {
         this.crytoSubtle.encrypt(payload, key,
         this.convertStringToArrayBufferView(unescape(encodeURIComponent(JSON.stringify(data)))))
         .then((result) => {
-          resolve(this.arrayBufferToBase64(result) + '.' + this.arrayBufferToBase64(salt));
+          let strResult = this.arrayBufferToBase64(result) + '.' + this.arrayBufferToBase64(salt);
+          if (strResult.length > this.dataMaxLength) {
+            reject('Data too large');
+          } else {
+            resolve(strResult);
+          }
         }, (error) => {
           reject(error);
         });
@@ -165,23 +172,27 @@ export class HutchCryptoService {
     return new Promise((resolve, reject) => {
       if (this.cryptoAvailable()) {
         let splitted = data.split('.');
-        this.crytoSubtle.decrypt({ name: this.alg,
-                                       iv: this.base64ToArrayBuffer(splitted[1]),
-                                       counter: this.base64ToArrayBuffer(splitted[1]),
-                                       tagLength: 128,
-                                       length: 128
-                                     },
-                                     key,
-                                     this.base64ToArrayBuffer(splitted[0]))
-        .then((result) => {
-          try {
-            resolve(JSON.parse(decodeURIComponent(escape(this.convertArrayBufferViewtoString(result)))));
-          } catch (e) {
-            reject(e);
-          }
-        }, (error) => {
-          reject(error);
-        });
+        if (splitted.length >= 2) {
+          this.crytoSubtle.decrypt({ name: this.alg,
+                                         iv: this.base64ToArrayBuffer(splitted[1]),
+                                         counter: this.base64ToArrayBuffer(splitted[1]),
+                                         tagLength: 128,
+                                         length: 128
+                                       },
+                                       key,
+                                       this.base64ToArrayBuffer(splitted[0]))
+          .then((result) => {
+            try {
+              resolve(JSON.parse(decodeURIComponent(escape(this.convertArrayBufferViewtoString(result)))));
+            } catch (e) {
+              reject(e);
+            }
+          }, (error) => {
+            reject(error);
+          });
+        } else {
+          reject('invalid encrypted data');
+        }
       } else {
         reject('web crypto not available');
       }
@@ -193,7 +204,6 @@ export class HutchCryptoService {
     for (let i = 0; i < str.length; i++) {
       bytes[i] = str.charCodeAt(i);
     }
-
     return bytes;
   }
 
