@@ -1,0 +1,24 @@
+.fileUpload {
+  position: relative;
+  overflow: hidden;
+  margin: 10px; }
+
+.fileUpload input.upload {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0;
+  filter: alpha(opacity=0); }
+
+.modal-dialog {
+  overflow-y: initial !important; }
+
+.modal-body {
+  max-height: calc(100vh - 210px);
+  overflow-y: auto; }
+
+/*# sourceMappingURL=app.38bc8175a1d2e3f849d1.css.map*/
