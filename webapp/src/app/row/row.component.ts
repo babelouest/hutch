@@ -5,8 +5,8 @@ import { ToastrService } from 'toastr-ng2';
 
 import { Row } from '../shared/coin';
 import { HutchRandomWordService } from '../shared/hutch-random-word.service';
-import { HutchCryptoService } from '../shared/hutch-crypto.service';
 import { HutchConfigService } from '../shared/hutch-config.service';
+import { HutchRowService } from '../shared/hutch-row.service';
 
 import { ConfirmComponent } from '../modal/confirm.component';
 import { EditTagsComponent } from '../modal/edit-tags.component';
@@ -28,9 +28,9 @@ export class RowComponent implements OnInit {
   constructor(private translate: TranslateService,
               private dialogService: DialogService,
               private toastrService: ToastrService,
-              private hutchCryptoService: HutchCryptoService,
               private hutchRandomWordService: HutchRandomWordService,
-              private hutchConfigService: HutchConfigService) {
+              private hutchConfigService: HutchConfigService,
+              private hutchRowService: HutchRowService) {
   }
 
   ngOnInit() {
@@ -192,26 +192,6 @@ export class RowComponent implements OnInit {
   }
 
   fileChange(event) {
-    let self = this;
-    let fileList: FileList = event.target.files;
-    if (fileList.length > 0) {
-      let file: File = fileList[0];
-      let fr = new FileReader();
-      fr.onload = function(ev2: any) {
-        if (ev2.target.result.length < self.fileMaxSize) {
-          self.row.value = {
-            name: event.target.value,
-            data: self.hutchCryptoService.arrayBufferToBase64(
-                    self.hutchCryptoService.convertStringToArrayBufferView(
-                      ev2.target.result
-                    )
-                  )
-          };
-        } else {
-          self.toastrService.error(self.translate.instant('toaster_error_file_too_large'), self.translate.instant('toaster_title'));
-        }
-      };
-      fr.readAsBinaryString(file);
-    }
+    this.hutchRowService.fileChange(event, this.row);
   }
 }

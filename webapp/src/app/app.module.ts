@@ -43,6 +43,7 @@ import { HutchObserveService } from './shared/hutch-observe.service';
 import { HutchConfigService } from './shared/hutch-config.service';
 import { HutchRandomWordService } from './shared/hutch-random-word.service';
 import { HutchIconListService } from './shared/hutch-icon-list.service';
+import { HutchRowService } from './shared/hutch-row.service';
 
 @NgModule({
   imports: [
@@ -100,7 +101,8 @@ import { HutchIconListService } from './shared/hutch-icon-list.service';
     HutchObserveService,
     HutchRandomWordService,
     Oauth2ConnectObservable,
-    HutchIconListService
+    HutchIconListService,
+    HutchRowService
   ],
   bootstrap: [AppComponent]
 })
