@@ -17,7 +17,7 @@ CREATE TABLE `h_profile` (
   `hp_id` INT(11) PRIMARY KEY AUTO_INCREMENT,
   `hp_username` VARCHAR(128) NOT NULL,
   `hp_fortune` VARCHAR(512) NOT NULL,
-  `hp_picture` BLOB
+  `hp_picture` MEDIUMBLOB
 );
 CREATE INDEX `i_hp_username` ON `h_profile`(`hp_username`);
 
@@ -37,7 +37,7 @@ CREATE TABLE `h_coin` (
   `hc_id` INT(11) PRIMARY KEY AUTO_INCREMENT,
   `hs_id` INT(11) NOT NULL,
   `hc_name` VARCHAR(128) NOT NULL,
-  `hc_data` BLOB, --  The usable data is encoded in a blob, so only the end-user can access it if she/he has the master password
+  `hc_data` MEDIUMBLOB, --  The usable data is encoded in a blob, so only the end-user can access it if she/he has the master password
   `hc_deleted` TINYINT DEFAULT 0,
   FOREIGN KEY(`hs_id`) REFERENCES `h_safe`(`hs_id`) ON DELETE CASCADE
 );
