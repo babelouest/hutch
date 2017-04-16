@@ -30,6 +30,7 @@
   "button_select": "Select",
   "button_change": "Change",
   "button_change_key": "Safe is compromised, change safe master key",
+  "button_sort": "Sort",
   "menu_home": "Home",
   "load_profile": "Loading profile",
   "alt_profile_picture": "Profile picture",
@@ -173,5 +174,7 @@
   "toaster_success_copy_clipboard_login": "Login succesfully copied to clipboard",
   "toaster_success_copy_clipboard_password": "Password succesfully copied to clipboard",
   "toaster_success_copy_clipboard_secret_answer": "Secret answer succesfully copied to clipboard",
-  "toaster_success_copy_clipboard_value": "Value succesfully copied to clipboard"
+  "toaster_success_copy_clipboard_value": "Value succesfully copied to clipboard",
+  "toaster_coin_sort_enabled": "Sort enabled",
+  "toaster_coin_sort_disabled": "Sort disabled"
 }

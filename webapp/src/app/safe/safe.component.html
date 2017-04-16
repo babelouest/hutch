@@ -36,8 +36,7 @@
                data-toggle="tooltip" 
                [title]="'safe_search_coin' | translate" 
                type="text"
-               [(ngModel)]="searchValue" 
-               (ngModelChange)="searchCoin()">
+               [(ngModel)]="searchValue">
         <button data-toggle="tooltip" [title]="'button_add_coin' | translate" type="button" class="btn btn-default" (click)="addCoin()">
           <i class="fa fa-plus"></i>
         </button>
@@ -47,7 +46,7 @@
 </div>
 
 <div *ngIf="unlocked">
-  <div class="col-md-6" *ngFor="let coin of coinListDisplayed">
+  <div class="col-md-6" *ngFor="let coin of coinList | myCoinFilter:searchValue">
     <my-hutch-coin [coin]="coin" [safeKey]="safe.safeKey" [safe]="safe.name" [editCoinMode]="coin.editCoinMode" (onDeleteCoin)="deleteCoin(coin)"></my-hutch-coin>
   </div>
 </div>

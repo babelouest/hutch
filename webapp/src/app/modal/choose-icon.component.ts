@@ -35,7 +35,9 @@ import * as _ from 'lodash';
                          </div>
                          <div class='col-md-4'>
                            <i class='fa fa-3x {{result}}' *ngIf='result'></i>
-                           <span class='label label-info' [innerHtml]='"choose_icon_modal_selected_none" | translate' *ngIf='!result'></span>
+                           <span class='label label-info'
+                                 [innerHtml]='"choose_icon_modal_selected_none" | translate'
+                                 *ngIf='!result'></span>
                          </div>
                        </div>
                        <hr>

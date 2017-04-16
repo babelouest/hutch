@@ -202,4 +202,13 @@ export class CoinComponent implements OnInit {
   copySuccess(type) {
     this.hutchRowService.copySuccess(type);
   }
+
+  enableSort(coin) {
+    coin.dragEnabled = !coin.dragEnabled;
+    if (coin.dragEnabled) {
+      this.toastrService.success(this.translate.instant('toaster_coin_sort_enabled'), this.translate.instant('toaster_title'));
+    } else {
+      this.toastrService.success(this.translate.instant('toaster_coin_sort_disabled'), this.translate.instant('toaster_title'));
+    }
+  }
 }

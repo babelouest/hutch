@@ -3,12 +3,12 @@
     <div class="panel-heading clearfix">
       <div class="row">
         <div class="col-md-6">
-          <a data-toggle="collapse" href="#{{coin.name}}" *ngIf="!editCoinMode">
-            <h4 class="panel-title pull-left">
-			  <i class="fa" [ngClass]='coin.icon' aria-hidden="true" *ngIf="coin.icon"></i>
-			  <span [innerHtml]="coin.displayName"></span>
-            </h4>
-          </a>
+          <h4 class="panel-title pull-left">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" href="#{{coin.name}}" *ngIf="!editCoinMode">
+              <i class="fa" [ngClass]='coin.icon' aria-hidden="true" *ngIf="coin.icon"></i>
+              <span [innerHtml]="coin.displayName"></span>
+            </a>
+          </h4>
           <div class="input-group-btn" *ngIf="editCoinMode">
             <form (ngSubmit)="saveCoin()">
               <span class="input-group">
@@ -58,6 +58,9 @@
     <div id="{{coin.name}}" class="panel-collapse collapse">
       <div class="panel-body">
         <div class="text-right" style="margin-bottom: 10px;">
+          <button [title]="'button_sort' | translate" (click)="enableSort(coin)" class="btn btn-default" [class.btn-success]="coin.dragEnabled">
+            <i class="fa fa-sort" aria-hidden="true"></i>
+          </button>
           <button [title]="'button_export' | translate" (click)="exportCoin()" class="btn btn-default">
             <i class="fa fa-cloud-download" aria-hidden="true"></i>
           </button>
@@ -65,8 +68,8 @@
             <i class="fa fa-plus" aria-hidden="true"></i>
           </button>
         </div>
-        <ul class="list-group" dnd-sortable-container [sortableData]="coin.rows">
-          <li *ngFor="let row of coin.rows; let i = index" class="list-group-item" dnd-sortable [sortableIndex]="i" (onDragSuccess)="updateRows($event)">
+        <ul class="list-group" dnd-sortable-container [sortableData]="coin.rows" [dragEnabled]="coin.dragEnabled">
+          <li *ngFor="let row of coin.rows; let i = index" class="list-group-item" dnd-sortable [sortableIndex]="i" (onDragSuccess)="updateRows($event)" [dragEnabled]="coin.dragEnabled">
             <my-hutch-row [row]="row" [index]="i" (onUpdate)="onUpdateCoin($event)"></my-hutch-row>
           </li>
           <li class="list-group-item">

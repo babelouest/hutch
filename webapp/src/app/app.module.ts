@@ -45,6 +45,7 @@ import { HutchConfigService } from './shared/hutch-config.service';
 import { HutchRandomWordService } from './shared/hutch-random-word.service';
 import { HutchIconListService } from './shared/hutch-icon-list.service';
 import { HutchRowService } from './shared/hutch-row.service';
+import { CoinFilterPipe } from './shared/coin-filter.pipe';
 
 @NgModule({
   imports: [
@@ -76,7 +77,8 @@ import { HutchRowService } from './shared/hutch-row.service';
     ResetPasswordSafeComponent,
     ExportCoinComponent,
     ChooseIconComponent,
-    ChangeSafeKeyComponent
+    ChangeSafeKeyComponent,
+    CoinFilterPipe
   ],
   entryComponents: [
     ConfirmComponent,
@@ -104,7 +106,8 @@ import { HutchRowService } from './shared/hutch-row.service';
     HutchRandomWordService,
     Oauth2ConnectObservable,
     HutchIconListService,
-    HutchRowService
+    HutchRowService,
+    CoinFilterPipe
   ],
   bootstrap: [AppComponent]
 })

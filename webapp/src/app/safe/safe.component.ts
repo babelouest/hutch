@@ -1,4 +1,4 @@
-import { Component, OnInit, isDevMode } from '@angular/core';
+import { Component, OnInit, isDevMode, ChangeDetectionStrategy, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { DialogService } from 'ng2-bootstrap-modal';
@@ -23,7 +23,8 @@ import * as _ from 'lodash';
 
 @Component({
   selector: 'my-hutch-safe',
-  templateUrl: './safe.component.html'
+  templateUrl: './safe.component.html',
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 
 export class SafeComponent implements OnInit {
@@ -33,7 +34,7 @@ export class SafeComponent implements OnInit {
   loading = false;
 
   coinList = [];
-  coinListDisplayed = [];
+  coinChange = new EventEmitter();
 
   unlocked = false;
   passwordError = false;
@@ -73,19 +74,6 @@ export class SafeComponent implements OnInit {
       });
     } else {
       this.router.navigate(['']);
-    }
-  }
-
-  searchCoin() {
-    if (this.searchValue !== '') {
-      this.coinListDisplayed = [];
-      for (let curCoin of this.coinList) {
-        if (curCoin.displayName.toLowerCase().indexOf(this.searchValue.toLowerCase()) >= 0) {
-          this.coinListDisplayed.push(curCoin);
-        }
-      }
-    } else {
-      this.coinListDisplayed = this.coinList.slice();
     }
   }
 
@@ -163,7 +151,6 @@ export class SafeComponent implements OnInit {
       this.hutchCoinService.add(this.safe.name, { name: newCoin.name, data: encryptedCoin })
       .then(() => {
         this.coinList.unshift(newCoin);
-        this.coinListDisplayed.unshift(newCoin);
         this.toastrService.success(this.translate.instant('toaster_success_coin_save'), this.translate.instant('toaster_title'));
       })
       .catch((error) => {
@@ -183,17 +170,14 @@ export class SafeComponent implements OnInit {
   loadSafe() {
     this.safe = {name: '', description: '', key: '', safeKey: null, coinList: []};
     this.coinList = [];
-    this.coinListDisplayed = [];
     if (this.hutchStoreService.get('safe', this.safeName)) {
       this.safe = this.hutchStoreService.get('safe', this.safeName);
       if (!!this.safe.safeKey) {
         this.unlocked = true;
         this.coinList = this.safe.coinList || [];
-        this.coinListDisplayed = this.safe.coinList.slice();
       } else {
         this.unlocked = false;
         this.coinList = [];
-        this.coinListDisplayed = [];
       }
     } else {
       this.safeFound = false;
@@ -263,7 +247,6 @@ export class SafeComponent implements OnInit {
       if (promises.length > 0) {
         Observable.forkJoin(promises).subscribe(() => {
           this.hutchStoreService.set('safe', this.safe.name, this.safe);
-          this.coinListDisplayed = this.safe.coinList.slice();
           this.loading = false;
         });
       } else {
@@ -290,7 +273,6 @@ export class SafeComponent implements OnInit {
     this.safe.coinList = [];
     localStorage.removeItem('hutch-safe-' + this.safe.name);
     this.coinList = [];
-    this.coinListDisplayed = [];
     this.unlocked = false;
     if (this.hutchStoreService.get('safe', this.safe.name)) {
       this.hutchStoreService.set('safe', this.safe.name, this.safe);
@@ -299,7 +281,6 @@ export class SafeComponent implements OnInit {
 
   deleteCoin(coin) {
     _.remove(this.coinList, {name: coin.name});
-    _.remove(this.coinListDisplayed, {name: coin.name});
   }
 
   manageSafe() {
