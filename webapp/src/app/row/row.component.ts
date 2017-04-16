@@ -12,8 +12,6 @@ import { ConfirmComponent } from '../modal/confirm.component';
 import { EditTagsComponent } from '../modal/edit-tags.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
 
-declare var Clipboard: any;
-
 @Component({
   selector: 'my-hutch-row',
   templateUrl: './row.component.html'
@@ -34,11 +32,6 @@ export class RowComponent implements OnInit {
   }
 
   ngOnInit() {
-    new Clipboard('.btn-copy', {
-      text: function(trigger) {
-        return trigger.getAttribute('data-hutch-clipboard');
-      }
-    });
     this.hutchConfigService.get().then((config) => {
       this.fileMaxSize = config.api.maxLength;
     });
@@ -193,5 +186,9 @@ export class RowComponent implements OnInit {
 
   fileChange(event) {
     this.hutchRowService.fileChange(event, this.row);
+  }
+
+  copySuccess(type) {
+    this.hutchRowService.copySuccess(type);
   }
 }

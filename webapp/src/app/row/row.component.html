@@ -47,7 +47,7 @@
           <button type="button" class="btn btn-default btn-sm" (click)="downloadFile()" [title]="'button_download' | translate" *ngIf="row.type === 'file'">
             <i class="fa fa-cloud-download" aria-hidden="true"></i>
           </button>
-          <button type="button" class="btn btn-default btn-sm btn-copy" [attr.data-hutch-clipboard]="row.value" [title]="'button_copy' | translate" *ngIf="row.type !== 'secret-questions' && row.type !== 'file'">
+          <button type="button" class="btn btn-default btn-sm btn-copy" [title]="'button_copy' | translate" *ngIf="row.type !== 'secret-questions' && row.type !== 'file'" xngClipboard [cbContent]="row.value" (cbOnSuccess)="copySuccess(row.type)">
             <i class="fa fa-clipboard" aria-hidden="true"></i>
           </button>
           <button type="button" class="btn btn-default btn-sm" (click)="editRow()" [title]="'button_edit' | translate" *ngIf="row.type !== 'secret-questions'">
@@ -93,7 +93,12 @@
           </div>
           <div class="col-md-4" *ngIf="!secretQuestion.edit">
             <div class="btn-group pull-right">
-              <button type="button" class="btn btn-default btn-sm btn-copy" [attr.data-hutch-clipboard]="secretQuestion.answer" [title]="'button_copy' | translate">
+              <button type="button"
+                      class="btn btn-default btn-sm btn-copy"
+                      [title]="'button_copy' | translate"
+                      xngClipboard
+                      [cbContent]="secretQuestion.answer"
+                      (cbOnSuccess)="copySuccess(row.type)">
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
               </button>
               <button type="button" class="btn btn-default btn-sm" (click)="editSecretQuestion(secretQuestion)" [title]="'button_edit' | translate">

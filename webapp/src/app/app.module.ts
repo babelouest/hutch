@@ -9,6 +9,7 @@ import { DndModule } from 'ng2-dnd';
 import { BootstrapModalModule } from 'ng2-bootstrap-modal';
 import { CookieService } from 'angular2-cookie/services/cookies.service';
 import { TranslateModule } from 'ng2-translate/ng2-translate';
+import { ClipboardModule } from 'angular2-clipboard';
 
 import { routing } from './app.routing';
 import { AppComponent } from './app.component';
@@ -55,7 +56,8 @@ import { HutchRowService } from './shared/hutch-row.service';
     BootstrapModalModule,
     DndModule.forRoot(),
     TranslateModule.forRoot(),
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    ClipboardModule
   ],
   declarations: [
     AppComponent,

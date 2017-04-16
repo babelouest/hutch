@@ -1,10 +1,12 @@
 import { Injectable, isDevMode }    from '@angular/core';
+import { DialogService } from 'ng2-bootstrap-modal';
 
 import { TranslateService } from 'ng2-translate/ng2-translate';
 import { ToastrService } from 'toastr-ng2';
 
 import { HutchConfigService } from './hutch-config.service';
 import { HutchCryptoService } from './hutch-crypto.service';
+import { GeneratePasswordComponent } from '../modal/generate-password.component';
 
 @Injectable()
 export class HutchRowService {
@@ -12,6 +14,7 @@ export class HutchRowService {
 
   constructor(private translate: TranslateService,
               private toastrService: ToastrService,
+              private dialogService: DialogService,
               private config: HutchConfigService,
               private hutchCryptoService: HutchCryptoService) {
      this.config.get()
@@ -49,4 +52,32 @@ export class HutchRowService {
     }
   }
 
+  generatePassword(row) {
+    this.dialogService.addDialog(GeneratePasswordComponent)
+      .subscribe((result) => {
+        if (result) {
+          row.value = result;
+          row.valueVerified = result;
+        }
+      });
+  }
+
+  copySuccess(type) {
+    let translate_message = '';
+    switch (type) {
+      case 'secret-questions':
+        translate_message = 'toaster_success_copy_clipboard_secret_answer';
+        break;
+      case 'login':
+        translate_message = 'toaster_success_copy_clipboard_login';
+        break;
+      case 'password':
+        translate_message = 'toaster_success_copy_clipboard_password';
+        break;
+      default:
+        translate_message = 'toaster_success_copy_clipboard_value';
+        break;
+    }
+    this.toastrService.success(this.translate.instant(translate_message), this.translate.instant('toaster_title'));
+  }
 }

@@ -16,8 +16,6 @@ import { ChooseIconComponent } from '../modal/choose-icon.component';
 
 import * as _ from 'lodash';
 
-declare var Clipboard: any;
-
 @Component({
   selector: 'my-hutch-coin',
   templateUrl: './coin.component.html'
@@ -44,11 +42,6 @@ export class CoinComponent implements OnInit {
   }
 
   ngOnInit() {
-    new Clipboard('.btn-copy', {
-      text: function(trigger) {
-        return trigger.getAttribute('data-hutch-clipboard');
-      }
-    });
     this.hutchConfigService.get().then((config) => {
       this.fileMaxSize = config.api.maxLength;
     });
@@ -204,5 +197,9 @@ export class CoinComponent implements OnInit {
           this.coin.icon = result;
         }
       });
+  }
+
+  copySuccess(type) {
+    this.hutchRowService.copySuccess(type);
   }
 }

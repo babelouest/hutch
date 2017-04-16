@@ -29,22 +29,18 @@ import * as _ from 'lodash';
                          </div>
                        </div>
                        <hr>
+                       <div class='row'>
+                         <div class='col-md-4'>
+                           <span class='label label-info' [innerHtml]='"choose_icon_modal_selected" | translate'></span>
+                         </div>
+                         <div class='col-md-4'>
+                           <i class='fa fa-3x {{result}}' *ngIf='result'></i>
+                           <span class='label label-info' [innerHtml]='"choose_icon_modal_selected_none" | translate' *ngIf='!result'></span>
+                         </div>
+                       </div>
+                       <hr>
                        <ul class='nav' style='max-height: 300px; overflow-y:scroll;'>
-                         <li [ngClass]='{ "bg-info": !result }'>
-                           <div class='row'>
-                             <div class='col-md-8'>
-                             </div>
-                             <div class='col-md-4'>
-                               <button type='button'
-                                       class='btn btn-default'
-                                       (click)='selectIcon("")'
-                                       [title]='"button_none" | translate'
-                                       [innerHtml]='"button_none" | translate'>
-                               </button>
-                             </div>
-                           </div>
-                         </li>
-                         <li *ngFor='let icon of iconListDisplayed' [ngClass]='{ "bg-info": result === icon.class }'>
+                         <li *ngFor='let icon of iconListDisplayed'>
                            <div class='row'>
                              <div class='col-md-4'>
                                <i class='fa fa-2x {{icon.class}}'></i>
@@ -115,17 +111,15 @@ export class ChooseIconComponent extends DialogComponent<void, string> implement
       this.loading = false;
     } else {
       this.iconListDisplayed = this.iconList;
+      this.loading = false;
     }
   }
 
   confirm() {
-    // we set dialog result as true on click on confirm button,
-    // then we can get dialog result from caller code
     this.close();
   }
 
   cancel() {
-    // Avoid annoying warning message, nothing less
     this.result = '';
     super.close();
   }
