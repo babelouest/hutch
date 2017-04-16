@@ -125,6 +125,10 @@ export class CoinComponent implements OnInit {
   }
 
   saveCoinInDatabase() {
+    _.each(this.coin.rows, row => {
+      delete row.show;
+      delete row.valueVerified;
+    });
     let saveCoin = { displayName: this.coin.displayName, icon: this.coin.icon, rows: this.coin.rows };
     return this.hutchCryptoService.encryptData(saveCoin, this.safeKey)
     .then((data) => {
