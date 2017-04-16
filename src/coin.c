@@ -113,7 +113,7 @@ json_t * is_coin_valid(struct config_elements * config, const char * username, c
     } else {
       if (add) {
         if (json_object_get(coin, "name") == NULL || !json_is_string(json_object_get(coin, "name")) || json_string_length(json_object_get(coin, "name")) == 0 || json_string_length(json_object_get(coin, "name")) > 128) {
-          json_array_append_new(j_return, json_pack("{ss}", "name", "name is mandatory and must be a non empty string of maximum 128 characters"));
+          json_array_append_new(j_return, json_pack("{ss}", "name", "name is mandatory and must be a non empty string, maximum 128 characters"));
         } else {
           j_coin = coin_get(config, username, safe_name, json_string_value(json_object_get(coin, "name")));
           if (check_result_value(j_coin, HU_OK)) {
@@ -123,8 +123,8 @@ json_t * is_coin_valid(struct config_elements * config, const char * username, c
         }
       }
       
-      if (json_object_get(coin, "data") == NULL || !json_is_string(json_object_get(coin, "data")) || json_string_length(json_object_get(coin, "data")) == 0) {
-        json_array_append_new(j_return, json_pack("{ss}", "data", "data is mandatory and must be a non empty string"));
+      if (json_object_get(coin, "data") == NULL || !json_is_string(json_object_get(coin, "data")) || json_string_length(json_object_get(coin, "data")) == 0 || json_string_length(json_object_get(coin, "data")) > (16*1024*1024)) {
+        json_array_append_new(j_return, json_pack("{ss}", "data", "data is mandatory and must be a non empty string, maximum 16MB"));
       }
     }
   } else {

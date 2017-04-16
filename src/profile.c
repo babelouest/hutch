@@ -86,11 +86,11 @@ json_t * is_profile_valid(json_t * profile) {
       json_array_append_new(j_result, json_pack("{ss}", "profile", "profile must be a json object"));
     } else {
       if (!json_is_string(json_object_get(profile, "fortune")) || json_string_length(json_object_get(profile, "fortune")) == 0 || json_string_length(json_object_get(profile, "fortune")) > 512) {
-        json_array_append_new(j_result, json_pack("{ss}", "fortune", "fortune must be a non empty string of at least 512 characters"));
+        json_array_append_new(j_result, json_pack("{ss}", "fortune", "fortune must be a non empty string, maximum 512 characters"));
       }
       
-      if (!json_is_string(json_object_get(profile, "picture")) || json_string_length(json_object_get(profile, "picture")) == 0) {
-        json_array_append_new(j_result, json_pack("{ss}", "picture", "picture must be a non empty string"));
+      if (!json_is_string(json_object_get(profile, "picture")) || json_string_length(json_object_get(profile, "picture")) == 0 || json_string_length(json_object_get(profile, "picture")) > (16*1024*1024)) {
+        json_array_append_new(j_result, json_pack("{ss}", "picture", "picture must be a non empty string, maximum 16MB"));
       }
     }
   } else {
