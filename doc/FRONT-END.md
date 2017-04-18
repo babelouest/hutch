@@ -24,6 +24,10 @@ Then, when the profile is set, the user can create and manage safes.
 
 ![no safe](https://github.com/babelouest/hutch/raw/master/doc/images/profile_set.png)
 
+## Lock all safe
+
+This will lock all safe on this device. To reopen them, the user has to enter the password again, even if he or she checked the option `keep this safe open on this device` before.
+
 ## Add a new safe
 
 To add a new safe, the user must click the button in the top right of the home screen. Then, the user must set a name for the safe, unique for the user, an optional description, and a password. The password must be at least 8 characters. A strength meter is available for the user to enter a strong password. The safe name can't be changed once created.
