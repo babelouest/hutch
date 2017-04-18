@@ -31,6 +31,7 @@
   "button_change": "Change",
   "button_change_key": "Safe is compromised, change safe master key",
   "button_sort": "Sort",
+  "button_history": "Access history",
   "menu_home": "Home",
   "load_profile": "Loading profile",
   "alt_profile_picture": "Profile picture",
@@ -178,5 +179,14 @@
   "toaster_coin_sort_enabled": "Sort enabled",
   "toaster_coin_sort_disabled": "Sort disabled",
   "modal_delete_safe_title": "Delete safe",
-  "modal_delete_safe_message": "Please enter the safe '{{name}}' password to confirm its suppression."
+  "modal_delete_safe_message": "Please enter the safe '{{name}}' password to confirm its suppression.",
+  "modal_history_title": "Access log",
+  "modal_history_table_date": "Date",
+  "modal_history_table_source": "Source IP",
+  "modal_history_table_access": "Access type",
+  "modal_history_table_access_type_create": "Creation",
+  "modal_history_table_access_type_read": "Read",
+  "modal_history_table_access_type_update": "Update",
+  "modal_history_table_access_type_delete": "Delete",
+  "modal_history_table_access_type_history": "History"
 }

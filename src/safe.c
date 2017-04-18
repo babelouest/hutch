@@ -263,7 +263,7 @@ int safe_add_access_history(struct config_elements * config, const char * userna
 }
 
 json_t * safe_get_history(struct config_elements * config, const char * username, const char * safe_name) {
-  json_t * j_query, * j_result, * j_element;
+  json_t * j_query, * j_result, * j_return, * j_element;
   int res;
   char * hp_id_clause, * escaped, * escaped_name;
   size_t index;
@@ -272,7 +272,7 @@ json_t * safe_get_history(struct config_elements * config, const char * username
   escaped = h_escape_string(config->conn, username);
   hp_id_clause = msprintf("= (SELECT `hs_id` FROM `%s` WHERE `hs_name`='%s' AND `hs_deleted`=0 AND `hp_id`=(SELECT `hp_id` FROM `%s` WHERE `hp_username`='%s'))", HUTCH_TABLE_SAFE, escaped_name, HUTCH_TABLE_PROFILE, escaped);
   
-  j_query = json_pack("{sss[sss]s{s{ssss}}}",
+  j_query = json_pack("{sss[sss]s{s{ssss}}ss}",
                       "table",
                       HUTCH_TABLE_SAFE_HISTORY,
                       "columns",
@@ -284,7 +284,9 @@ json_t * safe_get_history(struct config_elements * config, const char * username
                           "operator",
                           "raw",
                           "value",
-                          hp_id_clause);
+                          hp_id_clause,
+                      "order_by",
+                      "hsh_date_access DESC");
   free(escaped);
   free(escaped_name);
   free(hp_id_clause);
@@ -297,15 +299,17 @@ json_t * safe_get_history(struct config_elements * config, const char * username
         json_object_set_new(j_element, "access_type", json_string("read"));
       } else if (json_integer_value(json_object_get(j_element, "hsh_access_type")) == access_update) {
         json_object_set_new(j_element, "access_type", json_string("update"));
+      } else if (json_integer_value(json_object_get(j_element, "hsh_access_type")) == access_create) {
+        json_object_set_new(j_element, "access_type", json_string("create"));
       } else if (json_integer_value(json_object_get(j_element, "hsh_access_type")) == access_history) {
         json_object_set_new(j_element, "access_type", json_string("history"));
       }
       json_object_del(j_element, "hsh_access_type");
     }
-    j_result= json_pack("{siso}", "result", HU_OK, "history", j_result);
+    j_return = json_pack("{siso}", "result", HU_OK, "history", j_result);
   } else {
     y_log_message(Y_LOG_LEVEL_ERROR, "safe_get_history - Error executing j_query");
-    j_result = json_pack("{si}", "result", HU_ERROR_DB);
+    j_return = json_pack("{si}", "result", HU_ERROR_DB);
   }
-  return j_result;
+  return j_return;
 }

@@ -52,4 +52,8 @@ export class HutchCoinService {
   delete(safe: string, name: string): Promise<void> {
     return this.hutchApiService.httpRequest('DELETE', '/safe/' + safe + '/coin/' + name);
   }
+
+  history(safe: string, name: string): Promise<any> {
+    return this.hutchApiService.httpRequest('GET', '/safe/' + safe + '/coin/' + name + '/history/');
+  }
 }

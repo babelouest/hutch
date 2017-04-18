@@ -173,3 +173,13 @@ This will open a modal where the user can update the safe description, and/or up
 ### Delete safe
 
 This will open a confirm modal window to the user. If the user confirms the suppression, the safe will be deleted premanently.
+
+## History logs
+
+To check for non authorized access, the user can have the whole access history for its profile, and independently every safe and secrets. A `show history` button is now available.
+
+![History button](https://github.com/babelouest/hutch/raw/master/doc/images/history_button.png)
+
+By clicking on this button, the user will have see access sorted by date from the most recent, the originated ip source and the access type. This can be useful if the user has some suspicions. But this log won't tell the user if the data were decrypted or not, only if they were accessed and how.
+
+![History](https://github.com/babelouest/hutch/raw/master/doc/images/history.png)

@@ -148,7 +148,7 @@ json_t * profile_get_history(struct config_elements * config, const char * usern
   escaped = h_escape_string(config->conn, username);
   hp_id_clause = msprintf("=(SELECT `hp_id` FROM `%s` WHERE `hp_username`='%s')", HUTCH_TABLE_PROFILE, escaped);
   
-  j_query = json_pack("{sss[sss]s{s{ssss}}}",
+  j_query = json_pack("{sss[sss]s{s{ssss}}ss}",
                       "table",
                       HUTCH_TABLE_PROFILE_HISTORY,
                       "columns",
@@ -160,7 +160,9 @@ json_t * profile_get_history(struct config_elements * config, const char * usern
                           "operator",
                           "raw",
                           "value",
-                          hp_id_clause);
+                          hp_id_clause,
+                      "order_by",
+                      "hph_date_access DESC");
   free(escaped);
   free(hp_id_clause);
   res = h_select(config->conn, j_query, &j_result, NULL);

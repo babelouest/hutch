@@ -52,4 +52,8 @@ export class HutchSafeService {
   delete(name: string): Promise<void> {
     return this.hutchApiService.httpRequest('DELETE', '/safe/' + name);
   }
+
+  history(name: string): Promise<any> {
+    return this.hutchApiService.httpRequest('GET', '/safe/' + name + '/history/');
+  }
 }

@@ -264,12 +264,12 @@ int callback_hutch_safe_get_history (const struct _u_request * request, struct _
   if (check_result_value(j_token, G_OK)) {
     j_safe_history = safe_get_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"));
     if (check_result_value(j_safe_history, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_safe_history, "safe"));
+      response->json_body = json_copy(json_object_get(j_safe_history, "history"));
       if (safe_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), ip_source, access_history) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_history - Error adding safe access history");
       }
     } else {
-      y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_history - Error getting safe");
+      y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_history - Error getting safe access history");
     }
     json_decref(j_safe_history);
   } else {
@@ -443,14 +443,14 @@ int callback_hutch_coin_get_history (const struct _u_request * request, struct _
   if (check_result_value(j_token, G_OK)) {
     j_coin_history = coin_get_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"));
     if (check_result_value(j_coin_history, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_coin_history, "coin"));
+      response->json_body = json_copy(json_object_get(j_coin_history, "history"));
       if (coin_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"), ip_source, access_history) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_history - Error adding coin access history");
       }
     } else if (check_result_value(j_coin_history, HU_ERROR_NOT_FOUND)) {
       response->status = 404;
     } else {
-      y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_history - Error getting coin");
+      y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_history - Error getting coin access history");
     }
     json_decref(j_coin_history);
   } else {

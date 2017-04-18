@@ -56,6 +56,7 @@ import { ExportCoinComponent } from './modal/export-coin.component';
 import { ChooseIconComponent } from './modal/choose-icon.component';
 import { ChangeSafeKeyComponent } from './modal/change-safe-key.component';
 import { DeleteSafeComponent } from './modal/delete-safe.component';
+import { HistoryComponent } from './modal/history.component';
 
 import { WikimediaCommonsService } from './shared/wikimedia-commons.service';
 import { HutchApiService } from './shared/hutch-api.service';
@@ -102,6 +103,7 @@ import { CoinFilterPipe } from './shared/coin-filter.pipe';
     ChooseIconComponent,
     ChangeSafeKeyComponent,
     DeleteSafeComponent,
+    HistoryComponent,
     CoinFilterPipe
   ],
   entryComponents: [
@@ -116,7 +118,8 @@ import { CoinFilterPipe } from './shared/coin-filter.pipe';
     ExportCoinComponent,
     ChooseIconComponent,
     ChangeSafeKeyComponent,
-    DeleteSafeComponent
+    DeleteSafeComponent,
+    HistoryComponent
   ],
   providers: [
     CookieService,

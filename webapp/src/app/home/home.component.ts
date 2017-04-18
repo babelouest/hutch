@@ -30,6 +30,7 @@ import { ToastrService } from 'toastr-ng2';
 import { MessageComponent } from '../modal/message.component';
 import { EditSafeComponent } from '../modal/edit-safe.component';
 import { EditProfileComponent } from '../modal/edit-profile.component';
+import { HistoryComponent } from '../modal/history.component';
 
 import { HutchProfileService } from '../shared/hutch-profile.service';
 import { HutchSafeService } from '../shared/hutch-safe.service';
@@ -220,4 +221,9 @@ export class HomeComponent implements OnInit {
     this.toastrService.success(this.translate.instant('toaster_lock_all_safe'), this.translate.instant('toaster_title'));
   }
 
+  profileHistory() {
+    this.dialogService.addDialog(HistoryComponent, {
+      type: 'profile'
+    });
+  }
 }

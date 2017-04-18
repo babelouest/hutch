@@ -34,10 +34,14 @@ export class HutchProfileService {
   constructor(private hutchApiService: HutchApiService) { }
 
   getProfile(): Promise<Profile> {
-    return this.hutchApiService.httpRequest('GET', '/profile');
+    return this.hutchApiService.httpRequest('GET', '/profile/');
+  }
+
+  getProfileHistory(): Promise<any> {
+    return this.hutchApiService.httpRequest('GET', '/profile/history/');
   }
 
   setProfile(profile: Profile): Promise<void> {
-    return this.hutchApiService.httpRequest('PUT', '/profile', null, profile);
+    return this.hutchApiService.httpRequest('PUT', '/profile/', null, profile);
   }
 }

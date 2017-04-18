@@ -289,7 +289,7 @@ int coin_add_access_history(struct config_elements * config, const char * userna
 }
 
 json_t * coin_get_history(struct config_elements * config, const char * username, const char * safe_name, const char * coin_name) {
-  json_t * j_query, * j_result, * j_element;
+  json_t * j_query, * j_result, * j_return, * j_element;
   int res;
   char * hc_id_clause, * escaped, * escaped_name, * escaped_safe_name;
   size_t index;
@@ -297,9 +297,9 @@ json_t * coin_get_history(struct config_elements * config, const char * username
   escaped_name = h_escape_string(config->conn, coin_name);
   escaped_safe_name = h_escape_string(config->conn, safe_name);
   escaped = h_escape_string(config->conn, username);
-  hc_id_clause = msprintf("= (SELECT `hc_id` FROM `%s` WHERE `hs_id` = (SELECT `hs_id` FROM `%s` WHERE `hs_name`='%s' AND `hs_deleted`=0 AND `hp_id`=(SELECT `hp_id` FROM `%s` WHERE `hp_username`='%s')) AND `hc_name`='%s' AND `hc_deleted`=0)", HUTCH_TABLE_COIN, HUTCH_TABLE_SAFE, escaped_safe_name, HUTCH_TABLE_PROFILE, escaped, escaped_name);
+  hc_id_clause = msprintf("IN (SELECT `hc_id` FROM `%s` WHERE `hs_id` = (SELECT `hs_id` FROM `%s` WHERE `hs_name`='%s' AND `hs_deleted`=0 AND `hp_id`=(SELECT `hp_id` FROM `%s` WHERE `hp_username`='%s')) AND `hc_name`='%s')", HUTCH_TABLE_COIN, HUTCH_TABLE_SAFE, escaped_safe_name, HUTCH_TABLE_PROFILE, escaped, escaped_name);
   
-  j_query = json_pack("{sss[sss]s{s{ssss}}}",
+  j_query = json_pack("{sss[sss]s{s{ssss}}ss}",
                       "table",
                       HUTCH_TABLE_COIN_HISTORY,
                       "columns",
@@ -311,7 +311,9 @@ json_t * coin_get_history(struct config_elements * config, const char * username
                           "operator",
                           "raw",
                           "value",
-                          hc_id_clause);
+                          hc_id_clause,
+                      "order_by",
+                      "hch_date_access DESC");
   free(escaped);
   free(escaped_name);
   free(escaped_safe_name);
@@ -323,6 +325,8 @@ json_t * coin_get_history(struct config_elements * config, const char * username
     json_array_foreach(j_result, index, j_element) {
       if (json_integer_value(json_object_get(j_element, "hch_access_type")) == access_read) {
         json_object_set_new(j_element, "access_type", json_string("read"));
+      } else if (json_integer_value(json_object_get(j_element, "hch_access_type")) == access_create) {
+        json_object_set_new(j_element, "access_type", json_string("create"));
       } else if (json_integer_value(json_object_get(j_element, "hch_access_type")) == access_update) {
         json_object_set_new(j_element, "access_type", json_string("update"));
       } else if (json_integer_value(json_object_get(j_element, "hch_access_type")) == access_history) {
@@ -330,10 +334,10 @@ json_t * coin_get_history(struct config_elements * config, const char * username
       }
       json_object_del(j_element, "hch_access_type");
     }
-    j_result= json_pack("{siso}", "result", HU_OK, "history", j_result);
+    j_return = json_pack("{siso}", "result", HU_OK, "history", j_result);
   } else {
     y_log_message(Y_LOG_LEVEL_ERROR, "coin_get_history - Error executing j_query");
-    j_result = json_pack("{si}", "result", HU_ERROR_DB);
+    j_return = json_pack("{si}", "result", HU_ERROR_DB);
   }
-  return j_result;
+  return j_return;
 }

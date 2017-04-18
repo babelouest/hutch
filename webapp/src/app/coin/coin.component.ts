@@ -35,6 +35,7 @@ import { ConfirmComponent } from '../modal/confirm.component';
 import { GeneratePasswordComponent } from '../modal/generate-password.component';
 import { ExportCoinComponent } from '../modal/export-coin.component';
 import { ChooseIconComponent } from '../modal/choose-icon.component';
+import { HistoryComponent } from '../modal/history.component';
 
 import * as _ from 'lodash';
 
@@ -236,5 +237,13 @@ export class CoinComponent implements OnInit {
     } else {
       this.toastrService.success(this.translate.instant('toaster_coin_sort_disabled'), this.translate.instant('toaster_title'));
     }
+  }
+
+  coinHistory() {
+    this.dialogService.addDialog(HistoryComponent, {
+      type: 'coin',
+      safe: this.safe,
+      coin: this.coin.name
+    });
   }
 }

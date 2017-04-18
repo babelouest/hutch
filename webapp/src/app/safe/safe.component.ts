@@ -35,6 +35,7 @@ import { ManageSafeComponent } from '../modal/manage-safe.component';
 import { ResetPasswordSafeComponent } from '../modal/reset-password-safe.component';
 import { ChangeSafeKeyComponent } from '../modal/change-safe-key.component';
 import { DeleteSafeComponent } from '../modal/delete-safe.component';
+import { HistoryComponent } from '../modal/history.component';
 
 import { HutchObserveService } from '../shared/hutch-observe.service';
 import { HutchSafeService } from '../shared/hutch-safe.service';
@@ -349,6 +350,13 @@ export class SafeComponent implements OnInit {
           localStorage.setItem('hutch-safe-' + this.safe.name, JSON.stringify(result.exportKey));
         }
       }
+    });
+  }
+
+  safeHistory() {
+    this.dialogService.addDialog(HistoryComponent, {
+      type: 'safe',
+      safe: this.safe.name
     });
   }
 }
