@@ -35,6 +35,7 @@ For now, Hutch can use the 3 following encryption algorithms:
 - AES-CBC
 - AES-CTR
 - AES-GCM
+
 The key length is also parametrable, the length available are 128, 192 or 256 bits.
 
 Basically, the API server is just a container that stores encrypted data.
