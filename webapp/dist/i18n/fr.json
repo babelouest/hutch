@@ -31,6 +31,7 @@
   "button_change": "Changer",
   "button_change_key": "Le coffre est compromis, changer la clé principale",
   "button_sort": "Trier",
+  "button_history": "Historique des accès",
   "menu_home": "Accueil",
   "load_profile": "Chargement du profil",
   "alt_profile_picture": "Image de votre profil",
@@ -176,5 +177,16 @@
   "toaster_success_copy_clipboard_secret_answer": "Réponse secrète copiée dans le presse-papier",
   "toaster_success_copy_clipboard_value": "Valeur copiée dans le presse-papier",
   "toaster_coin_sort_enabled": "Tri activé",
-  "toaster_coin_sort_disabled": "Tri désactivé"
+  "toaster_coin_sort_disabled": "Tri désactivé",
+  "modal_delete_safe_title": "Supprimer un coffre",
+  "modal_delete_safe_message": "Veuillez entrer le mot de passe du coffre '{{name}}' pour confirmer sa suppression.",
+  "modal_history_title": "Journal des accès",
+  "modal_history_table_date": "Date",
+  "modal_history_table_source": "IP source",
+  "modal_history_table_access": "Type d'accès",
+  "modal_history_table_access_type_create": "Création",
+  "modal_history_table_access_type_read": "Lecture",
+  "modal_history_table_access_type_update": "Mise à jour",
+  "modal_history_table_access_type_delete": "Suppression",
+  "modal_history_table_access_type_history": "Historique"
 }
