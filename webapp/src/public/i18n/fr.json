@@ -176,5 +176,7 @@
   "toaster_success_copy_clipboard_secret_answer": "Réponse secrète copiée dans le presse-papier",
   "toaster_success_copy_clipboard_value": "Valeur copiée dans le presse-papier",
   "toaster_coin_sort_enabled": "Tri activé",
-  "toaster_coin_sort_disabled": "Tri désactivé"
+  "toaster_coin_sort_disabled": "Tri désactivé",
+  "modal_delete_safe_title": "Supprimer un coffre",
+  "modal_delete_safe_message": "Veuillez entrer le mot de passe du coffre '{{name}}' pour confirmer sa suppression."
 }

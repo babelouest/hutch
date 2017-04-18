@@ -176,5 +176,7 @@
   "toaster_success_copy_clipboard_secret_answer": "Secret answer succesfully copied to clipboard",
   "toaster_success_copy_clipboard_value": "Value succesfully copied to clipboard",
   "toaster_coin_sort_enabled": "Sort enabled",
-  "toaster_coin_sort_disabled": "Sort disabled"
+  "toaster_coin_sort_disabled": "Sort disabled",
+  "modal_delete_safe_title": "Delete safe",
+  "modal_delete_safe_message": "Please enter the safe '{{name}}' password to confirm its suppression."
 }

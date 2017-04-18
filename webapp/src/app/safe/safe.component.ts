@@ -30,11 +30,11 @@ import { ToastrService } from 'toastr-ng2';
 
 import { Safe } from '../shared/safe';
 
-import { ConfirmComponent } from '../modal/confirm.component';
 import { EditSafeComponent } from '../modal/edit-safe.component';
 import { ManageSafeComponent } from '../modal/manage-safe.component';
 import { ResetPasswordSafeComponent } from '../modal/reset-password-safe.component';
 import { ChangeSafeKeyComponent } from '../modal/change-safe-key.component';
+import { DeleteSafeComponent } from '../modal/delete-safe.component';
 
 import { HutchObserveService } from '../shared/hutch-observe.service';
 import { HutchSafeService } from '../shared/hutch-safe.service';
@@ -126,9 +126,9 @@ export class SafeComponent implements OnInit {
   }
 
   deleteSafe() {
-    this.dialogService.addDialog(ConfirmComponent, {
-      title: this.translate.instant('safe_delete_safe'),
-      message: this.translate.instant('safe_delete_safe_confirm', { name: this.safe.name })})
+    this.dialogService.addDialog(DeleteSafeComponent, {
+      name: this.safe.name,
+      key: this.safe.key})
       .subscribe((result) => {
         if (result) {
           this.hutchSafeService.delete(this.safe.name)
