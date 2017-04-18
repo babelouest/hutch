@@ -1,8 +1,10 @@
 # Hutch front-end application
 
-A compiled, ready to use version is available in [/hutch/webapp/](https://github.com/babelouest/hutch/tree/master/webapp) folder, this is the source code of the front-end application.
+A compiled, ready to use version is available in [/hutch/webapp/dist/](https://github.com/babelouest/hutch/tree/master/webapp/dist/) folder, this is the source code of the front-end application.
 
-Based on preboot's [Angular 2 Webpack](https://github.com/preboot/angular-webpack).
+Based on preboot's [Angular 2 Webpack](https://github.com/preboot/angular-webpack), MIT licence.
+
+Hutch front-end application is licenced under [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html). All modules and packages used to develop or build the application can use different licences. 
 
 Angular 2 application, uses [Web Cryptography API](https://www.w3.org/TR/WebCryptoAPI/) to encode/decode on the client side, Bootstrap for the css.
 
