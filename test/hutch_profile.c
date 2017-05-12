@@ -107,10 +107,12 @@ int main(int argc, char *argv[])
   u_map_put(auth_req.map_post_body, "scope", argc>3?argv[3]:USER_SCOPE_LIST);
   res = ulfius_send_http_request(&auth_req, &auth_resp);
   if (res == U_OK && auth_resp.status == 200) {
-    char * bearer_token = msprintf("Bearer %s", (json_string_value(json_object_get(auth_resp.json_body, "access_token"))));
-    y_log_message(Y_LOG_LEVEL_INFO, "User %s authenticated", USER_LOGIN, json_dumps(auth_resp.json_body, JSON_ENCODE_ANY), auth_resp.status);
+    json_t * json_body = ulfius_get_json_body_response(&auth_resp, NULL);
+    char * bearer_token = msprintf("Bearer %s", (json_string_value(json_object_get(json_body, "access_token"))));
+    y_log_message(Y_LOG_LEVEL_INFO, "User %s authenticated", USER_LOGIN, json_dumps(json_body, JSON_ENCODE_ANY), auth_resp.status);
     u_map_put(user_req.map_header, "Authorization", bearer_token);
     free(bearer_token);
+    json_decref(json_body);
     
     s = libjwt_suite();
     sr = srunner_create(s);

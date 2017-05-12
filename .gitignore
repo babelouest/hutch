@@ -2,9 +2,9 @@
 valgrind.txt
 hutch.conf
 hutch
-tests/hutch_coin
-tests/hutch_profile
-tests/hutch_safe
+test/hutch_coin
+test/hutch_profile
+test/hutch_safe
 
 # webapp ignore list, based on original .gitignore from angular2-webpack: https://github.com/preboot/angular-webpack
 webapp/src/public/config.json

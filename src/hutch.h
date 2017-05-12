@@ -36,7 +36,7 @@
 
 #define HUTCH_LOG_NAME "Hutch"
 #define HUTCH_DEFAULT_PORT 4884
-#define HUTCH_DEFAULT_PREFIX "hutch"
+#define HUTCH_DEFAULT_PREFIX "api"
 
 #define HUTCH_RUNNING  0
 #define HUTCH_STOP     1
