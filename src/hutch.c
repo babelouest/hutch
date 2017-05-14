@@ -113,31 +113,31 @@ int main (int argc, char ** argv) {
   // At this point, we declare all API endpoints and configure 
   
   // Profile endpoint
-  ulfius_add_endpoint_by_val(config->instance, "*", config->api_prefix, "/*", 0, &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/", 1, &callback_hutch_profile_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/history", 1, &callback_hutch_profile_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/profile/", 1, &callback_hutch_profile_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "*", config->api_prefix, "/*", HUTCH_CALLBACK_PRIORITY_AUTHENTICATION, &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_profile_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/history", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_profile_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/profile/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_profile_set, (void*)config);
   
   // Safe endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/", 1, &callback_hutch_safe_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe", 1, &callback_hutch_safe_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/history", 1, &callback_hutch_safe_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/", 1, &callback_hutch_safe_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe", 1, &callback_hutch_safe_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe", 1, &callback_hutch_safe_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/history", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_delete, (void*)config);
 
   // Coin endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/", 1, &callback_hutch_coin_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin", 1, &callback_hutch_coin_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin/history", 1, &callback_hutch_coin_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/:safe/coin/", 1, &callback_hutch_coin_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe/coin/:coin", 1, &callback_hutch_coin_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe/coin/:coin", 1, &callback_hutch_coin_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin/history", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/:safe/coin/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe/coin/:coin", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe/coin/:coin", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_delete, (void*)config);
   
   // Other endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->app_files_path, "*", 1, &callback_hutch_static_file, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, 1, &callback_hutch_server_configuration, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", 1, &callback_hutch_options, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->app_files_path, "*", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_static_file, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_server_configuration, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", HUTCH_CALLBACK_PRIORITY_ZERO, &callback_hutch_options, (void*)config);
   ulfius_set_default_endpoint(config->instance, &callback_default, (void*)config);
 
   // Set default headers
