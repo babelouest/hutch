@@ -63,7 +63,7 @@ json_t * profile_get(struct config_elements * config, const char * username) {
                         username);
   res = h_select(config->conn, j_query, &j_result, NULL);
   json_decref(j_query);
-  
+
   if (res == H_OK) {
     if (json_array_size(j_result) > 0) {
       j_return = json_pack("{siso}", "result", HU_OK, "profile", json_copy(json_array_get(j_result, 0)));

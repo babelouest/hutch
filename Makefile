@@ -20,7 +20,7 @@
 #
 
 HUTCH_SOURCE=./src
-HUTCH_TESTS=./tests
+HUTCH_TESTS=./test
 
 all:
 	cd $(HUTCH_SOURCE) && $(MAKE)

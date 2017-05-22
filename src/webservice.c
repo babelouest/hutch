@@ -24,14 +24,19 @@
 #include <string.h>
 #include "hutch.h"
 
+int set_response_json_body_and_clean(struct _u_response * response, uint status, json_t * json_body) {
+  int res = ulfius_set_json_body_response(response, status, json_body);
+  json_decref(json_body);
+  return res;
+}
+
 /**
  * default callback endpoint
  * return an error 404
  */
 int callback_default (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  response->status = 404;
-  response->json_body = json_pack("{ssss}", "error", "resource not found", "message", "no resource available at this address");
-  return U_OK;
+  set_response_json_body_and_clean(response, 404, json_pack("{ssss}", "error", "resource not found", "message", "no resource available at this address"));
+  return U_CALLBACK_CONTINUE;
 }
 
 /**
@@ -55,7 +60,7 @@ int callback_hutch_static_file (const struct _u_request * request, struct _u_res
     *strchr(file_requested, '?') = '\0';
   }
   
-  if (file_requested == NULL || strlen(file_requested) == 0 || 0 == nstrcmp("/", file_requested)) {
+  if (file_requested == NULL || strlen(file_requested) == 0 || 0 == o_strcmp("/", file_requested)) {
     file_requested = "/index.html";
   }
   
@@ -88,15 +93,13 @@ int callback_hutch_static_file (const struct _u_request * request, struct _u_res
       u_map_put(response->map_header, "Content-Type", content_type);
     } else {
       y_log_message(Y_LOG_LEVEL_ERROR, "Static File Server - Internal error in %s", request->http_url);
-      response->json_body = json_pack("{ss}", "error", request->http_url);
-      response->status = 500;
+      set_response_json_body_and_clean(response, 500, json_pack("{ss}", "error", request->http_url));
     }
   } else {
-    response->json_body = json_pack("{ss}", "resource not found", request->http_url);
-    response->status = 404;
+    set_response_json_body_and_clean(response, 404, json_pack("{ss}", "static resource not found", request->http_url));
   }
   free(file_path);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 /**
@@ -107,7 +110,7 @@ int callback_hutch_options (const struct _u_request * request, struct _u_respons
   u_map_put(response->map_header, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   u_map_put(response->map_header, "Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Bearer, Authorization");
   u_map_put(response->map_header, "Access-Control-Max-Age", "1800");
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 /**
@@ -115,12 +118,12 @@ int callback_hutch_options (const struct _u_request * request, struct _u_respons
  * send the location of prefixes
  */
 int callback_hutch_server_configuration (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  response->json_body = json_pack("{ssss}", 
+  set_response_json_body_and_clean(response, 200, json_pack("{ssss}", 
                         "api_prefix", 
                         ((struct config_elements *)user_data)->api_prefix,
                         "hutch_scope",
-                        ((struct config_elements *)user_data)->glewlwyd_resource_config->oauth_scope);
-  return U_OK;
+                        ((struct config_elements *)user_data)->glewlwyd_resource_config->oauth_scope));
+  return U_CALLBACK_CONTINUE;
 };
 
 int callback_hutch_profile_get (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -131,13 +134,12 @@ int callback_hutch_profile_get (const struct _u_request * request, struct _u_res
   if (check_result_value(j_token, G_OK)) {
     j_profile = profile_get(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")));
     if (check_result_value(j_profile, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_profile, "profile"));
+      set_response_json_body_and_clean(response, 200, json_copy(json_object_get(j_profile, "profile")));
       if (profile_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), ip_source, access_read) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_get - Error adding profile access history");
       }
     } else if (check_result_value(j_profile, HU_ERROR_NOT_FOUND)) {
-      response->status = 404;
-      response->json_body = json_pack("{ss}", "error", "Profile not found, please create one");
+      set_response_json_body_and_clean(response, 404, json_pack("{ss}", "error", "Profile not found, please create one"));
     } else {
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_get - Error getting profile");
     }
@@ -147,7 +149,7 @@ int callback_hutch_profile_get (const struct _u_request * request, struct _u_res
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_get - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_profile_set (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -155,11 +157,12 @@ int callback_hutch_profile_set (const struct _u_request * request, struct _u_res
   json_t * j_token = access_token_get_payload(u_map_get(request->map_header, HEADER_AUTHORIZATION) + strlen(HEADER_PREFIX_BEARER)), * j_is_valid;
   int res;
   const char * ip_source = get_ip_source(request);
+  json_t * json_body = ulfius_get_json_body_request(request, NULL);
   
   if (check_result_value(j_token, G_OK)) {
-    j_is_valid = is_profile_valid(request->json_body);
+    j_is_valid = is_profile_valid(json_body);
     if (j_is_valid != NULL && json_array_size(j_is_valid) == 0) {
-      res = profile_set(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), request->json_body);
+      res = profile_set(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), json_body);
       if (profile_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), ip_source, access_update) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_set - Error adding profile access history");
       }
@@ -168,8 +171,7 @@ int callback_hutch_profile_set (const struct _u_request * request, struct _u_res
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_set - Error setting profile");
       }
     } else if (j_is_valid != NULL && json_array_size(j_is_valid) > 0) {
-      response->status = 400;
-      response->json_body= json_copy(j_is_valid);
+      set_response_json_body_and_clean(response, 400, json_copy(j_is_valid));
     } else {
       response->status = 500;
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_set - Error is_profile_valid");
@@ -180,7 +182,8 @@ int callback_hutch_profile_set (const struct _u_request * request, struct _u_res
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_set - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  json_decref(json_body);
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_profile_get_history (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -191,7 +194,7 @@ int callback_hutch_profile_get_history (const struct _u_request * request, struc
   if (check_result_value(j_token, G_OK)) {
     j_history = profile_get_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")));
     if (check_result_value(j_history, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_history, "history"));
+      set_response_json_body_and_clean(response, 200, json_copy(json_object_get(j_history, "history")));
       if (profile_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), ip_source, access_history) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_get_history - Error adding profile access history");
       }
@@ -206,7 +209,7 @@ int callback_hutch_profile_get_history (const struct _u_request * request, struc
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_get_history - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_safe_get_list (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -216,7 +219,7 @@ int callback_hutch_safe_get_list (const struct _u_request * request, struct _u_r
   if (check_result_value(j_token, G_OK)) {
     j_safe = safe_get_list(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")));
     if (check_result_value(j_safe, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_safe, "safe"));
+      set_response_json_body_and_clean(response, 200, json_copy(json_object_get(j_safe, "safe")));
     } else {
       response->status = 500;
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_list - Error getting safe");
@@ -227,7 +230,7 @@ int callback_hutch_safe_get_list (const struct _u_request * request, struct _u_r
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_list - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_safe_get (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -240,7 +243,7 @@ int callback_hutch_safe_get (const struct _u_request * request, struct _u_respon
     if (check_result_value(j_safe, HU_ERROR_NOT_FOUND)) {
       response->status = 404;
     } else if (check_result_value(j_safe, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_safe, "safe"));
+      set_response_json_body_and_clean(response, 200, json_copy(json_object_get(j_safe, "safe")));
       if (safe_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), ip_source, access_read) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_list - Error adding safe access history");
       }
@@ -253,7 +256,7 @@ int callback_hutch_safe_get (const struct _u_request * request, struct _u_respon
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_safe_get_history (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -264,7 +267,7 @@ int callback_hutch_safe_get_history (const struct _u_request * request, struct _
   if (check_result_value(j_token, G_OK)) {
     j_safe_history = safe_get_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"));
     if (check_result_value(j_safe_history, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_safe_history, "history"));
+      set_response_json_body_and_clean(response, 200, json_copy(json_object_get(j_safe_history, "history")));
       if (safe_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), ip_source, access_history) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_history - Error adding safe access history");
       }
@@ -277,7 +280,7 @@ int callback_hutch_safe_get_history (const struct _u_request * request, struct _
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get_history - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_safe_add (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -285,12 +288,13 @@ int callback_hutch_safe_add (const struct _u_request * request, struct _u_respon
   json_t * j_token = access_token_get_payload(u_map_get(request->map_header, HEADER_AUTHORIZATION) + strlen(HEADER_PREFIX_BEARER)), * j_is_valid;
   const char * ip_source = get_ip_source(request);
   int res;
+  json_t * json_body = ulfius_get_json_body_request(request, NULL);
   
   if (check_result_value(j_token, G_OK)) {
-    j_is_valid = is_safe_valid(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), request->json_body, 1);
+    j_is_valid = is_safe_valid(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), json_body, 1);
     if (j_is_valid != NULL && json_array_size(j_is_valid) == 0) {
-      res = safe_add(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), request->json_body);
-      if (safe_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), json_string_value(json_object_get(request->json_body, "name")), ip_source, access_create) != HU_OK) {
+      res = safe_add(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), json_body);
+      if (safe_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), json_string_value(json_object_get(json_body, "name")), ip_source, access_create) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_add - Error adding safe access history");
       }
       if (res != HU_OK) {
@@ -298,8 +302,7 @@ int callback_hutch_safe_add (const struct _u_request * request, struct _u_respon
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_add - Error adding safe");
       }
     } else if (j_is_valid != NULL && json_array_size(j_is_valid) > 0) {
-      response->status = 400;
-      response->json_body= json_copy(j_is_valid);
+      set_response_json_body_and_clean(response, 400, json_copy(j_is_valid));
     } else {
       response->status = 500;
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_add - Error is_safe_valid");
@@ -310,7 +313,8 @@ int callback_hutch_safe_add (const struct _u_request * request, struct _u_respon
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_add - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  json_decref(json_body);
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_safe_set (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -318,13 +322,14 @@ int callback_hutch_safe_set (const struct _u_request * request, struct _u_respon
   json_t * j_token = access_token_get_payload(u_map_get(request->map_header, HEADER_AUTHORIZATION) + strlen(HEADER_PREFIX_BEARER)), * j_is_valid, * j_safe;
   const char * ip_source = get_ip_source(request);
   int res;
+  json_t * json_body = ulfius_get_json_body_request(request, NULL);
   
   if (check_result_value(j_token, G_OK)) {
     j_safe = safe_get(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"));
     if (check_result_value(j_safe, HU_OK)) {
-      j_is_valid = is_safe_valid(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), request->json_body, 0);
+      j_is_valid = is_safe_valid(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), json_body, 0);
       if (j_is_valid != NULL && json_array_size(j_is_valid) == 0) {
-        res = safe_set(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), request->json_body);
+        res = safe_set(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), json_body);
         if (safe_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), ip_source, access_update) != HU_OK) {
           y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_set - Error setting safe access history");
         }
@@ -333,8 +338,7 @@ int callback_hutch_safe_set (const struct _u_request * request, struct _u_respon
           y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_set - Error setting safe");
         }
       } else if (j_is_valid != NULL && json_array_size(j_is_valid) > 0) {
-        response->status = 400;
-        response->json_body= json_copy(j_is_valid);
+        set_response_json_body_and_clean(response, 400, json_copy(j_is_valid));
       } else {
         response->status = 500;
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_set - Error is_safe_valid");
@@ -352,7 +356,8 @@ int callback_hutch_safe_set (const struct _u_request * request, struct _u_respon
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_set - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  json_decref(json_body);
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_safe_delete (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -384,7 +389,7 @@ int callback_hutch_safe_delete (const struct _u_request * request, struct _u_res
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_delete - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_coin_get_list (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -394,7 +399,7 @@ int callback_hutch_coin_get_list (const struct _u_request * request, struct _u_r
   if (check_result_value(j_token, G_OK)) {
     j_coin = coin_get_list(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"));
     if (check_result_value(j_coin, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_coin, "coin"));
+      set_response_json_body_and_clean(response, 200, json_copy(json_object_get(j_coin, "coin")));
     } else {
       response->status = 500;
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_list - Error getting coin");
@@ -405,7 +410,7 @@ int callback_hutch_coin_get_list (const struct _u_request * request, struct _u_r
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_list - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_coin_get (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -416,7 +421,7 @@ int callback_hutch_coin_get (const struct _u_request * request, struct _u_respon
   if (check_result_value(j_token, G_OK)) {
     j_coin = coin_get(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"));
     if (check_result_value(j_coin, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_coin, "coin"));
+      set_response_json_body_and_clean(response, 200, json_copy(json_object_get(j_coin, "coin")));
       if (coin_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"), ip_source, access_read) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_list - Error adding coin access history");
       }
@@ -432,7 +437,7 @@ int callback_hutch_coin_get (const struct _u_request * request, struct _u_respon
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_coin_get_history (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -443,7 +448,7 @@ int callback_hutch_coin_get_history (const struct _u_request * request, struct _
   if (check_result_value(j_token, G_OK)) {
     j_coin_history = coin_get_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"));
     if (check_result_value(j_coin_history, HU_OK)) {
-      response->json_body = json_copy(json_object_get(j_coin_history, "history"));
+      set_response_json_body_and_clean(response, 200, json_copy(json_object_get(j_coin_history, "history")));
       if (coin_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"), ip_source, access_history) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_history - Error adding coin access history");
       }
@@ -458,7 +463,7 @@ int callback_hutch_coin_get_history (const struct _u_request * request, struct _
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get_history - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_coin_add (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -466,12 +471,13 @@ int callback_hutch_coin_add (const struct _u_request * request, struct _u_respon
   json_t * j_token = access_token_get_payload(u_map_get(request->map_header, HEADER_AUTHORIZATION) + strlen(HEADER_PREFIX_BEARER)), * j_is_valid;
   const char * ip_source = get_ip_source(request);
   int res;
+  json_t * json_body = ulfius_get_json_body_request(request, NULL);
   
   if (check_result_value(j_token, G_OK)) {
-    j_is_valid = is_coin_valid(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), request->json_body, 1);
+    j_is_valid = is_coin_valid(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), json_body, 1);
     if (j_is_valid != NULL && json_array_size(j_is_valid) == 0) {
-      res = coin_add(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), request->json_body);
-      if (coin_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), json_string_value(json_object_get(request->json_body, "name")), ip_source, access_create) != HU_OK) {
+      res = coin_add(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), json_body);
+      if (coin_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), json_string_value(json_object_get(json_body, "name")), ip_source, access_create) != HU_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_add - Error adding coin access history");
       }
       if (res != HU_OK) {
@@ -479,8 +485,7 @@ int callback_hutch_coin_add (const struct _u_request * request, struct _u_respon
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_add - Error adding coin");
       }
     } else if (j_is_valid != NULL && json_array_size(j_is_valid) > 0) {
-      response->status = 400;
-      response->json_body= json_copy(j_is_valid);
+      set_response_json_body_and_clean(response, 400, json_copy(j_is_valid));
     } else {
       response->status = 500;
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_add - Error is_coin_valid");
@@ -490,8 +495,9 @@ int callback_hutch_coin_add (const struct _u_request * request, struct _u_respon
     response->status = 500;
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_add - Error getting token payload");
   }
+  json_decref(json_body);
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_coin_set (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -499,23 +505,23 @@ int callback_hutch_coin_set (const struct _u_request * request, struct _u_respon
   json_t * j_token = access_token_get_payload(u_map_get(request->map_header, HEADER_AUTHORIZATION) + strlen(HEADER_PREFIX_BEARER)), * j_is_valid, * j_coin;
   const char * ip_source = get_ip_source(request);
   int res;
+  json_t * json_body = ulfius_get_json_body_request(request, NULL);
   
   if (check_result_value(j_token, G_OK)) {
     j_coin = coin_get(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"));
     if (check_result_value(j_coin, HU_OK)) {
-      j_is_valid = is_coin_valid(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), request->json_body, 0);
+      j_is_valid = is_coin_valid(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), json_body, 0);
       if (j_is_valid != NULL && json_array_size(j_is_valid) == 0) {
         if (coin_add_access_history(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"), ip_source, access_update) != HU_OK) {
           y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_set - Error setting coin access history");
         }
-        res = coin_set(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"), request->json_body);
+        res = coin_set(config, json_string_value(json_object_get(json_object_get(j_token, "grants"), "username")), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"), json_body);
         if (res != HU_OK) {
           response->status = 500;
           y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_set - Error setting coin");
         }
       } else if (j_is_valid != NULL && json_array_size(j_is_valid) > 0) {
-        response->status = 400;
-        response->json_body= json_copy(j_is_valid);
+        set_response_json_body_and_clean(response, 400, json_copy(j_is_valid));
       } else {
         response->status = 500;
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_set - Error is_coin_valid");
@@ -533,7 +539,8 @@ int callback_hutch_coin_set (const struct _u_request * request, struct _u_respon
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_set - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  json_decref(json_body);
+  return U_CALLBACK_CONTINUE;
 }
 
 int callback_hutch_coin_delete (const struct _u_request * request, struct _u_response * response, void * user_data) {
@@ -565,5 +572,5 @@ int callback_hutch_coin_delete (const struct _u_request * request, struct _u_res
     y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_delete - Error getting token payload");
   }
   json_decref(j_token);
-  return U_OK;
+  return U_CALLBACK_CONTINUE;
 }

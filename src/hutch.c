@@ -68,7 +68,7 @@ int main (int argc, char ** argv) {
     fprintf(stderr, "Memory error - config->instance || config->glewlwyd_resource_config\n");
     return 1;
   }
-  ulfius_init_instance(config->instance, -1, NULL);
+  ulfius_init_instance(config->instance, HUTCH_DEFAULT_PORT, NULL, NULL);
   config->glewlwyd_resource_config->method = G_METHOD_HEADER;
   config->glewlwyd_resource_config->realm = NULL;
   config->glewlwyd_resource_config->oauth_scope = NULL;
@@ -113,31 +113,32 @@ int main (int argc, char ** argv) {
   // At this point, we declare all API endpoints and configure 
   
   // Profile endpoint
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/profile/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_profile_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "*", config->api_prefix, "/*", HUTCH_CALLBACK_PRIORITY_AUTHENTICATION, &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_profile_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/profile/history", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_profile_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/profile/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_profile_set, (void*)config);
   
   // Safe endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_safe_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/history", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_safe_delete, (void*)config);
 
   // Coin endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get_list, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin/history", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_get_history, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/:safe/coin/", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_add, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_set, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe/coin/:coin", &callback_check_glewlwyd_access_token, config->glewlwyd_resource_config, NULL, &callback_hutch_coin_delete, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_get_list, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_get, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->api_prefix, "/safe/:safe/coin/:coin/history", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_get_history, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "POST", config->api_prefix, "/safe/:safe/coin/", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_add, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "PUT", config->api_prefix, "/safe/:safe/coin/:coin", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_set, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe/coin/:coin", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_delete, (void*)config);
   
   // Other endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", NULL, "*", NULL, NULL, NULL, &callback_hutch_static_file, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, NULL, NULL, NULL, &callback_hutch_server_configuration, (void*)config);
-  ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", NULL, NULL, NULL, &callback_hutch_options, (void*)config);
-  ulfius_set_default_endpoint(config->instance, NULL, NULL, NULL, &callback_default, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->app_files_path, "*", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_static_file, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_server_configuration, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", HUTCH_CALLBACK_PRIORITY_ZERO, &callback_hutch_options, (void*)config);
+  ulfius_set_default_endpoint(config->instance, &callback_default, (void*)config);
 
   // Set default headers
   u_map_put(config->instance->default_headers, "Access-Control-Allow-Origin", config->allow_origin);
@@ -230,7 +231,7 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
       switch (next_option) {
         case 'c':
           if (optarg != NULL) {
-            config->config_file = nstrdup(optarg);
+            config->config_file = o_strdup(optarg);
             if (config->config_file == NULL) {
               fprintf(stderr, "Error allocating config->config_file, exiting\n");
               exit_server(&config, HUTCH_STOP);
@@ -254,7 +255,7 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
           break;
         case 'u':
           if (optarg != NULL) {
-            config->api_prefix = nstrdup(optarg);
+            config->api_prefix = o_strdup(optarg);
             if (config->api_prefix == NULL) {
               fprintf(stderr, "Error allocating config->api_prefix, exiting\n");
               exit_server(&config, HUTCH_STOP);
@@ -266,7 +267,7 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
           break;
         case 'm':
           if (optarg != NULL) {
-            tmp = nstrdup(optarg);
+            tmp = o_strdup(optarg);
             if (tmp == NULL) {
               fprintf(stderr, "Error allocating log_mode, exiting\n");
               exit_server(&config, HUTCH_STOP);
@@ -308,7 +309,7 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
           break;
         case 'f':
           if (optarg != NULL) {
-            config->log_file = nstrdup(optarg);
+            config->log_file = o_strdup(optarg);
             if (config->log_file == NULL) {
               fprintf(stderr, "Error allocating config->log_file, exiting\n");
               exit_server(&config, HUTCH_STOP);
@@ -398,15 +399,17 @@ int build_config_from_file(struct config_elements * config) {
     return 0;
   }
   
-  if (config->instance->port == -1) {
+  if (config->instance->port == HUTCH_DEFAULT_PORT) {
     // Get Port number to listen to
-    config_lookup_int(&cfg, "port", &(config->instance->port));
+    int port;
+    config_lookup_int(&cfg, "port", &port);
+    config->instance->port = (uint)port;
   }
   
   if (config->api_prefix == NULL) {
     // Get prefix url for angharad
     if (config_lookup_string(&cfg, "api_prefix", &cur_prefix)) {
-      config->api_prefix = nstrdup(cur_prefix);
+      config->api_prefix = o_strdup(cur_prefix);
       if (config->api_prefix == NULL) {
         fprintf(stderr, "Error allocating config->api_prefix, exiting\n");
         config_destroy(&cfg);
@@ -418,7 +421,7 @@ int build_config_from_file(struct config_elements * config) {
   if (config->allow_origin == NULL) {
     // Get allow-origin value for CORS
     if (config_lookup_string(&cfg, "allow_origin", &cur_allow_origin)) {
-      config->allow_origin = nstrdup(cur_allow_origin);
+      config->allow_origin = o_strdup(cur_allow_origin);
       if (config->allow_origin == NULL) {
         fprintf(stderr, "Error allocating config->allow_origin, exiting\n");
         config_destroy(&cfg);
@@ -432,16 +435,16 @@ int build_config_from_file(struct config_elements * config) {
     if (config_lookup_string(&cfg, "log_mode", &cur_log_mode)) {
       one_log_mode = strtok((char *)cur_log_mode, ",");
       while (one_log_mode != NULL) {
-        if (0 == nstrncmp("console", one_log_mode, strlen("console"))) {
+        if (0 == o_strncmp("console", one_log_mode, strlen("console"))) {
           config->log_mode |= Y_LOG_MODE_CONSOLE;
-        } else if (0 == nstrncmp("syslog", one_log_mode, strlen("syslog"))) {
+        } else if (0 == o_strncmp("syslog", one_log_mode, strlen("syslog"))) {
           config->log_mode |= Y_LOG_MODE_SYSLOG;
-        } else if (0 == nstrncmp("file", one_log_mode, strlen("file"))) {
+        } else if (0 == o_strncmp("file", one_log_mode, strlen("file"))) {
           config->log_mode |= Y_LOG_MODE_FILE;
           // Get log file path
           if (config->log_file == NULL) {
             if (config_lookup_string(&cfg, "log_file", &cur_log_file)) {
-              config->log_file = nstrdup(cur_log_file);
+              config->log_file = o_strdup(cur_log_file);
               if (config->log_file == NULL) {
                 fprintf(stderr, "Error allocating config->log_file, exiting\n");
                 config_destroy(&cfg);
@@ -458,15 +461,15 @@ int build_config_from_file(struct config_elements * config) {
   if (config->log_level == Y_LOG_LEVEL_NONE) {
     // Get log level
     if (config_lookup_string(&cfg, "log_level", &cur_log_level)) {
-      if (0 == nstrncmp("NONE", cur_log_level, strlen("NONE"))) {
+      if (0 == o_strncmp("NONE", cur_log_level, strlen("NONE"))) {
         config->log_level = Y_LOG_LEVEL_NONE;
-      } else if (0 == nstrncmp("ERROR", cur_log_level, strlen("ERROR"))) {
+      } else if (0 == o_strncmp("ERROR", cur_log_level, strlen("ERROR"))) {
         config->log_level = Y_LOG_LEVEL_ERROR;
-      } else if (0 == nstrncmp("WARNING", cur_log_level, strlen("WARNING"))) {
+      } else if (0 == o_strncmp("WARNING", cur_log_level, strlen("WARNING"))) {
         config->log_level = Y_LOG_LEVEL_WARNING;
-      } else if (0 == nstrncmp("INFO", cur_log_level, strlen("INFO"))) {
+      } else if (0 == o_strncmp("INFO", cur_log_level, strlen("INFO"))) {
         config->log_level = Y_LOG_LEVEL_INFO;
-      } else if (0 == nstrncmp("DEBUG", cur_log_level, strlen("DEBUG"))) {
+      } else if (0 == o_strncmp("DEBUG", cur_log_level, strlen("DEBUG"))) {
         config->log_level = Y_LOG_LEVEL_DEBUG;
       }
     }
@@ -481,7 +484,7 @@ int build_config_from_file(struct config_elements * config) {
   database = config_setting_get_member(root, "database");
   if (database != NULL) {
     if (config_setting_lookup_string(database, "type", &db_type) == CONFIG_TRUE) {
-      if (0 == nstrncmp(db_type, "sqlite3", strlen("sqlite3"))) {
+      if (0 == o_strncmp(db_type, "sqlite3", strlen("sqlite3"))) {
         if (config_setting_lookup_string(database, "path", &db_sqlite_path) == CONFIG_TRUE) {
           config->conn = h_connect_sqlite(db_sqlite_path);
           if (config->conn == NULL) {
@@ -494,7 +497,7 @@ int build_config_from_file(struct config_elements * config) {
           fprintf(stderr, "Error, no sqlite database specified\n");
           return 0;
         }
-      } else if (0 == nstrncmp(db_type, "mariadb", strlen("mariadb"))) {
+      } else if (0 == o_strncmp(db_type, "mariadb", strlen("mariadb"))) {
         config_setting_lookup_string(database, "host", &db_mariadb_host);
         config_setting_lookup_string(database, "user", &db_mariadb_user);
         config_setting_lookup_string(database, "password", &db_mariadb_password);
@@ -525,7 +528,7 @@ int build_config_from_file(struct config_elements * config) {
   if (config->app_files_path == NULL) {
     // Get path that serve static files
     if (config_lookup_string(&cfg, "app_files_path", &cur_static_files_path)) {
-      config->app_files_path = nstrdup(cur_static_files_path);
+      config->app_files_path = o_strdup(cur_static_files_path);
       if (config->app_files_path == NULL) {
         fprintf(stderr, "Error allocating config->app_files_path, exiting\n");
         config_destroy(&cfg);
@@ -569,7 +572,7 @@ int build_config_from_file(struct config_elements * config) {
     } else if (cur_use_sha) {
       config_setting_lookup_string(jwt, "sha_secret", &cur_sha_secret);
       if (cur_sha_secret != NULL) {
-        config->glewlwyd_resource_config->jwt_decode_key = nstrdup(cur_sha_secret);
+        config->glewlwyd_resource_config->jwt_decode_key = o_strdup(cur_sha_secret);
         config->glewlwyd_resource_config->jwt_alg = JWT_ALG_HS512;
       } else {
         config_destroy(&cfg);
@@ -584,7 +587,7 @@ int build_config_from_file(struct config_elements * config) {
   }
   
   if (config_lookup_string(&cfg, "oauth_scope", &cur_oauth_scope)) {
-    config->glewlwyd_resource_config->oauth_scope = nstrdup(cur_oauth_scope);
+    config->glewlwyd_resource_config->oauth_scope = o_strdup(cur_oauth_scope);
     if (config->glewlwyd_resource_config->oauth_scope == NULL) {
       fprintf(stderr, "Error allocating config->oauth_scope, exiting\n");
       config_destroy(&cfg);
@@ -607,7 +610,7 @@ int check_config(struct config_elements * config) {
   }
   
   if (config->api_prefix == NULL) {
-    config->api_prefix = nstrdup(HUTCH_DEFAULT_PREFIX);
+    config->api_prefix = o_strdup(HUTCH_DEFAULT_PREFIX);
     if (config->api_prefix == NULL) {
       fprintf(stderr, "Error allocating api_prefix, exit\n");
       return 0;
