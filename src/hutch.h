@@ -25,6 +25,8 @@
 #define __GLEWLWYD_H_
 
 /** Angharad libraries **/
+#define U_DISABLE_WEBSOCKET
+#define U_DISABLE_CURL
 #include <ulfius.h>
 #include <yder.h>
 
