@@ -44,6 +44,10 @@
 #define HUTCH_STOP     1
 #define HUTCH_ERROR    2
 
+#define HUTCH_CALLBACK_PRIORITY_ZERO           0
+#define HUTCH_CALLBACK_PRIORITY_AUTHENTICATION 1
+#define HUTCH_CALLBACK_PRIORITY_APPLICATION    2
+
 #define HU_OK                 0
 #define HU_ERROR              1
 #define HU_ERROR_UNAUTHORIZED 2

@@ -117,13 +117,13 @@ export class Oauth2ConnectComponent implements OnInit {
    * Expiration is ran 1 minute before expires_in value
    */
   runTokenTimeout() {
+    let timeout = this.expiresIn - 60;
     if (this.expiresIn > 0) {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
-        this.accessToken = '';
         this.expiresIn = 0;
         this.runRefreshToken();
-      }, 1000 * (this.expiresIn - 60));
+      }, 1000 * timeout);
     }
   }
 
