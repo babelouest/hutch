@@ -83,7 +83,10 @@ int main (int argc, char ** argv) {
   u_map_init(config->mime_types);
   u_map_put(config->mime_types, "*", "application/octet-stream");
   
-  global_handler_variable = HUTCH_RUNNING;
+  if (pthread_mutex_init(&global_handler_close_lock, NULL) || 
+      pthread_cond_init(&global_handler_close_cond, NULL)) {
+    y_log_message(Y_LOG_LEVEL_ERROR, "init - Error initializing global_handler_close_lock or global_handler_close_cond");
+  }
   // Catch end signals to make a clean exit
   signal (SIGQUIT, exit_handler);
   signal (SIGINT, exit_handler);
@@ -162,13 +165,17 @@ int main (int argc, char ** argv) {
     res = ulfius_start_framework(config->instance);
   }
   if (res == U_OK) {
-    // Loop until stop signal is broadcasted
-    while (global_handler_variable == HUTCH_RUNNING) {
-      sleep(1);
-    }
+    // Wait until stop signal is broadcasted
+    pthread_mutex_lock(&global_handler_close_lock);
+    pthread_cond_wait(&global_handler_close_cond, &global_handler_close_lock);
+    pthread_mutex_unlock(&global_handler_close_lock);
   } else {
     y_log_message(Y_LOG_LEVEL_ERROR, "Error starting glewlwyd webserver");
     exit_server(&config, HUTCH_ERROR);
+  }
+  if (pthread_mutex_destroy(&global_handler_close_lock) ||
+      pthread_cond_destroy(&global_handler_close_cond)) {
+    y_log_message(Y_LOG_LEVEL_ERROR, "Error destroying global_handler_close_lock or global_handler_close_cond");
   }
   exit_server(&config, HUTCH_STOP);
   return 0;
@@ -374,7 +381,9 @@ void print_help(FILE * output) {
  */
 void exit_handler(int signal) {
   y_log_message(Y_LOG_LEVEL_INFO, "Hutch caught a stop or kill signal (%d), exiting", signal);
-  global_handler_variable = HUTCH_STOP;
+  pthread_mutex_lock(&global_handler_close_lock);
+  pthread_cond_signal(&global_handler_close_cond);
+  pthread_mutex_unlock(&global_handler_close_lock);
 }
 
 /**

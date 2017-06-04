@@ -63,7 +63,8 @@
 #define HUTCH_TABLE_SAFE_HISTORY    "h_safe_history"
 #define HUTCH_TABLE_COIN_HISTORY    "h_coin_history"
 
-int global_handler_variable;
+pthread_mutex_t global_handler_close_lock;
+pthread_cond_t  global_handler_close_cond;
 
 typedef enum {
   access_create,
