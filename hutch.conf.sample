@@ -113,9 +113,14 @@ database =
 # jwt parameters
 jwt =
 {
+	 key_size = 512
+	 
    use_rsa = false
-   rsa_pub_file = "public.pem"
+   rsa_pub_file = "public-rsa.pem"
    
+	 use_ecdsa = false
+	 ecdsa_pub_file = "public-ecdsa.pem"
+	 
    use_sha = true
    sha_secret = "secret"
    
