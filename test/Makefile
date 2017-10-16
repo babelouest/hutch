@@ -31,7 +31,7 @@ PARAM_GLEWLWYD=
 all: test
 
 clean:
-	rm -f *.o hutch_profile hutch_safe hutch_coin valgrind.txt
+	rm -f *.o *.err *.log hutch_profile hutch_safe hutch_coin valgrind.txt
 
 unit-tests.o: unit-tests.c unit-tests.h
 	$(CC) $(CFLAGS) -c unit-tests.c
@@ -40,18 +40,18 @@ hutch_profile: hutch_profile.c unit-tests.o
 	$(CC) $(CFLAGS) hutch_profile.c unit-tests.o -o hutch_profile $(LIBS)
 
 test_hutch_profile: hutch_profile
-	-./hutch_profile $(PARAM_USER) $(PARAM_PASSWORD) $(PARAM_SCOPE) $(PARAM_GLEWLWYD)
+	-./run_test.sh ./hutch_profile $(PARAM_USER) $(PARAM_PASSWORD) $(PARAM_SCOPE) $(PARAM_GLEWLWYD)
 
 hutch_safe: hutch_safe.c unit-tests.o
 	$(CC) $(CFLAGS) hutch_safe.c unit-tests.o -o hutch_safe $(LIBS)
 
 test_hutch_safe: hutch_safe
-	-./hutch_safe $(PARAM_USER) $(PARAM_PASSWORD) $(PARAM_SCOPE) $(PARAM_GLEWLWYD)
+	-./run_test.sh ./hutch_safe $(PARAM_USER) $(PARAM_PASSWORD) $(PARAM_SCOPE) $(PARAM_GLEWLWYD)
 
 hutch_coin: hutch_coin.c unit-tests.o
 	$(CC) $(CFLAGS) hutch_coin.c unit-tests.o -o hutch_coin $(LIBS)
 
 test_hutch_coin: hutch_coin
-	-./hutch_coin $(PARAM_USER) $(PARAM_PASSWORD) $(PARAM_SCOPE) $(PARAM_GLEWLWYD)
+	-./run_test.sh ./hutch_coin $(PARAM_USER) $(PARAM_PASSWORD) $(PARAM_SCOPE) $(PARAM_GLEWLWYD)
 
 test: test_hutch_profile test_hutch_safe test_hutch_coin

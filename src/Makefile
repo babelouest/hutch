@@ -23,7 +23,7 @@ CC=gcc
 #CC=clang
 CFLAGS=-c -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc -lulfius -lyder -ljansson -lorcania -lhoel -ljwt -lconfig
-OBJECTS=hutch.o glewlwyd_resource.o profile.o coin.o safe.o webservice.o
+OBJECTS=hutch.o glewlwyd_resource.o static_file_callback.o profile.o coin.o safe.o webservice.o
 PREFIX=/usr/local
 CONFIG_FILE=../hutch.conf
 

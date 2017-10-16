@@ -35,6 +35,7 @@
 #include <hoel.h>
 
 #include "glewlwyd_resource.h"
+#include "static_file_callback.h"
 
 #define HUTCH_LOG_NAME "Hutch"
 #define HUTCH_DEFAULT_PORT 4884
@@ -47,6 +48,7 @@
 #define HUTCH_CALLBACK_PRIORITY_ZERO           0
 #define HUTCH_CALLBACK_PRIORITY_AUTHENTICATION 1
 #define HUTCH_CALLBACK_PRIORITY_APPLICATION    2
+#define HUTCH_CALLBACK_PRIORITY_CLEAN          3
 
 #define HU_OK                 0
 #define HU_ERROR              1
@@ -81,14 +83,13 @@ struct config_elements {
   unsigned long                      log_level;
   char *                             log_file;
   char *                             allow_origin;
-  char *                             app_files_path;
   unsigned int                       use_secure_connection;
   char *                             secure_connection_key_file;
   char *                             secure_connection_pem_file;
   struct _h_connection *             conn;
   struct _u_instance *               instance;
-  struct _u_map *                    mime_types;
   struct _glewlwyd_resource_config * glewlwyd_resource_config;
+	struct _static_file_config       * static_file_config;
 };
 
 // Main functions and misc functions
@@ -150,5 +151,6 @@ int callback_hutch_server_configuration (const struct _u_request * request, stru
 int callback_hutch_options (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_static_file (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_default (const struct _u_request * request, struct _u_response * response, void * user_data);
+int callback_clean (const struct _u_request * request, struct _u_response * response, void * user_data);
 
 #endif

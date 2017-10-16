@@ -40,69 +40,6 @@ int callback_default (const struct _u_request * request, struct _u_response * re
 }
 
 /**
- * static file callback endpoint
- */
-int callback_hutch_static_file (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  void * buffer = NULL;
-  size_t length, res;
-  FILE * f;
-  char * file_requested;
-  char * file_path;
-  const char * content_type;
-
-  file_requested = request->http_url + sizeof(char);
-  
-  if (strchr(file_requested, '#') != NULL) {
-    *strchr(file_requested, '#') = '\0';
-  }
-  
-  if (strchr(file_requested, '?') != NULL) {
-    *strchr(file_requested, '?') = '\0';
-  }
-  
-  if (file_requested == NULL || strlen(file_requested) == 0 || 0 == o_strcmp("/", file_requested)) {
-    file_requested = "/index.html";
-  }
-  
-  file_path = msprintf("%s%s", ((struct config_elements *)user_data)->app_files_path, file_requested);
-
-  if (access(file_path, F_OK) != -1) {
-    f = fopen (file_path, "rb");
-    if (f) {
-      fseek (f, 0, SEEK_END);
-      length = ftell (f);
-      fseek (f, 0, SEEK_SET);
-      buffer = malloc(length*sizeof(void));
-      if (buffer) {
-        res = fread (buffer, 1, length, f);
-        if (res != length) {
-          y_log_message(Y_LOG_LEVEL_WARNING, "callback_angharad_static_file - fread warning, reading %ld while expecting %ld", res, length);
-        }
-      }
-      fclose (f);
-    }
-
-    if (buffer) {
-      content_type = u_map_get_case(((struct config_elements *)user_data)->mime_types, get_filename_ext(file_requested));
-      if (content_type == NULL) {
-        content_type = u_map_get(((struct config_elements *)user_data)->mime_types, "*");
-        y_log_message(Y_LOG_LEVEL_WARNING, "Static File Server - Unknown mime type for extension %s", get_filename_ext(file_requested));
-      }
-      response->binary_body = buffer;
-      response->binary_body_length = length;
-      u_map_put(response->map_header, "Content-Type", content_type);
-    } else {
-      y_log_message(Y_LOG_LEVEL_ERROR, "Static File Server - Internal error in %s", request->http_url);
-      set_response_json_body_and_clean(response, 500, json_pack("{ss}", "error", request->http_url));
-    }
-  } else {
-    set_response_json_body_and_clean(response, 404, json_pack("{ss}", "static resource not found", request->http_url));
-  }
-  free(file_path);
-  return U_CALLBACK_CONTINUE;
-}
-
-/**
  * OPTIONS callback function
  * Send mandatory parameters for browsers to call REST APIs
  */
@@ -125,6 +62,16 @@ int callback_hutch_server_configuration (const struct _u_request * request, stru
                         ((struct config_elements *)user_data)->glewlwyd_resource_config->oauth_scope));
   return U_CALLBACK_CONTINUE;
 };
+
+/**
+ * Last endpoint called, clean response->shared_data
+ */
+int callback_clean (const struct _u_request * request, struct _u_response * response, void * user_data) {
+  if (response->shared_data != NULL) {
+    json_decref((json_t *)response->shared_data);
+  }
+  return U_CALLBACK_COMPLETE;
+}
 
 int callback_hutch_profile_get (const struct _u_request * request, struct _u_response * response, void * user_data) {
   struct config_elements * config = (struct config_elements *)user_data;

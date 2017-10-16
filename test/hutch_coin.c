@@ -247,6 +247,7 @@ int main(int argc, char *argv[])
   struct _u_request auth_req;
   struct _u_response auth_resp;
   int res;
+	char * bearer_token;
   
   y_init_logs("Hutch test", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "Starting Hutch test");
   
@@ -263,8 +264,8 @@ int main(int argc, char *argv[])
   res = ulfius_send_http_request(&auth_req, &auth_resp);
   if (res == U_OK && auth_resp.status == 200) {
     json_t * json_body = ulfius_get_json_body_response(&auth_resp, NULL);
-    char * bearer_token = msprintf("Bearer %s", (json_string_value(json_object_get(json_body, "access_token"))));
-    y_log_message(Y_LOG_LEVEL_INFO, "User %s authenticated", USER_LOGIN, json_dumps(json_body, JSON_ENCODE_ANY), auth_resp.status);
+    bearer_token = msprintf("Bearer %s", json_string_value(json_object_get(json_body, "access_token")));
+	  y_log_message(Y_LOG_LEVEL_INFO, "User %s authenticated", USER_LOGIN, json_dumps(json_body, JSON_ENCODE_ANY), auth_resp.status);
     u_map_put(user_req.map_header, "Authorization", bearer_token);
     free(bearer_token);
     json_decref(json_body);

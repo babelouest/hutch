@@ -59,13 +59,13 @@ int main (int argc, char ** argv) {
   config->conn = NULL;
   config->instance = malloc(sizeof(struct _u_instance));
   config->allow_origin = NULL;
-  config->app_files_path = NULL;
   config->glewlwyd_resource_config = malloc(sizeof(struct _glewlwyd_resource_config));
+	config->static_file_config = o_malloc(sizeof(struct _static_file_config));
   config->use_secure_connection = 0;
   config->secure_connection_key_file = NULL;
   config->secure_connection_pem_file = NULL;
-  if (config->instance == NULL || config->glewlwyd_resource_config == NULL) {
-    fprintf(stderr, "Memory error - config->instance || config->glewlwyd_resource_config\n");
+  if (config->instance == NULL || config->glewlwyd_resource_config == NULL || config->static_file_config == NULL) {
+    fprintf(stderr, "Memory error - config->instance || config->glewlwyd_resource_config || config->static_file_config\n");
     return 1;
   }
   ulfius_init_instance(config->instance, HUTCH_DEFAULT_PORT, NULL, NULL);
@@ -75,14 +75,16 @@ int main (int argc, char ** argv) {
   config->glewlwyd_resource_config->jwt_decode_key = NULL;
   config->glewlwyd_resource_config->jwt_alg = JWT_ALG_NONE;
 
-  config->mime_types = malloc(sizeof(struct _u_map));
-  if (config->mime_types == NULL) {
-    y_log_message(Y_LOG_LEVEL_ERROR, "init - Error allocating resources for config->mime_types, aborting");
+  config->static_file_config->files_path = NULL;
+  config->static_file_config->url_prefix = NULL;
+  config->static_file_config->mime_types = o_malloc(sizeof(struct _u_map));
+  if (config->static_file_config->mime_types == NULL) {
+    fprintf(stderr, "init - Error allocating resources for config->static_file_config->mime_types, aborting");
     exit_server(&config, HUTCH_ERROR);
   }
-  u_map_init(config->mime_types);
-  u_map_put(config->mime_types, "*", "application/octet-stream");
-  
+  u_map_init(config->static_file_config->mime_types);
+  u_map_put(config->static_file_config->mime_types, "*", "application/octet-stream");
+
   if (pthread_mutex_init(&global_handler_close_lock, NULL) || 
       pthread_cond_init(&global_handler_close_cond, NULL)) {
     y_log_message(Y_LOG_LEVEL_ERROR, "init - Error initializing global_handler_close_lock or global_handler_close_cond");
@@ -138,9 +140,10 @@ int main (int argc, char ** argv) {
   ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe/coin/:coin", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_delete, (void*)config);
   
   // Other endpoints
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->app_files_path, "*", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_static_file, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "GET", config->static_file_config->url_prefix, "*", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_static_file, (void*)config->static_file_config);
   ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_server_configuration, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", HUTCH_CALLBACK_PRIORITY_ZERO, &callback_hutch_options, (void*)config);
+  ulfius_add_endpoint_by_val(config->instance, "*", NULL, "*", HUTCH_CALLBACK_PRIORITY_CLEAN, &callback_clean, (void*)config);
   ulfius_set_default_endpoint(config->instance, &callback_default, (void*)config);
 
   // Set default headers
@@ -170,7 +173,7 @@ int main (int argc, char ** argv) {
     pthread_cond_wait(&global_handler_close_cond, &global_handler_close_lock);
     pthread_mutex_unlock(&global_handler_close_lock);
   } else {
-    y_log_message(Y_LOG_LEVEL_ERROR, "Error starting glewlwyd webserver");
+    y_log_message(Y_LOG_LEVEL_ERROR, "Error starting hutch webservice");
     exit_server(&config, HUTCH_ERROR);
   }
   if (pthread_mutex_destroy(&global_handler_close_lock) ||
@@ -192,14 +195,15 @@ void exit_server(struct config_elements ** config, int exit_value) {
     free((*config)->api_prefix);
     free((*config)->log_file);
     free((*config)->allow_origin);
-    free((*config)->app_files_path);
     free((*config)->secure_connection_key_file);
     free((*config)->secure_connection_pem_file);
     free((*config)->glewlwyd_resource_config->oauth_scope);
     free((*config)->glewlwyd_resource_config->jwt_decode_key);
     free((*config)->glewlwyd_resource_config);
     
-    u_map_clean_full((*config)->mime_types);
+		o_free((*config)->static_file_config->files_path);
+		o_free((*config)->static_file_config->url_prefix);
+    u_map_clean_full((*config)->static_file_config->mime_types);
     h_close_db((*config)->conn);
     h_clean_connection((*config)->conn);
     ulfius_stop_framework((*config)->instance);
@@ -396,9 +400,9 @@ int build_config_from_file(struct config_elements * config) {
   config_setting_t * root, * database, * jwt, * mime_type_list, * mime_type;
   const char * cur_prefix, * cur_log_mode, * cur_log_level, * cur_log_file = NULL, * one_log_mode, * cur_allow_origin,
              * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL,
-             * db_mariadb_password = NULL, * db_mariadb_dbname = NULL, * cur_static_files_path = NULL, * cur_rsa_pub_file = NULL,
+             * db_mariadb_password = NULL, * db_mariadb_dbname = NULL, * cur_static_files_path = NULL, * cur_rsa_pub_file = NULL, * cur_ecdsa_pub_file = NULL,
              * cur_sha_secret = NULL, * cur_oauth_scope = NULL, * extension = NULL, * mime_type_value = NULL;
-  int db_mariadb_port = 0, cur_use_rsa = 0, cur_use_sha = 0, i = 0;
+  int db_mariadb_port = 0, cur_key_size = 512, cur_use_rsa = 0, cur_use_sha = 0, cur_use_ecdsa = 0, i = 0;
   
   config_init(&cfg);
   
@@ -534,12 +538,24 @@ int build_config_from_file(struct config_elements * config) {
     return 0;
   }
 
-  if (config->app_files_path == NULL) {
+  if (config->static_file_config->files_path == NULL) {
     // Get path that serve static files
     if (config_lookup_string(&cfg, "app_files_path", &cur_static_files_path)) {
-      config->app_files_path = o_strdup(cur_static_files_path);
-      if (config->app_files_path == NULL) {
-        fprintf(stderr, "Error allocating config->app_files_path, exiting\n");
+      config->static_file_config->files_path = o_strdup(cur_static_files_path);
+      if (config->static_file_config->files_path == NULL) {
+        fprintf(stderr, "Error allocating config->static_file_config->files_path, exiting\n");
+        config_destroy(&cfg);
+        return 0;
+      }
+    }
+  }
+
+  if (config->static_file_config->url_prefix == NULL) {
+    // Get prefix url for angharad
+    if (config_lookup_string(&cfg, "app_files_prefix", &cur_prefix)) {
+      config->static_file_config->url_prefix = o_strdup(cur_prefix);
+      if (config->static_file_config->url_prefix == NULL) {
+        fprintf(stderr, "Error allocating config->static_file_config->url_prefix, exiting\n");
         config_destroy(&cfg);
         return 0;
       }
@@ -553,7 +569,7 @@ int build_config_from_file(struct config_elements * config) {
       mime_type = config_setting_get_elem(mime_type_list, i);
       if (mime_type != NULL) {
         if (config_setting_lookup_string(mime_type, "extension", &extension) && config_setting_lookup_string(mime_type, "type", &mime_type_value)) {
-          u_map_put(config->mime_types, extension, mime_type_value);
+          u_map_put(config->static_file_config->mime_types, extension, mime_type_value);
         }
       }
     }
@@ -561,38 +577,74 @@ int build_config_from_file(struct config_elements * config) {
   
   jwt = config_setting_get_member(root, "jwt");
   if (jwt != NULL) {
-    config_setting_lookup_bool(jwt, "use_rsa", &cur_use_rsa);
-    config_setting_lookup_bool(jwt, "use_sha", &cur_use_sha);
-    if (cur_use_rsa) {
-      config_setting_lookup_string(jwt, "rsa_pub_file", &cur_rsa_pub_file);
-      if (cur_rsa_pub_file != NULL) {
-        config->glewlwyd_resource_config->jwt_decode_key = get_file_content(cur_rsa_pub_file);
-        config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS512;
-        if (config->glewlwyd_resource_config->jwt_decode_key == NULL) {
-          config_destroy(&cfg);
-          fprintf(stderr, "Error, rsa_pub_file content incorrect\n");
-          return 0;
-        }
-      } else {
-        config_destroy(&cfg);
-        fprintf(stderr, "Error, rsa_pub_file incorrect\n");
-        return 0;
-      }
-    } else if (cur_use_sha) {
-      config_setting_lookup_string(jwt, "sha_secret", &cur_sha_secret);
-      if (cur_sha_secret != NULL) {
-        config->glewlwyd_resource_config->jwt_decode_key = o_strdup(cur_sha_secret);
-        config->glewlwyd_resource_config->jwt_alg = JWT_ALG_HS512;
-      } else {
-        config_destroy(&cfg);
-        fprintf(stderr, "Error, sha_secret incorrect\n");
-        return 0;
-      }
-    } else {
-      config_destroy(&cfg);
-      fprintf(stderr, "Error, no jwt algorithm selected\n");
-      return 0;
-    }
+		config_setting_lookup_bool(jwt, "key_size", &cur_key_size);
+		
+		if (cur_key_size == 256 || cur_key_size == 384 || cur_key_size == 512) {
+			config_setting_lookup_bool(jwt, "use_rsa", &cur_use_rsa);
+			config_setting_lookup_bool(jwt, "use_sha", &cur_use_sha);
+			config_setting_lookup_bool(jwt, "use_ecdsa", &cur_use_ecdsa);
+			if (cur_use_rsa) {
+				config_setting_lookup_string(jwt, "rsa_pub_file", &cur_rsa_pub_file);
+				if (cur_rsa_pub_file != NULL) {
+					config->glewlwyd_resource_config->jwt_decode_key = get_file_content(cur_rsa_pub_file);
+					if (config->glewlwyd_resource_config->jwt_decode_key == NULL) {
+						config_destroy(&cfg);
+						fprintf(stderr, "Error, rsa_pub_file content incorrect\n");
+						return 0;
+					}
+					if (cur_key_size == 256) {
+						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS256;
+					} else if (cur_key_size == 384) {
+						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS384;
+					} else if (cur_key_size == 512) {
+						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS512;
+					}
+				} else {
+					config_destroy(&cfg);
+					fprintf(stderr, "Error, rsa_pub_file incorrect\n");
+					return 0;
+				}
+			} else if (cur_use_ecdsa) {
+				config_setting_lookup_string(jwt, "ecdsa_pub_file", &cur_ecdsa_pub_file);
+				if (cur_ecdsa_pub_file != NULL) {
+					config->glewlwyd_resource_config->jwt_decode_key = get_file_content(cur_ecdsa_pub_file);
+					if (config->glewlwyd_resource_config->jwt_decode_key == NULL) {
+						config_destroy(&cfg);
+						fprintf(stderr, "Error, ecdsa_pub_file content incorrect\n");
+						return 0;
+					}
+					if (cur_key_size == 256) {
+						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES256;
+					} else if (cur_key_size == 384) {
+						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES384;
+					} else if (cur_key_size == 512) {
+						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES512;
+					}
+				} else {
+					config_destroy(&cfg);
+					fprintf(stderr, "Error, ecdsa_pub_file incorrect\n");
+					return 0;
+				}
+			} else if (cur_use_sha) {
+				config_setting_lookup_string(jwt, "sha_secret", &cur_sha_secret);
+				if (cur_sha_secret != NULL) {
+					config->glewlwyd_resource_config->jwt_decode_key = o_strdup(cur_sha_secret);
+					config->glewlwyd_resource_config->jwt_alg = JWT_ALG_HS512;
+				} else {
+					config_destroy(&cfg);
+					fprintf(stderr, "Error, sha_secret incorrect\n");
+					return 0;
+				}
+			} else {
+				config_destroy(&cfg);
+				fprintf(stderr, "Error, no jwt algorithm selected\n");
+				return 0;
+			}
+		} else {
+			config_destroy(&cfg);
+			fprintf(stderr, "Error, key_size incorrect, values available are 256, 384 or 512\n");
+			return 0;
+		}
   }
   
   if (config_lookup_string(&cfg, "oauth_scope", &cur_oauth_scope)) {
@@ -641,18 +693,6 @@ int check_config(struct config_elements * config) {
   }
   
   return 1;
-}
-
-/**
- * Return the filename extension
- */
-const char * get_filename_ext(const char *path) {
-    const char *dot = strrchr(path, '.');
-    if(!dot || dot == path) return "*";
-    if (strchr(dot, '?') != NULL) {
-      *strchr(dot, '?') = '\0';
-    }
-    return dot;
 }
 
 /**
