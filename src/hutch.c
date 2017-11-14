@@ -60,7 +60,7 @@ int main (int argc, char ** argv) {
   config->instance = malloc(sizeof(struct _u_instance));
   config->allow_origin = NULL;
   config->glewlwyd_resource_config = malloc(sizeof(struct _glewlwyd_resource_config));
-	config->static_file_config = o_malloc(sizeof(struct _static_file_config));
+  config->static_file_config = o_malloc(sizeof(struct _static_file_config));
   config->use_secure_connection = 0;
   config->secure_connection_key_file = NULL;
   config->secure_connection_pem_file = NULL;
@@ -201,8 +201,8 @@ void exit_server(struct config_elements ** config, int exit_value) {
     free((*config)->glewlwyd_resource_config->jwt_decode_key);
     free((*config)->glewlwyd_resource_config);
     
-		o_free((*config)->static_file_config->files_path);
-		o_free((*config)->static_file_config->url_prefix);
+    o_free((*config)->static_file_config->files_path);
+    o_free((*config)->static_file_config->url_prefix);
     u_map_clean_full((*config)->static_file_config->mime_types);
     h_close_db((*config)->conn);
     h_clean_connection((*config)->conn);
@@ -222,7 +222,7 @@ void exit_server(struct config_elements ** config, int exit_value) {
  */
 int build_config_from_args(int argc, char ** argv, struct config_elements * config) {
   int next_option;
-  const char * short_options = "c::p::u::m::l::f::h::";
+  const char * short_options = "c::p::u::m::l::f::h::v::";
   char * tmp = NULL, * to_free = NULL, * one_log_mode = NULL;
   static const struct option long_options[]= {
     {"config-file", optional_argument, NULL, 'c'},
@@ -232,6 +232,7 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
     {"log-level", optional_argument, NULL, 'l'},
     {"log-file", optional_argument, NULL, 'f'},
     {"help", optional_argument, NULL, 'h'},
+    {"version", optional_argument, NULL, 'v'},
     {NULL, 0, NULL, 0}
   };
   
@@ -331,6 +332,8 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
           }
           break;
         case 'h':
+        case 'v':
+				  print_help(stdout);
           exit_server(&config, HUTCH_STOP);
           break;
       }
@@ -354,16 +357,25 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
  * Print help message to output file specified
  */
 void print_help(FILE * output) {
-  fprintf(output, "\nHutch\n");
+  fprintf(output, "\nHutch - Password and private data locker\n");
   fprintf(output, "\n");
-  fprintf(output, "Password and private data locker\n");
+  fprintf(output, "Version %s\n", _HUTCH_VERSION_);
+  fprintf(output, "\n");
+  fprintf(output, "Copyright 2017 Nicolas Mora <mail@babelouest.org>\n");
+  fprintf(output, "\n");
+  fprintf(output, "This program is free software; you can redistribute it and/or\n");
+  fprintf(output, "modify it under the terms of the GNU GENERAL PUBLIC LICENSE\n");
+  fprintf(output, "License as published by the Free Software Foundation;\n");
+  fprintf(output, "version 3 of the License.\n");
+  fprintf(output, "\n");
+  fprintf(output, "Command-line options:\n");
   fprintf(output, "\n");
   fprintf(output, "-c --config-file=PATH\n");
   fprintf(output, "\tPath to configuration file\n");
   fprintf(output, "-p --port=PORT\n");
   fprintf(output, "\tPort to listen to\n");
   fprintf(output, "-u --url-prefix=PREFIX\n");
-  fprintf(output, "\tURL prefix\n");
+  fprintf(output, "\tAPI URL prefix\n");
   fprintf(output, "-m --log-mode=MODE\n");
   fprintf(output, "\tLog Mode\n");
   fprintf(output, "\tconsole, syslog or file\n");
@@ -376,6 +388,7 @@ void print_help(FILE * output) {
   fprintf(output, "-f --log-file=PATH\n");
   fprintf(output, "\tPath for log file if log mode file is specified\n");
   fprintf(output, "-h --help\n");
+  fprintf(output, "-v --version\n");
   fprintf(output, "\tPrint this message\n\n");
 }
 
@@ -504,6 +517,12 @@ int build_config_from_file(struct config_elements * config) {
             config_destroy(&cfg);
             fprintf(stderr, "Error opening sqlite database %s\n", db_sqlite_path);
             return 0;
+          } else {
+            if (h_exec_query_sqlite(config->conn, "PRAGMA foreign_keys = ON;") != H_OK) {
+              y_log_message(Y_LOG_LEVEL_ERROR, "Error executing sqlite3 query 'PRAGMA foreign_keys = ON;'");
+              config_destroy(&cfg);
+              return 0;
+            }
           }
         } else {
           config_destroy(&cfg);
@@ -577,74 +596,74 @@ int build_config_from_file(struct config_elements * config) {
   
   jwt = config_setting_get_member(root, "jwt");
   if (jwt != NULL) {
-		config_setting_lookup_bool(jwt, "key_size", &cur_key_size);
-		
-		if (cur_key_size == 256 || cur_key_size == 384 || cur_key_size == 512) {
-			config_setting_lookup_bool(jwt, "use_rsa", &cur_use_rsa);
-			config_setting_lookup_bool(jwt, "use_sha", &cur_use_sha);
-			config_setting_lookup_bool(jwt, "use_ecdsa", &cur_use_ecdsa);
-			if (cur_use_rsa) {
-				config_setting_lookup_string(jwt, "rsa_pub_file", &cur_rsa_pub_file);
-				if (cur_rsa_pub_file != NULL) {
-					config->glewlwyd_resource_config->jwt_decode_key = get_file_content(cur_rsa_pub_file);
-					if (config->glewlwyd_resource_config->jwt_decode_key == NULL) {
-						config_destroy(&cfg);
-						fprintf(stderr, "Error, rsa_pub_file content incorrect\n");
-						return 0;
-					}
-					if (cur_key_size == 256) {
-						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS256;
-					} else if (cur_key_size == 384) {
-						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS384;
-					} else if (cur_key_size == 512) {
-						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS512;
-					}
-				} else {
-					config_destroy(&cfg);
-					fprintf(stderr, "Error, rsa_pub_file incorrect\n");
-					return 0;
-				}
-			} else if (cur_use_ecdsa) {
-				config_setting_lookup_string(jwt, "ecdsa_pub_file", &cur_ecdsa_pub_file);
-				if (cur_ecdsa_pub_file != NULL) {
-					config->glewlwyd_resource_config->jwt_decode_key = get_file_content(cur_ecdsa_pub_file);
-					if (config->glewlwyd_resource_config->jwt_decode_key == NULL) {
-						config_destroy(&cfg);
-						fprintf(stderr, "Error, ecdsa_pub_file content incorrect\n");
-						return 0;
-					}
-					if (cur_key_size == 256) {
-						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES256;
-					} else if (cur_key_size == 384) {
-						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES384;
-					} else if (cur_key_size == 512) {
-						config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES512;
-					}
-				} else {
-					config_destroy(&cfg);
-					fprintf(stderr, "Error, ecdsa_pub_file incorrect\n");
-					return 0;
-				}
-			} else if (cur_use_sha) {
-				config_setting_lookup_string(jwt, "sha_secret", &cur_sha_secret);
-				if (cur_sha_secret != NULL) {
-					config->glewlwyd_resource_config->jwt_decode_key = o_strdup(cur_sha_secret);
-					config->glewlwyd_resource_config->jwt_alg = JWT_ALG_HS512;
-				} else {
-					config_destroy(&cfg);
-					fprintf(stderr, "Error, sha_secret incorrect\n");
-					return 0;
-				}
-			} else {
-				config_destroy(&cfg);
-				fprintf(stderr, "Error, no jwt algorithm selected\n");
-				return 0;
-			}
-		} else {
-			config_destroy(&cfg);
-			fprintf(stderr, "Error, key_size incorrect, values available are 256, 384 or 512\n");
-			return 0;
-		}
+    config_setting_lookup_bool(jwt, "key_size", &cur_key_size);
+    
+    if (cur_key_size == 256 || cur_key_size == 384 || cur_key_size == 512) {
+      config_setting_lookup_bool(jwt, "use_rsa", &cur_use_rsa);
+      config_setting_lookup_bool(jwt, "use_sha", &cur_use_sha);
+      config_setting_lookup_bool(jwt, "use_ecdsa", &cur_use_ecdsa);
+      if (cur_use_rsa) {
+        config_setting_lookup_string(jwt, "rsa_pub_file", &cur_rsa_pub_file);
+        if (cur_rsa_pub_file != NULL) {
+          config->glewlwyd_resource_config->jwt_decode_key = get_file_content(cur_rsa_pub_file);
+          if (config->glewlwyd_resource_config->jwt_decode_key == NULL) {
+            config_destroy(&cfg);
+            fprintf(stderr, "Error, rsa_pub_file content incorrect\n");
+            return 0;
+          }
+          if (cur_key_size == 256) {
+            config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS256;
+          } else if (cur_key_size == 384) {
+            config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS384;
+          } else if (cur_key_size == 512) {
+            config->glewlwyd_resource_config->jwt_alg = JWT_ALG_RS512;
+          }
+        } else {
+          config_destroy(&cfg);
+          fprintf(stderr, "Error, rsa_pub_file incorrect\n");
+          return 0;
+        }
+      } else if (cur_use_ecdsa) {
+        config_setting_lookup_string(jwt, "ecdsa_pub_file", &cur_ecdsa_pub_file);
+        if (cur_ecdsa_pub_file != NULL) {
+          config->glewlwyd_resource_config->jwt_decode_key = get_file_content(cur_ecdsa_pub_file);
+          if (config->glewlwyd_resource_config->jwt_decode_key == NULL) {
+            config_destroy(&cfg);
+            fprintf(stderr, "Error, ecdsa_pub_file content incorrect\n");
+            return 0;
+          }
+          if (cur_key_size == 256) {
+            config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES256;
+          } else if (cur_key_size == 384) {
+            config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES384;
+          } else if (cur_key_size == 512) {
+            config->glewlwyd_resource_config->jwt_alg = JWT_ALG_ES512;
+          }
+        } else {
+          config_destroy(&cfg);
+          fprintf(stderr, "Error, ecdsa_pub_file incorrect\n");
+          return 0;
+        }
+      } else if (cur_use_sha) {
+        config_setting_lookup_string(jwt, "sha_secret", &cur_sha_secret);
+        if (cur_sha_secret != NULL) {
+          config->glewlwyd_resource_config->jwt_decode_key = o_strdup(cur_sha_secret);
+          config->glewlwyd_resource_config->jwt_alg = JWT_ALG_HS512;
+        } else {
+          config_destroy(&cfg);
+          fprintf(stderr, "Error, sha_secret incorrect\n");
+          return 0;
+        }
+      } else {
+        config_destroy(&cfg);
+        fprintf(stderr, "Error, no jwt algorithm selected\n");
+        return 0;
+      }
+    } else {
+      config_destroy(&cfg);
+      fprintf(stderr, "Error, key_size incorrect, values available are 256, 384 or 512\n");
+      return 0;
+    }
   }
   
   if (config_lookup_string(&cfg, "oauth_scope", &cur_oauth_scope)) {

@@ -21,8 +21,10 @@
  *
  */
 
-#ifndef __GLEWLWYD_H_
-#define __GLEWLWYD_H_
+#ifndef __HUTCH_H_
+#define __HUTCH_H_
+
+#define _HUTCH_VERSION_ "1.0.2"
 
 /** Angharad libraries **/
 #define U_DISABLE_WEBSOCKET
