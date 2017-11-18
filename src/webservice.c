@@ -31,15 +31,6 @@ int set_response_json_body_and_clean(struct _u_response * response, uint status,
 }
 
 /**
- * default callback endpoint
- * return an error 404
- */
-int callback_default (const struct _u_request * request, struct _u_response * response, void * user_data) {
-  set_response_json_body_and_clean(response, 404, json_pack("{ssss}", "error", "resource not found", "message", "no resource available at this address"));
-  return U_CALLBACK_CONTINUE;
-}
-
-/**
  * OPTIONS callback function
  * Send mandatory parameters for browsers to call REST APIs
  */

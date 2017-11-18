@@ -152,7 +152,6 @@ int callback_hutch_coin_delete (const struct _u_request * request, struct _u_res
 int callback_hutch_server_configuration (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_options (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_hutch_static_file (const struct _u_request * request, struct _u_response * response, void * user_data);
-int callback_default (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_clean (const struct _u_request * request, struct _u_response * response, void * user_data);
 
 #endif

@@ -144,7 +144,6 @@ int main (int argc, char ** argv) {
   ulfius_add_endpoint_by_val(config->instance, "GET", "/config/", NULL, HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_server_configuration, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", HUTCH_CALLBACK_PRIORITY_ZERO, &callback_hutch_options, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "*", NULL, "*", HUTCH_CALLBACK_PRIORITY_CLEAN, &callback_clean, (void*)config);
-  ulfius_set_default_endpoint(config->instance, &callback_default, (void*)config);
 
   // Set default headers
   u_map_put(config->instance->default_headers, "Access-Control-Allow-Origin", config->allow_origin);
@@ -563,18 +562,6 @@ int build_config_from_file(struct config_elements * config) {
       config->static_file_config->files_path = o_strdup(cur_static_files_path);
       if (config->static_file_config->files_path == NULL) {
         fprintf(stderr, "Error allocating config->static_file_config->files_path, exiting\n");
-        config_destroy(&cfg);
-        return 0;
-      }
-    }
-  }
-
-  if (config->static_file_config->url_prefix == NULL) {
-    // Get prefix url for angharad
-    if (config_lookup_string(&cfg, "app_files_prefix", &cur_prefix)) {
-      config->static_file_config->url_prefix = o_strdup(cur_prefix);
-      if (config->static_file_config->url_prefix == NULL) {
-        fprintf(stderr, "Error allocating config->static_file_config->url_prefix, exiting\n");
         config_destroy(&cfg);
         return 0;
       }
