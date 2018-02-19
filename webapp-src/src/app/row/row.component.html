@@ -1,0 +1,127 @@
+<div class="row">
+  <div>
+    <a id="downloadAnchor" style="display:none" *ngIf="row.type === 'file'"></a>
+    <div class="col-md-4 text-left">
+      <span class="label label-info" [innerHtml]="'coin_type_' + row.type.replace('-', '_') | translate"></span>
+      <a href="" class="btn btn-default btn-xs" (click)="showPassword($event)" [title]="'button_show_password' | translate" *ngIf="row.type === 'password' && !row.edit">
+        <i class="fa fa-eye" aria-hidden="true" *ngIf="!row.show"></i>
+        <i class="fa fa-eye-slash" aria-hidden="true" *ngIf="row.show"></i>
+      </a>
+      <div>
+        <span *ngFor="let tag of row.tags" class="badge" [innerHtml]="tag"></span>
+      </div>
+    </div>
+    <form (ngSubmit)="saveRow()">
+      <div class="col-md-3 text-left">
+        <a href="{{row.value}}" title="{{row.value}}" target="_blank" *ngIf="!row.edit && row.type === 'url'" [innerHtml]="row.value"></a>
+        <span [innerHtml]="row.value"
+              *ngIf="!row.edit && (row.type === 'login' || row.type === 'text' || (row.show && row.type === 'password'))"></span>
+        <span *ngIf="!row.edit && !row.show && row.type === 'password'">********</span>
+        <input type="text"
+               name="value"
+               [(ngModel)]="row.value"
+               *ngIf="row.edit && (row.type === 'login' || row.type === 'text' || row.type === 'url')"
+               class="form-control"
+               [placeholder]="'coin_value' | translate">
+        <input type="password"
+               name="password"
+               [(ngModel)]="row.value"
+               *ngIf="row.edit && row.type === 'password'"
+               class="form-control">
+        <input type="password"
+               name="passwordVerified"
+               [(ngModel)]="row.valueVerified"
+               *ngIf="row.edit && row.type === 'password'"
+               class="form-control">
+        <span [innerHtml]="row.value.name" *ngIf="row.type === 'file'"></span>
+        <div class="fileUpload btn btn-default" *ngIf="row.edit && row.type === 'file'">
+          <span [innerHtml]="'button_upload' | translate"></span>
+          <input type="file" name="file" (change)="fileChange($event)" class="upload" />
+        </div>
+      </div>
+      <div class="col-md-5" *ngIf="!row.edit">
+        <div class="btn-group pull-right">
+          <button type="button" class="btn btn-default btn-sm" (click)="addSecretQuestion()" [title]="'button_add_secret_question' | translate" *ngIf="row.type === 'secret-questions'">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-default btn-sm" (click)="downloadFile()" [title]="'button_download' | translate" *ngIf="row.type === 'file'">
+            <i class="fa fa-cloud-download" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-default btn-sm btn-copy" [title]="'button_copy' | translate" *ngIf="row.type !== 'secret-questions' && row.type !== 'file'" (click)="copyToClipboard(row.value, row.type)" (cbOnSuccess)="copySuccess(row.type)">
+            <i class="fa fa-clipboard" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-default btn-sm" (click)="editRow()" [title]="'button_edit' | translate" *ngIf="row.type !== 'secret-questions'">
+            <i class="fa fa-pencil" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-default btn-sm" (click)="deleteRow()" [title]="'button_delete' | translate">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-default btn-sm" (click)="editTags()" [title]="'button_manage_tag' | translate">
+            <i class="fa fa-tag" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-4" *ngIf="row.edit">
+        <div class="btn-group pull-right">
+          <button type="button" class="btn btn-default btn-sm" (click)="generatePassword()" [title]="'button_generate_password' | translate" *ngIf="row.type === 'password'">
+            <i class="fa fa-magic" aria-hidden="true"></i>
+          </button>
+          <button type="submit" class="btn btn-default btn-sm" [disabled]="!isRowValid()" [title]="'button_save' | translate">
+            <i class="fa fa-save" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-default btn-sm" (click)="cancelEditRow()" [title]="'button_cancel' | translate">
+            <i class="fa fa-close" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="row.type === 'secret-questions'">
+    <hr>
+    <div class="col-md-12">
+      <div class="row" *ngFor="let secretQuestion of row.value; let i = index">
+        <form (ngSubmit)="saveSecretQuestion(secretQuestion)">
+          <div class="col-md-4 text-left">
+            <label class="label label-primary" [innerHtml]="'coin_secret_question_question' | translate:{ index: (i+1) }"></label>
+            <label [innerHtml]="secretQuestion.question" *ngIf="!secretQuestion.edit"></label>
+            <input name="question" type="text" [(ngModel)]="secretQuestion.question" *ngIf="secretQuestion.edit">
+          </div>
+          <div class="col-md-4 text-left">
+            <label class="label label-primary" [innerHtml]="'coin_secret_question_answer' | translate"></label>
+            <label [innerHtml]="secretQuestion.answer" *ngIf="!secretQuestion.edit"></label>
+            <input name="answer" type="text" [(ngModel)]="secretQuestion.answer" *ngIf="secretQuestion.edit">
+          </div>
+          <div class="col-md-4" *ngIf="!secretQuestion.edit">
+            <div class="btn-group pull-right">
+              <button type="button"
+                      class="btn btn-default btn-sm btn-copy"
+                      [title]="'button_copy' | translate"
+                      (click)="copyToClipboard(secretQuestion.answer, 'secret-questions')">
+                <i class="fa fa-clipboard" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-default btn-sm" (click)="editSecretQuestion(secretQuestion)" [title]="'button_edit' | translate">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-default btn-sm" (click)="deleteSecretQuestion(i)" [title]="'button_delete' | translate">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-md-4" *ngIf="secretQuestion.edit">
+            <div class="btn-group pull-right">
+              <button type="button" class="btn btn-default btn-sm" (click)="generateAnswer(secretQuestion)" [title]="'button_generate_answer' | translate">
+                <i class="fa fa-magic" aria-hidden="true"></i>
+              </button>
+              <button type="submit" class="btn btn-default btn-sm" [title]="'button_save' | translate">
+                <i class="fa fa-save" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-default btn-sm" (click)="cancelEditSecretQuestion(secretQuestion, i)" [title]="'button_cancel' | translate">
+                <i class="fa fa-close" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
