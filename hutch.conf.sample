@@ -14,10 +14,7 @@ port=4884
 api_prefix="api"
 
 # path to static files to access webapp
-app_files_path="/usr/local/share/hutch/webapp"
-
-# static files prefix
-app_files_prefix = "app"
+app_files_path="/usr/share/hutch/webapp"
 
 # mime types for webapp files
 app_files_mime_types =
