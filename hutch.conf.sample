@@ -14,7 +14,7 @@ port=4884
 api_prefix="api"
 
 # path to static files to access webapp
-app_files_path="webapp/dist/"
+app_files_path="/usr/local/share/hutch/webapp"
 
 # static files prefix
 app_files_prefix = "app"
@@ -76,10 +76,10 @@ app_files_mime_types =
 allow_origin="*"
 
 # log mode (console, syslog, file)
-log_mode="console,file"
+log_mode="file"
 
 # log level: NONE, ERROR, WARNING, INFO, DEBUG
-log_level="WARNING"
+log_level="INFO"
 
 # output to log file (required if log_mode is file)
 log_file="/tmp/hutch.log"
@@ -93,35 +93,34 @@ secure_connection_key_file="cert.key"
 secure_connection_pem_file="cert.pem"
 
 # MariaDB/Mysql database connection
-database =
-{
-  type = "mariadb";
-  host = "localhost";
-  user = "hutch";
-  password = "hutch";
-  dbname = "hutch";
-  port = 0;
-};
-
-# SQLite database connection
 #database =
 #{
-#   type               = "sqlite3";
-#   path               = "/tmp/hutch.db";
+#  type = "mariadb";
+#  host = "localhost";
+#  user = "hutch";
+#  password = "hutch";
+#  dbname = "hutch";
+#  port = 0;
 #};
 
-# jwt parameters
+# SQLite database connection
+database =
+{
+   type               = "sqlite3";
+   path               = "/var/cache/hutch/hutch.db";
+};
+
+# jwt parameters, these parameters correspond to the JWT configuration of the OAuth2 server you rely on
 jwt =
 {
-	 key_size = 512
+   key_size = 512
 	 
-   use_rsa = false
-   rsa_pub_file = "public-rsa.pem"
+   use_rsa = true
+   rsa_pub_file = "/usr/etc/hutch/public-rsa.pem"
    
 	 use_ecdsa = false
-	 ecdsa_pub_file = "public-ecdsa.pem"
+	 ecdsa_pub_file = "/usr/etc/hutch/public-ecdsa.pem"
 	 
-   use_sha = true
+   use_sha = false
    sha_secret = "secret"
-   
 }
