@@ -1,28 +1,51 @@
 # Hutch Installation
 
+## Upgrade from Hutch 1.0.x to 1.1
+
+A major change was applied to the safe password digest method, Hutch switched from SHA256 to PBKDF2, which means that **ALL** the safes created in Hutch 1.0 **WON'T** be available after migrating to Hutch 1.1.
+
+So proceed with caution, make a backup of the database and the front-end application in case you need to restore them.
+
+To migrate your safes, you can proceed with one of the following procedure.
+
+### Export, migrate, then reimport all safes
+
+Use the `Export safe` functionality for each safe of each user to export all safes into files. The export **must be without password**.
+
+Reconnect to Hutch, recreate new safes, then import all the safe backups in their new safe.
+
+Finally, if everything is working in the new safes, you can delete the old safes.
+
+### Export safe key
+
+Export the safe key for all safes in the `Manage safe` modal.
+
+Upgrade to 1.1 as explained in the upgrade paragraph.
+
+Reconnect to Hutch, lock all safe if they were unlocked, the use the `Reset password` procedure: click on the `Forgot password?`, then use your stored safe key to reset the password.
+
+### Upgrade procedure
+
+You must reinstall the API backend server with the packages available or by recompiling it, then install the updated front-end application files in the path specified by `app_files_path` in the hutch.conf file. There is no change in the database.
+
 ## Pre-compiled packages
 
 You can install Hutch with a pre-compiled package available in the [release pages](https://github.com/babelouest/hutch/releases/latest/). The package files `hutch-full_*` contain the package libraries of `orcania`, `yder`, `ulfius` and `hoel` precompiled for `hutch`, plus `hutch` package. To install a pre-compiled package, you need to have installed the following libraries:
 
 ```
+libmicrohttpd
 libjansson
-libavfilter
-libavcodec
-libavformat
-libavresample
-libavutil
-libcurl-gnutls
 libgnutls
-libgcrypt
 libsqlite3
+libssl
 libmariadbclient
 libconfig
 ```
 
-For example, to install Hutch with the `hutch-full_1.0.12_Debian_stretch_x86_64.tar.gz` package downloaded on the `releases` page, you must execute the following commands:
+For example, to install Hutch with the `hutch-full_1.1.0_Debian_stretch_x86_64.tar.gz` package downloaded on the `releases` page, you must execute the following commands:
 
 ```shell
-$ sudo apt install -y autoconf libjansson-dev libssl-dev libavfilter libavcodec libavformat libavresample libavutil libcurl-gnutls libgnutls libgcrypt libsqlite3 libmariadbclient libconfig
+$ sudo apt install -y autoconf libjansson-dev libssl-dev libsqlite3 libmariadbclient libconfig
 $ wget https://github.com/benmcollins/libjwt/archive/v1.9.tar.gz
 $ tar -zxvf v1.9.tar.gz
 $ cd libjwt-1.9
@@ -47,7 +70,6 @@ You must install the following libraries including their header files:
 ```
 libmicrohttpd
 libjansson
-libcurl 
 libmysqlclient 
 libsqlite3 
 libconfig 
@@ -57,7 +79,7 @@ libssl
 On a Debian based distribution (Debian, Ubuntu, Raspbian, etc.), you can install those dependencies using the following command:
 
 ```shell
-$ sudo apt-get install libmicrohttpd-dev libjansson-dev libcurl4-gnutls-dev libmysqlclient-dev libsqlite3-dev libconfig-dev libssl-dev
+$ sudo apt-get install libmicrohttpd-dev libjansson-dev libmysqlclient-dev libsqlite3-dev libconfig-dev libssl-dev
 ```
 
 ### CMake
@@ -102,13 +124,13 @@ $ sudo make install
 # Install Ulfius
 $ git clone https://github.com/babelouest/ulfius.git
 $ cd ulfius/src/
-$ make
+$ make -DWITH_CURL=off -DWITH_WEBSOCKET=off
 $ sudo make install
 
 # Install Hoel
 $ git clone https://github.com/babelouest/hoel.git
 $ cd hoel/src/
-$ make
+$ make -DWITH_PGSQL=off
 $ sudo make install
 
 # Install Hutch
