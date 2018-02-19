@@ -159,7 +159,7 @@ If you use a [Glewlwyd](https://github.com/babelouest/glewlwyd) instance as Oaut
 
 Hutch front-end is a Angular2 application, it will need a non confidential client_id, and the authorization types `code` and/or `token`.
 
-![glewlwyd client configuration](https://github.com/babelouest/hutch/raw/master/docs/images/glewlwyd.png)
+![glewlwyd client configuration](images/glewlwyd.png)
 
 ## Setup the web application
 
