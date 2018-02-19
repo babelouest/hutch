@@ -14,11 +14,11 @@ Authentication relies on a [Glewlwyd OAuth2 server](https://github.com/babeloues
 
 ## Documentation
 
-Installation documentation is available in the file [INSTALL.md](https://github.com/babelouest/hutch/blob/master/doc/INSTALL.md).
+Installation documentation is available in the file [INSTALL.md](https://github.com/babelouest/hutch/blob/master/docs/INSTALL.md).
 
-User guide documentation is available in the file [FRONT-END.md](https://github.com/babelouest/hutch/blob/master/doc/FRONT-END.md).
+User guide documentation is available in the file [FRONT-END.md](https://github.com/babelouest/hutch/blob/master/docs/FRONT-END.md).
 
-Server API description is available in the file [API.md](https://github.com/babelouest/hutch/blob/master/doc/API.md).
+Server API description is available in the file [API.md](https://github.com/babelouest/hutch/blob/master/docs/API.md).
 
 ## How does it work?
 
@@ -75,11 +75,11 @@ A secret has a name of 128 characters maximum, and data of 16MB maximum. The nam
 
 #### Encrypt a secret
 
-![encrypt coin](https://github.com/babelouest/hutch/raw/master/doc/images/Encrypt_coins.png)
+![encrypt coin](https://github.com/babelouest/hutch/raw/master/docs/images/Encrypt_coins.png)
 
 #### Decrypt a secret
 
-![decrypt coin](https://github.com/babelouest/hutch/raw/master/doc/images/Decrypt_coins.png)
+![decrypt coin](https://github.com/babelouest/hutch/raw/master/docs/images/Decrypt_coins.png)
 
 ## Is it secure?
 

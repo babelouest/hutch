@@ -1,5 +1,45 @@
 # Hutch Installation
 
+## Pre-compiled packages
+
+You can install Hutch with a pre-compiled package available in the [release pages](https://github.com/babelouest/hutch/releases/latest/). The package files `hutch-full_*` contain the package libraries of `orcania`, `yder`, `ulfius` and `hoel` precompiled for `hutch`, plus `hutch` package. To install a pre-compiled package, you need to have installed the following libraries:
+
+```
+libjansson
+libavfilter
+libavcodec
+libavformat
+libavresample
+libavutil
+libcurl-gnutls
+libgnutls
+libgcrypt
+libsqlite3
+libmariadbclient
+libconfig
+```
+
+For example, to install Hutch with the `hutch-full_1.0.12_Debian_stretch_x86_64.tar.gz` package downloaded on the `releases` page, you must execute the following commands:
+
+```shell
+$ sudo apt install -y autoconf libjansson-dev libssl-dev libavfilter libavcodec libavformat libavresample libavutil libcurl-gnutls libgnutls libgcrypt libsqlite3 libmariadbclient libconfig
+$ wget https://github.com/benmcollins/libjwt/archive/v1.9.tar.gz
+$ tar -zxvf v1.9.tar.gz
+$ cd libjwt-1.9
+$ autoreconf -i
+$ ./configure
+$ make && sudo make install
+$ wget https://github.com/babelouest/hutch/releases/download/v1.0.12/hutch-full_1.1.0_Debian_stretch_x86_64.tar.gz
+$ tar xf hoel-dev-full_1.4.0_Debian_stretch_x86_64.tar.gz
+$ sudo dpkg -i liborcania_1.2.0_Debian_stretch_x86_64.deb
+$ sudo dpkg -i libyder_1.2.0_Debian_stretch_x86_64.deb
+$ sudo dpkg -i libhoel_1.4.0_Debian_stretch_x86_64.deb
+$ sudo dpkg -i libulfius_2.3.0_Debian_stretch_x86_64.deb
+$ sudo dpkg -i hutch_1.1.0_Debian_stretch_x86_64.deb
+```
+
+If there's no package available for your distribution, you can recompile it manually using `CMake` or `Makefile`.
+
 ## Build API server
 
 You must install the following libraries including their header files:
@@ -20,7 +60,23 @@ On a Debian based distribution (Debian, Ubuntu, Raspbian, etc.), you can install
 $ sudo apt-get install libmicrohttpd-dev libjansson-dev libcurl4-gnutls-dev libmysqlclient-dev libsqlite3-dev libconfig-dev libssl-dev
 ```
 
-Then, download Hutch and its dependendencies hosted in github, compile and install.
+### CMake
+
+Download Hutch from Github, then use the CMake script to build the application:
+
+```shell
+# Install Hutch
+$ git clone https://github.com/babelouest/hutch.git
+$ mkdir hutch/build
+$ cd hutch/build
+$ cmake ..
+$ make 
+$ sudo make install
+```
+
+### Good ol' Makefile
+
+Download Hutch and its dependendencies hosted in github, compile and install.
 
 ```shell
 # Install libjwt
@@ -75,7 +131,7 @@ Use the dedicated script, `hutch.mariadb.sql` or `hutch.sqlite3.sql` to initiali
 
 You must set the configuration values to correspond with your OAuth2 glewlwyd server. The glewlwyd configuration block is labelled `jwt`
 
-In this block, you must set the value `use_rsa` to `true` if you use RSA signatures for the tokens, then specify the path to the RSA public key file in the value `rsa_pub_file`. If you use `sha` digest as signature, set `use_sha` to `true`, then specify the secret used to encode the tokens in the value `sha_secret`.
+In this block, you must set the value `use_rsa` to `true` if you use RSA signatures for the tokens, then specify the path to the RSA public key file in the value `rsa_pub_file`. If you use an ECDSA signature, set the parameter `use_ecdsa` to true and set the path to your ECDSA public key file. If you use `sha` digest as signature, set `use_sha` to `true`, then specify the secret used to encode the tokens in the value `sha_secret`.
 
 ### Install service
 
@@ -167,4 +223,4 @@ You can also manually start the application like this:
 $ ./hutch --config-file=hutch.conf
 ```
 
-By default, Hutch is available on TCP port 4884, the API is located in [http://localhost:4884/](http://localhost:4884/) and the web application is located in the url [http://localhost:4884/app/](http://localhost:4884/app/).
+By default, Hutch is available on TCP port 4884, the API is located at [http://localhost:4884/api](http://localhost:4884/api) and the web application is located at [http://localhost:4884/](http://localhost:4884/).
