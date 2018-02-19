@@ -6,23 +6,23 @@ This document will explain the different functionalities of the front-end.
 
 When the user first access the application, the user must click on the connect button on the top right of the screen, this will redirect the user to the glewlwyd authentication page. On successful authentication, the user will be redirected to Hutch with a valid token that will allow to manage safes and secrets.
 
-![Not connected](https://github.com/babelouest/hutch/raw/master/doc/images/not_connected.png)
+![Not connected](https://github.com/babelouest/hutch/raw/master/docs/images/not_connected.png)
 
 ## Setup profile
 
 On first connection, the user will need to setup his or her profile with a fortune message and a fortune image. So on every connection, the user will see the fortune message and image he or she has previously chosen, so he or she can verify he or she's connected to the correct server, to avoid some attacks like man in the middle.
 
-![No profile](https://github.com/babelouest/hutch/raw/master/doc/images/no_profile.png)
+![No profile](https://github.com/babelouest/hutch/raw/master/docs/images/no_profile.png)
 
 The user must enter a fortune message. This can be anything he or she wants, as long it's no more than 512 characters. It's common to use a citation or any sentence that has a meaning for the user.
 
 The user must also choose either a local image file, not over 400 Kb, or get a random file from [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page).
 
-![setup profile](https://github.com/babelouest/hutch/raw/master/doc/images/setup_profile.png)
+![setup profile](https://github.com/babelouest/hutch/raw/master/docs/images/setup_profile.png)
 
 Then, when the profile is set, the user can create and manage safes.
 
-![no safe](https://github.com/babelouest/hutch/raw/master/doc/images/profile_set.png)
+![no safe](https://github.com/babelouest/hutch/raw/master/docs/images/profile_set.png)
 
 ## Lock all safe
 
@@ -32,17 +32,17 @@ This will lock all safe on this device. To reopen them, the user has to enter th
 
 To add a new safe, the user must click the button in the top right of the home screen. Then, the user must set a name for the safe, unique for the user, an optional description, and a password. The password must be at least 8 characters. A strength meter is available for the user to enter a strong password. The safe name can't be changed once created.
 
-![add safe](https://github.com/babelouest/hutch/raw/master/doc/images/add_safe.png)
+![add safe](https://github.com/babelouest/hutch/raw/master/docs/images/add_safe.png)
 
 ## Safe connection
 
 To access a safe, select it on the tab list on the top left of the screen.
 
-![access safe](https://github.com/babelouest/hutch/raw/master/doc/images/home_with_safe.png)
+![access safe](https://github.com/babelouest/hutch/raw/master/docs/images/home_with_safe.png)
 
 Then, the user must enter the safe password to connect to the safe.
 
-![connect safe](https://github.com/babelouest/hutch/raw/master/doc/images/safe_connect.png)
+![connect safe](https://github.com/babelouest/hutch/raw/master/docs/images/safe_connect.png)
 
 If the user chooses the option "keep this safe open on this device", this safe will no longer need the password to be accessible on this browser, as long as the user is connected. This is used to facilitate the process, but the user must take extreme precautions with this option, and use it only on a device the user trusts, e.g. not on a public or shared session.
 
@@ -52,13 +52,13 @@ If the user has lost its password, he or she can use the reset safe password pro
 
 A safe password can't be reset if there is no secret in it.
 
-![safe reset password](https://github.com/babelouest/hutch/raw/master/doc/images/safe_reset_password.png)
+![safe reset password](https://github.com/babelouest/hutch/raw/master/docs/images/safe_reset_password.png)
 
 ## Secrets management
 
 When the user access a safe, the user can read, write, update, delete secrets and manage the safe.
 
-![safe example](https://github.com/babelouest/hutch/raw/master/doc/images/safe_example_detailed.png)
+![safe example](https://github.com/babelouest/hutch/raw/master/docs/images/safe_example_detailed.png)
 
 ### Secrets list
 
@@ -70,7 +70,7 @@ To add a new secret, the user must click on the (+) button right to the search i
 
 By default, all secrets are collapsed on the list. When a secret is collapsed, the user can click to deploy it to access all values, the user can also copy the sernames or the passwords stored in this secret when i't collapsed by clicking on the buttons.
 
-![Secret collapsed detailed](https://github.com/babelouest/hutch/raw/master/doc/images/secret_collapsed_detailed.png)
+![Secret collapsed detailed](https://github.com/babelouest/hutch/raw/master/docs/images/secret_collapsed_detailed.png)
 
 ### Secret expanded
 
@@ -88,13 +88,13 @@ A secret can have as many values as possible. The only limit is that a secret ca
 
 Every row can be edited or deleted. An updated or deleted row can't be recovered.
 
-![Secret expanded detailed](https://github.com/babelouest/hutch/raw/master/doc/images/secret_expanded_detailed.png)
+![Secret expanded detailed](https://github.com/babelouest/hutch/raw/master/docs/images/secret_expanded_detailed.png)
 
 ### Edit secret name and icon
 
 By clicking on the edit secret button, the user can update its displayed name and its icon. To update the icon, the user must click on the button left to the name input when in edit mode. Then a modal window opens and allows the user to select an icon on a list of available icons, the icons are provided by [Font Awesome](http://fontawesome.io/).
 
-![Select secret icon](https://github.com/babelouest/hutch/raw/master/doc/images/select_icon.png)
+![Select secret icon](https://github.com/babelouest/hutch/raw/master/docs/images/select_icon.png)
 
 ### Sort rows
 
@@ -104,19 +104,19 @@ The user can sort the rows of a secret. First the user must click on the sort bu
 
 The user can export this secret alone by clicking on its `Download secret` button. This will open a modal window where the user can select if the secret is exported with a password or not, then export the secret. This can be useful to exchange secrets between users.
 
-![Export secret](https://github.com/babelouest/hutch/raw/master/doc/images/export_secret.png)
+![Export secret](https://github.com/babelouest/hutch/raw/master/docs/images/export_secret.png)
 
 ### Edit a row
 
 By clicking on the edit row icon, the user can update the value. He or she can modify the value directly, or, for a password or a secret answer, generate a random value.
 
-![Update rows](https://github.com/babelouest/hutch/raw/master/doc/images/update_rows.png)
+![Update rows](https://github.com/babelouest/hutch/raw/master/docs/images/update_rows.png)
 
 #### Generate a random password
 
 By clicking on the generate random password button, a modal window opens to select the characters available and the length of the generated password.
 
-![Genrate password](https://github.com/babelouest/hutch/raw/master/doc/images/generate_password.png)
+![Genrate password](https://github.com/babelouest/hutch/raw/master/docs/images/generate_password.png)
 
 Then the user selects the password options, click on the button `Generate`, then click on the button `OK` to set the new generated password on the row value. The password is never displayed in this process, to protect the privacy. After that, the user can copy the new password in the clipboard and paste it when he or she create or update the password on the service.
 
@@ -124,13 +124,13 @@ Then the user selects the password options, click on the button `Generate`, then
 
 A _secret answer_ can also be generated by clicking on the `generate answer` button when the secret question is in edit mode. The answer is generated by picking at random 2 words from a list of most common words in the language the user uses the application. The answer will be totally wrong and that's the purpose, so an attacker won't be able to guess the answer from a background check of the user, but the user will still be able to answer them by using Hutch.
 
-![Genrate answer](https://github.com/babelouest/hutch/raw/master/doc/images/generate_answer.png)
+![Genrate answer](https://github.com/babelouest/hutch/raw/master/docs/images/generate_answer.png)
 
 ## Safe management
 
 On the top right of the safe tab are the safe action buttons.
 
-![Safe actions](https://github.com/babelouest/hutch/raw/master/doc/images/safe_actions_detailed.png)
+![Safe actions](https://github.com/babelouest/hutch/raw/master/docs/images/safe_actions_detailed.png)
 
 ### Reload all secrets
 
@@ -144,7 +144,7 @@ Lock the safe on the device. To reopen it, the user has to enter the password ag
 
 This opens a modal window where the user can export all safe secrets, import ones, or export the safe key.
 
-![Manage safe](https://github.com/babelouest/hutch/raw/master/doc/images/manage_safe.png)
+![Manage safe](https://github.com/babelouest/hutch/raw/master/docs/images/manage_safe.png)
 
 #### Export all safe secrets
 
@@ -168,7 +168,7 @@ If the user previously has exported the safe key, this key file will no longer b
 
 This will open a modal where the user can update the safe description, and/or update the safe password. To update the safe password, the user must previously enter the current one. The new password has the same strength policy than when creating a safe, with 8 characters minimum, and a strength meter is displayed on the screen.
 
-![Edit safe](https://github.com/babelouest/hutch/raw/master/doc/images/edit_safe.png)
+![Edit safe](https://github.com/babelouest/hutch/raw/master/docs/images/edit_safe.png)
 
 ### Delete safe
 
@@ -178,8 +178,8 @@ This will open a confirm modal window to the user. If the user confirms the supp
 
 To check for non authorized access, the user can have the whole access history for its profile, and independently every safe and secrets. A `show history` button is now available.
 
-![History button](https://github.com/babelouest/hutch/raw/master/doc/images/history_button.png)
+![History button](https://github.com/babelouest/hutch/raw/master/docs/images/history_button.png)
 
 By clicking on this button, the user will have see access sorted by date from the most recent, the originated ip source and the access type. This can be useful if the user has some suspicions. But this log won't tell the user if the data were decrypted or not, only if they were accessed and how.
 
-![History](https://github.com/babelouest/hutch/raw/master/doc/images/history.png)
+![History](https://github.com/babelouest/hutch/raw/master/docs/images/history.png)
