@@ -64,3 +64,5 @@ webapp/doc/
 # IDE #
 webapp/.idea/
 webapp/*.swp
+
+config.json

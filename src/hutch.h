@@ -24,7 +24,7 @@
 #ifndef __HUTCH_H_
 #define __HUTCH_H_
 
-#define _HUTCH_VERSION_ "1.0.2"
+#define _HUTCH_VERSION_ "1.1.0"
 
 /** Angharad libraries **/
 #define U_DISABLE_WEBSOCKET
