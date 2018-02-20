@@ -9,7 +9,9 @@
   "webCryptography": {
     "algorithm": "AES-CBC",
     "keyLength": 256,
-    "salt": "I'm a salty variable"
+    "passwordSalt": "I'm a salty variable",
+    "passwordIterations": 1000,
+    "passwordHash": "SHA-512"
   },
   "api": {
     "baseUrl": "http://localhost:4884/api",

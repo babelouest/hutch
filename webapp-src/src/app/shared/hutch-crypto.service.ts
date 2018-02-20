@@ -49,7 +49,9 @@ export class HutchCryptoService {
   dataMaxLength: number;
   crytoSubtle: any;
   isWebkit = false;
-  salt: '';
+  passwordSalt: '';
+  passwordIterations: 0;
+  passwordHash: '';
 
   constructor(private configService: HutchConfigService) {
     this.crytoSubtle = false;
@@ -64,9 +66,11 @@ export class HutchCryptoService {
           config.webCryptography.keyLength === 192 ||
           config.webCryptography.keyLength === 256)) {
         this.alg = config.webCryptography.algorithm;
-        this.salt = config.webCryptography.salt;
         this.keyLength = config.webCryptography.keyLength;
         this.dataMaxLength = config.api.maxLength;
+        this.passwordSalt = config.webCryptography.passwordSalt;
+        this.passwordIterations = config.webCryptography.passwordIterations;
+        this.passwordHash = config.webCryptography.passwordHash;
         if (window.crypto) {
           if (window.crypto.subtle) {
             this.crytoSubtle = window.crypto.subtle;
@@ -142,9 +146,9 @@ export class HutchCryptoService {
           this.crytoSubtle.deriveKey(
             {
               'name': 'PBKDF2',
-              'salt': this.convertStringToArrayBufferView(this.salt),
-              'iterations': 1000,
-              'hash': 'SHA-512'
+              'salt': this.convertStringToArrayBufferView(this.passwordSalt),
+              'iterations': this.passwordIterations,
+              'hash': this.passwordHash
             },
             baseKey,
             {'name': this.alg, 'length': this.keyLength},
