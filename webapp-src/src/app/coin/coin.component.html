@@ -1,0 +1,121 @@
+<div class="panel-group">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <div class="row">
+        <div class="col-md-6">
+          <h4 class="panel-title pull-left">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" href="#{{coin.name}}" *ngIf="!editCoinMode">
+              <i class="fa" [ngClass]='coin.icon' aria-hidden="true" *ngIf="coin.icon"></i>
+              <span [innerHtml]="coin.displayName"></span>
+            </a>
+          </h4>
+          <div class="input-group-btn" *ngIf="editCoinMode">
+            <form (ngSubmit)="saveCoin()">
+              <span class="input-group">
+                <span class="input-group-btn">
+                  <button [title]="'coin_set_icon' | translate" (click)="changeIcon()" type="button" class="btn btn-default">
+                    <i class="fa" [ngClass]='coin.icon' aria-hidden="true" *ngIf="coin.icon"></i>
+                    <i class="fa fa-font-awesome" aria-hidden="true" *ngIf="!coin.icon"></i>
+                  </button>
+                </span>
+                <input type="text" class="form-control input-medium" *ngIf="editCoinMode" name="coinName" [(ngModel)]="coin.displayName">
+                <span class="input-group-btn">
+                  <button [title]="'coin_save_name' | translate" type="submit" class="btn btn-default">
+                    <i class="fa fa-save" aria-hidden="true"></i>
+                  </button>
+                  <button [title]="'button_cancel' | translate" (click)="cancelEditCoin()" type="button" class="btn btn-default">
+                    <i class="fa fa-close" aria-hidden="true"></i>
+                  </button>
+                </span>
+              </span>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="btn-group pull-right align-baseline" *ngIf="!editCoinMode">
+            <button [title]="'button_edit' | translate" (click)="editCoin()" class="btn btn-default">
+              <i class="fa fa-pencil" aria-hidden="true"></i>
+            </button>
+            <button [title]="'button_delete' | translate" (click)="deleteCoin()" class="btn btn-default">
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div *ngIf="!editCoinMode">
+            <div class="btn-group pull-right" *ngFor="let row of coin.rows">
+              <button [title]="'button_copy_password' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'password'" class="btn btn-default btn-copy" (click)="copyToClipboard(row.value, row.type)" (cbOnSuccess)="copySuccess('password')">
+                <i class="fa fa-key" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div class="btn-group pull-right" *ngFor="let row of coin.rows">
+              <button [title]="'button_copy_login' | translate:{ tags: displayTags(row) }" *ngIf="row.type === 'login'" class="btn btn-default btn-copy" (click)="copyToClipboard(row.value, row.type)" (cbOnSuccess)="copySuccess('login')">
+                <i class="fa fa-user" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="{{coin.name}}" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="text-right" style="margin-bottom: 10px;">
+          <button [title]="'button_sort' | translate" (click)="enableSort(coin)" class="btn btn-default" [class.btn-success]="coin.dragEnabled">
+            <i class="fa fa-sort" aria-hidden="true"></i>
+          </button>
+          <button [title]="'button_export' | translate" (click)="exportCoin()" class="btn btn-default">
+            <i class="fa fa-cloud-download" aria-hidden="true"></i>
+          </button>
+          <button [title]="'button_history' | translate" (click)="coinHistory()" class="btn btn-default">
+            <i class="fa fa-history" aria-hidden="true"></i>
+          </button>
+          <button [title]="'button_add_line' | translate" (click)="addCoinRow()" class="btn btn-default">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+          </button>
+        </div>
+        <ul class="list-group" dnd-sortable-container [sortableData]="coin.rows" [dragEnabled]="coin.dragEnabled">
+          <li *ngFor="let row of coin.rows; let i = index" class="list-group-item" dnd-sortable [sortableIndex]="i" (onDragSuccess)="updateRows($event)" [dragEnabled]="coin.dragEnabled">
+            <my-hutch-row [row]="row" [index]="i" (onUpdate)="onUpdateCoin($event)"></my-hutch-row>
+          </li>
+          <li class="list-group-item">
+            <div class="row" *ngIf="newRowMode">
+              <form (ngSubmit)="saveNewRow()">
+                <div class="col-md-4 text-left">
+                  <select class="form-control" [(ngModel)]="newRow.type" (ngModelChange)="updateNewRowType()" name="type">
+                    <option value="url" [innerHtml]="'coin_type_url' | translate"></option>
+                    <option value="login" [innerHtml]="'coin_type_login' | translate"></option>
+                    <option value="password" [innerHtml]="'coin_type_password' | translate"></option>
+                    <option value="secret-questions" [innerHtml]="'coin_type_secret_questions' | translate"></option>
+                    <option value="file" [innerHtml]="'coin_type_file' | translate"></option>
+                    <option value="text" [innerHtml]="'coin_type_text' | translate"></option>
+                  </select>
+                </div>
+                <div class="col-md-4 text-left">
+                  <input type="text" name="misc" class="form-control" [(ngModel)]="newRow.value" [placeholder]="'placeholder_value' | translate" *ngIf="newRow.type === 'login' || newRow.type === 'url' || newRow.type === 'text'">
+                  <input type="password" name="password" class="form-control" [(ngModel)]="newRow.value" [placeholder]="'placeholder_password' | translate" *ngIf="newRow.type === 'password'">
+                  <input type="password" name="passwordVerify" class="form-control" [(ngModel)]="newRow.valueVerified" [placeholder]="'placeholder_password_verify' | translate" *ngIf="newRow.type === 'password'">
+                  <span [innerHtml]="newRow.value.name" *ngIf="newRow.type === 'file'"></span>
+                  <div class="fileUpload btn btn-default" *ngIf="newRow.type === 'file'">
+                    <span [innerHtml]="'button_upload' | translate"></span>
+                    <input type="file" name="file" (change)="fileChange($event)" class="upload" />
+                  </div>
+                </div>
+                <div class="col-md-4 text-left">
+                  <div class="btn-group pull-right">
+                    <button type="button" class="btn btn-default btn-sm" (click)="generatePassword(newRow)" [title]="'button_generate_password' | translate" *ngIf="newRow.type === 'password'">
+                      <i class="fa fa-magic" aria-hidden="true"></i>
+                    </button>
+                    <button type="submit" class="btn btn-default btn-sm" [title]="'button_save' | translate" [disabled]="!isNewRowValid()">
+                      <i class="fa fa-save" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm" (click)="cancelEditNewRow()" [title]="'button_cancel' | translate">
+                      <i class="fa fa-close" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

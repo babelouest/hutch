@@ -1,0 +1,28 @@
+{
+  "lang": {
+    "available": [
+      { "code": "en", "display": "English" },
+      { "code": "fr", "display": "Français" }
+    ],
+    "default": "en"
+  },
+  "webCryptography": {
+    "algorithm": "AES-CBC",
+    "keyLength": 256,
+    "salt": "I'm a salty variable"
+  },
+  "api": {
+    "baseUrl": "http://localhost:4884/api",
+    "maxLength": 16777215
+  },
+  "oauth2Connect": {
+      "serverUri": "http://localhost:4593/api",
+      "clientId": "clientxyz",
+      "responseType": "code",
+      "redirectUri": "http://localhost:4884/",
+      "scope": "hutch",
+      "authorizePath": "auth",
+      "tokenPath": "token",
+      "storage": "localStorage"
+  }
+}
