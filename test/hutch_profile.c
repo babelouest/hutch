@@ -67,7 +67,7 @@ START_TEST(test_hutch_profile_get_history)
 }
 END_TEST
 
-static Suite *libjwt_suite(void)
+static Suite *hutch_suite(void)
 {
 	Suite *s;
 	TCase *tc_core;
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
     free(bearer_token);
     json_decref(json_body);
     
-    s = libjwt_suite();
+    s = hutch_suite();
     sr = srunner_create(s);
 
     srunner_run_all(sr, CK_VERBOSE);
