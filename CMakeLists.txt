@@ -204,7 +204,7 @@ endif ()
 
 install(TARGETS hutch
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES hutch.conf.sample 
+install(FILES docs/hutch.conf.sample 
         DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/hutch RENAME hutch.conf COMPONENT config)
 install(DIRECTORY webapp/
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/hutch/webapp/ COMPONENT runtime)
@@ -218,13 +218,13 @@ install(FILES docs/API.md
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
 install(FILES docs/FRONT-END.md
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
-install(FILES hutch-init
+install(FILES docs/hutch-init
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
-install(FILES hutch.service
+install(FILES docs/hutch.service
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
-install(FILES hutch.mariadb.sql
+install(FILES docs/hutch.mariadb.sql
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
-install(FILES hutch.sqlite3.sql
+install(FILES docs/hutch.sqlite3.sql
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
 
 set(TARGETS hutch)
