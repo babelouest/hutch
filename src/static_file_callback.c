@@ -2,7 +2,9 @@
  *
  * Static file server Ulfius callback
  *
- * Copyright 2017 Nicolas Mora <mail@babelouest.org>
+ * Copyright 2017-2018 Nicolas Mora <mail@babelouest.org>
+ *
+ * Version 20180607
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -120,7 +122,12 @@ int callback_static_file (const struct _u_request * request, struct _u_response 
 				}
       }
     } else {
-      ulfius_set_string_body_response(response, 404, "File not found");
+      if (((struct _static_file_config *)user_data)->redirect_on_404 == NULL) {
+        ulfius_set_string_body_response(response, 404, "File not found");
+      } else {
+        ulfius_add_header_to_response(response, "Location", ((struct _static_file_config *)user_data)->redirect_on_404);
+        response->status = 302;
+      }
     }
     o_free(file_path);
     o_free(url_dup_save);
