@@ -46,9 +46,9 @@ For example, to install Hutch with the `hutch-full_1.1.0_Debian_stretch_x86_64.t
 
 ```shell
 $ sudo apt install -y autoconf libjansson-dev libssl-dev libsqlite3 libmariadbclient libconfig
-$ wget https://github.com/benmcollins/libjwt/archive/v1.9.tar.gz
-$ tar -zxvf v1.9.tar.gz
-$ cd libjwt-1.9
+$ wget https://github.com/benmcollins/libjwt/archive/v1.9.0.tar.gz
+$ tar -zxvf v1.9.0.tar.gz
+$ cd libjwt-1.9.0
 $ autoreconf -i
 $ ./configure
 $ make && sudo make install
