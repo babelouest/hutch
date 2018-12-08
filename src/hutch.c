@@ -66,6 +66,7 @@ int main (int argc, char ** argv) {
   config->secure_connection_pem_file = NULL;
   if (config->instance == NULL || config->glewlwyd_resource_config == NULL || config->static_file_config == NULL) {
     fprintf(stderr, "Memory error - config->instance || config->glewlwyd_resource_config || config->static_file_config\n");
+    o_free(config);
     return 1;
   }
   ulfius_init_instance(config->instance, HUTCH_DEFAULT_PORT, NULL, NULL);
