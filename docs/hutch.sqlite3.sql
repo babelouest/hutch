@@ -23,6 +23,7 @@ CREATE TABLE `h_safe` (
   `hs_name` TEXT NOT NULL,
   `hs_description` TEXT,
   `hs_key` TEXT NOT NULL,
+  `hs_deleted` INTEGER DEFAULT 0,
   FOREIGN KEY(`hp_id`) REFERENCES `h_profile`(`hp_id`) ON DELETE CASCADE
 );
 
