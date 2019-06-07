@@ -107,6 +107,8 @@ char * url_decode(char *str);
 char * url_encode(char *str);
 const char * get_ip_source(const struct _u_request * request);
 
+int check_result_value(json_t * result, const int value);
+
 json_t * profile_get(struct config_elements * config, const char * username);
 json_t * is_profile_valid(json_t * profile);
 int profile_set(struct config_elements * config, const char * username, json_t * profile);
