@@ -27,13 +27,9 @@
 #define _HUTCH_VERSION_ "1.1.1"
 
 /** Angharad libraries **/
-#define U_DISABLE_WEBSOCKET
-#define U_DISABLE_CURL
 #include <ulfius.h>
 #include <yder.h>
 
-#define _HOEL_MARIADB
-#define _HOEL_SQLITE
 #include <hoel.h>
 
 #include "glewlwyd_resource.h"
