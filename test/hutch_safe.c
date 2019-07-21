@@ -233,43 +233,21 @@ int main(int argc, char *argv[])
   int number_failed;
   Suite *s;
   SRunner *sr;
-  struct _u_request auth_req;
-  struct _u_response auth_resp;
-  int res;
+	char * bearer_token;
   
   y_init_logs("Hutch test", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "Starting Hutch test");
   
-  // Getting a refresh_token
-  ulfius_init_request(&auth_req);
   ulfius_init_request(&user_req);
-  ulfius_init_response(&auth_resp);
-  auth_req.http_verb = strdup("POST");
-  auth_req.http_url = msprintf("%s/token/", argc>4?argv[4]:AUTH_SERVER_URI);
-  u_map_put(auth_req.map_post_body, "grant_type", "password");
-  u_map_put(auth_req.map_post_body, "username", argc>1?argv[1]:USER_LOGIN);
-  u_map_put(auth_req.map_post_body, "password", argc>2?argv[2]:USER_PASSWORD);
-  u_map_put(auth_req.map_post_body, "scope", argc>3?argv[3]:USER_SCOPE_LIST);
-  res = ulfius_send_http_request(&auth_req, &auth_resp);
-  if (res == U_OK && auth_resp.status == 200) {
-    json_t * json_body = ulfius_get_json_body_response(&auth_resp, NULL);
-    char * bearer_token = msprintf("Bearer %s", (json_string_value(json_object_get(json_body, "access_token"))));
-    y_log_message(Y_LOG_LEVEL_INFO, "User %s authenticated", USER_LOGIN, json_dumps(json_body, JSON_ENCODE_ANY), auth_resp.status);
-    u_map_put(user_req.map_header, "Authorization", bearer_token);
-    free(bearer_token);
-    json_decref(json_body);
-    
-    s = hutch_suite();
-    sr = srunner_create(s);
-
-    srunner_run_all(sr, CK_VERBOSE);
-    number_failed = srunner_ntests_failed(sr);
-    srunner_free(sr);
+  bearer_token = msprintf("Bearer %s", argc>1?argv[1]:"error");
+  u_map_put(user_req.map_header, "Authorization", bearer_token);
+  free(bearer_token);
   
-  } else {
-    y_log_message(Y_LOG_LEVEL_ERROR, "Error authentication user %s", USER_LOGIN);
-  }
-  ulfius_clean_request(&auth_req);
-  ulfius_clean_response(&auth_resp);
+  s = hutch_suite();
+  sr = srunner_create(s);
+
+  srunner_run_all(sr, CK_VERBOSE);
+  number_failed = srunner_ntests_failed(sr);
+  srunner_free(sr);
   
   ulfius_clean_request(&user_req);
   
