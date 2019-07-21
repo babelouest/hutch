@@ -1,5 +1,11 @@
 # Hutch Changelog
 
+## 1.1.2
+
+- Update library versions
+- Improve documentation
+- Update glewlwyd access_token functions
+
 ## 1.1.1
 
 - Use last static_file_callback
