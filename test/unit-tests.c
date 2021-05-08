@@ -1,30 +1,34 @@
+/* Public domain, no copyright. Use at your own risk. */
 
 #include <string.h>
 #include <ctype.h>
 #include <jansson.h>
-#include <ulfius.h>
 #include <orcania.h>
+#include <ulfius.h>
+#include <rhonabwy.h>
 
 #include "unit-tests.h"
 
-/**
- * Developper-friendly response print
- */
-void print_response(struct _u_response * response) {
-  char * dump_json = NULL;
-  json_t * json_body;
-  
-  if (response != NULL) {
-    fprintf(stderr,"Status: %ld\n\n", response->status);
-    json_body = ulfius_get_json_body_response(response, NULL);
-    if (json_body != NULL) {
-      dump_json = json_dumps(json_body, JSON_INDENT(2));
-      fprintf(stderr,"Json body:\n%s\n\n", dump_json);
-      o_free(dump_json);
-    } else {
-      fprintf(stderr,"String body: %.*s\n\n", (int)response->binary_body_length, (char *)response->binary_body);
+char * read_file(const char * filename) {
+  char * buffer = NULL;
+  long length;
+  FILE * f;
+  if (filename != NULL) {
+    f = fopen (filename, "rb");
+    if (f) {
+      fseek (f, 0, SEEK_END);
+      length = ftell (f);
+      fseek (f, 0, SEEK_SET);
+      buffer = o_malloc (length + 1);
+      if (buffer) {
+        fread (buffer, 1, length, f);
+        buffer[length] = '\0';
+      }
+      fclose (f);
     }
-    json_decref(json_body);
+    return buffer;
+  } else {
+    return NULL;
   }
 }
 
@@ -89,77 +93,130 @@ json_t * json_search(json_t * haystack, json_t * needle) {
   return NULL;
 }
 
-int test_request(struct _u_request * req, long int expected_status, json_t * expected_json_body, const char * exptected_string_body, const char * expected_redirect_uri_contains) {
+/**
+ * decode a u_map into a string
+ */
+char * print_map(const struct _u_map * map) {
+  char * line, * to_return = NULL;
+  const char **keys;
+  int len, i;
+  if (map != NULL) {
+    keys = u_map_enum_keys(map);
+    for (i=0; keys[i] != NULL; i++) {
+      len = snprintf(NULL, 0, "key is %s, value is %s\n", keys[i], u_map_get(map, keys[i]));
+      line = malloc((len+1)*sizeof(char));
+      snprintf(line, (len+1), "key is %s, value is %s\n", keys[i], u_map_get(map, keys[i]));
+      if (to_return != NULL) {
+        len = strlen(to_return) + strlen(line) + 1;
+        to_return = realloc(to_return, (len+1)*sizeof(char));
+      } else {
+        to_return = malloc((strlen(line) + 1)*sizeof(char));
+        to_return[0] = 0;
+      }
+      strcat(to_return, line);
+      free(line);
+    }
+    return to_return;
+  } else {
+    return NULL;
+  }
+}
+
+/**
+ * Developper-friendly response print
+ */
+void print_response(struct _u_response * response) {
+  char * dump_json = NULL;
+  json_t * json_body;
+  
+  if (response != NULL) {
+    printf("Status: %ld\n\n", response->status);
+    json_body = ulfius_get_json_body_response(response, NULL);
+    if (json_body != NULL) {
+      dump_json = json_dumps(json_body, JSON_INDENT(2));
+      printf("Json body:\n%s\n\n", dump_json);
+      free(dump_json);
+    } else {
+      printf("String body: %.*s\n\n", (int)response->binary_body_length, (char *)response->binary_body);
+    }
+    json_decref(json_body);
+  }
+}
+
+int test_request(struct _u_request * req, long int expected_status, json_t * expected_json_body, jwks_t * jwks, json_t * j_result) {
   int res, to_return = 0;
   struct _u_response response;
   json_t * json_body;
+  jwt_t * jwt;
   
   ulfius_init_response(&response);
   res = ulfius_send_http_request(req, &response);
   if (res == U_OK) {
     if (response.status != expected_status) {
-      fprintf(stderr,"##########################\nError status (%s %s %ld)\n", req->http_verb, req->http_url, expected_status);
+      printf("##########################\nError status (%s %s %ld)\n", req->http_verb, req->http_url, expected_status);
       print_response(&response);
-      fprintf(stderr,"##########################\n\n");
-    } else if (expected_json_body != NULL) {
-      json_body = ulfius_get_json_body_response(&response, NULL);
-      if (json_body == NULL || json_search(json_body, expected_json_body) == NULL) {
-        char * dump_expected = json_dumps(expected_json_body, JSON_ENCODE_ANY), * dump_response = json_dumps(json_body, JSON_ENCODE_ANY);
-        fprintf(stderr,"##########################\nError json (%s %s)\n", req->http_verb, req->http_url);
-        fprintf(stderr,"Expected result in response:\n%s\nWhile response is:\n%s\n", dump_expected, dump_response);
-        fprintf(stderr,"##########################\n\n");
-        o_free(dump_expected);
-        o_free(dump_response);
-      } else {
-        to_return = 1;
+      printf("##########################\n\n");
+    } else if (expected_json_body != NULL || j_result != NULL) {
+      r_jwt_init(&jwt);
+      if (jwks != NULL) {
+        r_jwt_add_sign_jwks(jwt, NULL, jwks);
       }
-      json_decref(json_body);
-    } else if (exptected_string_body != NULL && o_strnstr((const char *)response.binary_body, exptected_string_body, response.binary_body_length) == NULL) {
-      fprintf(stderr,"##########################\nError (%s %s)\n", req->http_verb, req->http_url);
-      fprintf(stderr,"Expected result in response:\n%s\nWhile response is:\n%s\n", exptected_string_body, (const char *)response.binary_body);
-      fprintf(stderr,"##########################\n\n");
-    } else if (expected_redirect_uri_contains != NULL && o_strstr(u_map_get(response.map_header, "Location"), expected_redirect_uri_contains) == NULL) {
-      fprintf(stderr,"##########################\nError (%s %s)\n", req->http_verb, req->http_url);
-      fprintf(stderr,"expected_redirect_uri_contains is %s\nwhile redirect_uri is %s\n", expected_redirect_uri_contains, u_map_get(response.map_header, "Location"));
-      fprintf(stderr,"##########################\n\n");
+      r_jwt_parsen(jwt, response.binary_body, response.binary_body_length, 0);
+      if (jwks == NULL || r_jwt_verify_signature(jwt, NULL, 0) == RHN_OK) {
+        json_body = r_jwt_get_full_claims_json_t(jwt);
+        if (expected_json_body != NULL) {
+          if (json_body == NULL || json_search(json_body, expected_json_body) == NULL) {
+            char * dump_expected = json_dumps(expected_json_body, JSON_ENCODE_ANY), * dump_response = json_dumps(json_body, JSON_ENCODE_ANY);
+            printf("##########################\nError json (%s %s)\n", req->http_verb, req->http_url);
+            printf("Expected result in response:\n%s\nWhile response is:\n%s\n", dump_expected, dump_response);
+            printf("##########################\n\n");
+            free(dump_expected);
+            free(dump_response);
+          } else {
+            to_return = 1;
+          }
+        } else {
+          to_return = 1;
+        }
+        if (json_is_object(j_result)) {
+          json_object_update(j_result, json_body);
+        }
+        json_decref(json_body);
+      } else {
+        printf("##########################\nError invalid signature\n##########################\n");
+      }
+      r_jwt_free(jwt);
     } else {
       to_return = 1;
     }
   } else {
-    fprintf(stderr,"Error in http request: %d\n", res);
+    printf("Error in http request: %d\n", res);
   }
   ulfius_clean_response(&response);
   return to_return;
 }
 
-int run_simple_test(struct _u_request * req, const char * method, const char * url, const char * auth_basic_user, const char * auth_basic_password, json_t * json_body, const struct _u_map * body, int expected_status, json_t * expected_json_body, const char * exptected_string_body, const char * expected_redirect_uri_contains) {
+int run_simple_authenticated_test(struct _u_request * req, const char * method, const char * url, json_t * json_body, int expected_status, json_t * expected_json_body, jwks_t * jwks, json_t * j_result) {
   struct _u_request * request;
   int res;
   
   if (req != NULL) {
     request = ulfius_duplicate_request(req);
-    o_free(request->http_verb);
-    o_free(request->http_url);
+    free(request->http_verb);
+    free(request->http_url);
   } else {
-    request = o_malloc(sizeof (struct _u_request));
+    request = malloc(sizeof (struct _u_request));
     ulfius_init_request(request);
   }
   request->http_verb = o_strdup(method);
-  request->http_url = o_strdup(url);
-  if (body != NULL) {
-    u_map_copy_into(request->map_post_body, body);
-  } else if (json_body != NULL) {
+  request->http_url = strdup(url);
+  if (json_body != NULL) {
     ulfius_set_json_body_request(request, json_body);
   }
-  o_free(request->auth_basic_user);
-  o_free(request->auth_basic_password);
-  request->auth_basic_user = o_strdup(auth_basic_user);
-  request->auth_basic_password = o_strdup(auth_basic_password);
-  
-  res = test_request(request, expected_status, expected_json_body, exptected_string_body, expected_redirect_uri_contains);
+
+  res = test_request(request, expected_status, expected_json_body, jwks, j_result);
   
   ulfius_clean_request_full(request);
-  request = NULL;
   
   return res;
 }
@@ -223,4 +280,8 @@ char * url_decode(const char * str) {
   }
   * pbuf = '\0';
   return buf;
+}
+
+int is_around_now_timestamp(time_t timestamp) {
+  return (llabs(timestamp-time(NULL)) < 2);
 }
