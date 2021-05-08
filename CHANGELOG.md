@@ -1,5 +1,9 @@
 # Hutch Changelog
 
+## 2.0.0
+
+- Massive rework for the better good
+
 ## 1.1.2
 
 - Update library versions
