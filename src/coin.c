@@ -32,7 +32,7 @@ json_t * coin_list(struct config_elements * config, json_t * j_profile, const ch
                       "columns",
                         "hc_name AS name",
                         "hc_data AS data",
-                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hc_last_updated) AS last_updated", "strftime('%s', hc_last_updated) AS last_updated", "EXTRACT(EPOCH FROM hc_last_updated)::integer AS last_updated"),
+                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hc_last_updated) AS last_updated", "hc_last_updated AS last_updated", "EXTRACT(EPOCH FROM hc_last_updated)::integer AS last_updated"),
                       "where",
                         "hs_id", safe_get_id(config, j_profile, safe),
                         "hc_deleted", 0);
@@ -56,7 +56,7 @@ json_t * coin_get(struct config_elements * config, json_t * j_profile, const cha
                       "columns",
                         "hc_name AS name",
                         "hc_data AS data",
-                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hc_last_updated) AS last_updated", "strftime('%s', hc_last_updated) AS last_updated", "EXTRACT(EPOCH FROM hc_last_updated)::integer AS last_updated"),
+                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hc_last_updated) AS last_updated", "hc_last_updated AS last_updated", "EXTRACT(EPOCH FROM hc_last_updated)::integer AS last_updated"),
                       "where",
                         "hs_id", safe_get_id(config, j_profile, safe),
                         "hc_name", name,

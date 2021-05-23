@@ -470,7 +470,7 @@ int build_config_from_file(struct config_elements * config) {
   config_t cfg;
   config_setting_t * root, * database, * mime_type_list, * mime_type, * oidc_cfg;
   const char * cur_prefix, * cur_external_url, * cur_log_mode, * cur_log_level, * cur_log_file = NULL, * one_log_mode, * cur_allow_origin,
-             * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL,
+             * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL, * db_pg_conninfo = NULL,
              * db_mariadb_password = NULL, * db_mariadb_dbname = NULL, * cur_static_files_path = NULL, * extension = NULL, * mime_type_value = NULL, * cur_sign_key = NULL;
   char * str_jwks = NULL;
   int db_mariadb_port = 0, i = 0, port, ret;
@@ -555,29 +555,30 @@ int build_config_from_file(struct config_elements * config) {
           config->log_level = Y_LOG_LEVEL_DEBUG;
         }
       }
+      
       database = config_setting_get_member(root, "database");
       if (database != NULL) {
         if (config_setting_lookup_string(database, "type", &db_type) == CONFIG_TRUE) {
-          if (0 == o_strncmp(db_type, "sqlite3", strlen("sqlite3"))) {
+          if (0 == o_strcmp(db_type, "sqlite3")) {
             if (config_setting_lookup_string(database, "path", &db_sqlite_path) == CONFIG_TRUE) {
               config->conn = h_connect_sqlite(db_sqlite_path);
               if (config->conn == NULL) {
-                fprintf(stderr, "Error opening sqlite database %s\n", db_sqlite_path);
+                fprintf(stderr, "Error opening sqlite database %s, exiting\n", db_sqlite_path);
                 ret = 0;
                 break;
               } else {
                 if (h_exec_query_sqlite(config->conn, "PRAGMA foreign_keys = ON;") != H_OK) {
-                  y_log_message(Y_LOG_LEVEL_ERROR, "Error executing sqlite3 query 'PRAGMA foreign_keys = ON;'");
+                  y_log_message(Y_LOG_LEVEL_ERROR, "Error executing sqlite3 query 'PRAGMA foreign_keys = ON;, exiting'");
                   ret = 0;
                   break;
                 }
               }
             } else {
-              fprintf(stderr, "Error, no sqlite database specified\n");
+              fprintf(stderr, "Error - no sqlite database specified\n");
               ret = 0;
               break;
             }
-          } else if (0 == o_strncmp(db_type, "mariadb", strlen("mariadb"))) {
+          } else if (0 == o_strcmp(db_type, "mariadb")) {
             config_setting_lookup_string(database, "host", &db_mariadb_host);
             config_setting_lookup_string(database, "user", &db_mariadb_user);
             config_setting_lookup_string(database, "password", &db_mariadb_password);
@@ -588,19 +589,33 @@ int build_config_from_file(struct config_elements * config) {
               fprintf(stderr, "Error opening mariadb database %s\n", db_mariadb_dbname);
               ret = 0;
               break;
+            } else {
+              if (h_execute_query_mariadb(config->conn, "SET sql_mode='PIPES_AS_CONCAT';", NULL) != H_OK) {
+                y_log_message(Y_LOG_LEVEL_ERROR, "Error executing mariadb query 'SET sql_mode='PIPES_AS_CONCAT';', exiting");
+                ret = 0;
+                break;
+              }
+            }
+          } else if (0 == o_strcmp(db_type, "postgre")) {
+            config_setting_lookup_string(database, "conninfo", &db_pg_conninfo);
+            config->conn = h_connect_pgsql(db_pg_conninfo);
+            if (config->conn == NULL) {
+              fprintf(stderr, "Error opening postgre database %s, exiting\n", db_pg_conninfo);
+              ret = 0;
+              break;
             }
           } else {
-            fprintf(stderr, "Error, database type unknown\n");
+            fprintf(stderr, "Error - database type unknown\n");
             ret = 0;
             break;
           }
         } else {
-          fprintf(stderr, "Error, no database type found\n");
+          fprintf(stderr, "Error - no database type found\n");
           ret = 0;
           break;
         }
       } else {
-        fprintf(stderr, "Error, no database setting found\n");
+        fprintf(stderr, "Error - no database setting found\n");
         ret = 0;
         break;
       }

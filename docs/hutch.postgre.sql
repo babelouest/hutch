@@ -17,45 +17,45 @@ CREATE TABLE h_profile (
   hp_sub VARCHAR(128) NOT NULL,
   hp_name VARCHAR(256),
   hp_fortune VARCHAR(512),
-  hp_picture MEDIUMBLOB,
+  hp_picture TEXT,
   hp_sign_kid VARCHAR(128),
   hp_deleted SMALLINT DEFAULT 0,
-  hp_last_updated TIMESTAMPZ
+  hp_last_updated TIMESTAMPTZ
 );
 CREATE INDEX i_hp_username ON h_profile(hp_sub);
 
 -- Meta data about the safe
 CREATE TABLE h_safe (
   hs_id SERIAL PRIMARY KEY,
-  hp_id INT(11) NOT NULL,
+  hp_id INTEGER NOT NULL,
   hs_name VARCHAR(128) NOT NULL,
   hs_display_name VARCHAR(512),
   hs_enc_type VARCHAR(128),
   hs_deleted SMALLINT DEFAULT 0,
-  hs_last_updated TIMESTAMPZ,
+  hs_last_updated TIMESTAMPTZ,
   FOREIGN KEY(hp_id) REFERENCES h_profile(hp_id) ON DELETE CASCADE
 );
 
 -- Safe master key
 CREATE TABLE h_key (
   hk_id SERIAL PRIMARY KEY,
-  hs_id INT(11) NOT NULL,
+  hs_id INTEGER NOT NULL,
   hk_type VARCHAR(128),
   hk_name VARCHAR(128) NOT NULL,
   hk_display_name VARCHAR(512),
-  hk_data MEDIUMBLOB, --  The key is protected in a way known by the client and the user only
+  hk_data TEXT, --  The key is protected in a way known by the client and the user only
   hk_deleted SMALLINT DEFAULT 0,
-  hk_last_updated TIMESTAMPZ,
+  hk_last_updated TIMESTAMPTZ,
   FOREIGN KEY(hs_id) REFERENCES h_safe(hs_id) ON DELETE CASCADE
 );
 
 -- Coin stored in the safe
 CREATE TABLE h_coin (
   hc_id SERIAL PRIMARY KEY,
-  hs_id INT(11) NOT NULL,
+  hs_id INTEGER NOT NULL,
   hc_name VARCHAR(128) NOT NULL,
-  hc_data MEDIUMBLOB, --  The usable data is encoded in a JWE, so only the end-user can access it if she/he has the master key
+  hc_data TEXT, --  The usable data is encoded in a JWE, so only the end-user can access it if she/he has the master key
   hc_deleted SMALLINT DEFAULT 0,
-  hc_last_updated TIMESTAMPZ,
+  hc_last_updated TIMESTAMPTZ,
   FOREIGN KEY(hs_id) REFERENCES h_safe(hs_id) ON DELETE CASCADE
 );

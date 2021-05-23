@@ -112,6 +112,7 @@ START_TEST(test_set_profile_ok)
 	ck_assert_int_eq(run_simple_authenticated_test(&user_req, "GET", HUTCH_SERVER_API "/profile/", NULL, 404, NULL, NULL, NULL), 1);
 	ck_assert_int_eq(run_simple_authenticated_test(&user_req, "PUT", HUTCH_SERVER_API "/profile/", j_profile, 200, NULL, NULL, NULL), 1);
 	ck_assert_int_eq(run_simple_authenticated_test(&user_req, "GET", HUTCH_SERVER_API "/profile/", NULL, 200, j_profile, jwks_config, j_result), 1);
+  y_log_message(Y_LOG_LEVEL_DEBUG, "j_result %s", json_dumps(j_result, JSON_ENCODE_ANY));
   ck_assert_int_eq(1, is_around_now_timestamp((time_t)json_integer_value(json_object_get(j_result, "last_updated"))));
   json_decref(j_profile);
   

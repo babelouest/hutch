@@ -35,7 +35,7 @@ json_t * profile_get(struct config_elements * config, const char * sub) {
                         "hp_fortune AS fortune",
                         "hp_picture AS picture",
                         "hp_sign_kid AS sign_kid",
-                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hp_last_updated) AS last_updated", "strftime('%s', hp_last_updated) AS last_updated", "EXTRACT(EPOCH FROM hp_last_updated)::integer AS last_updated"),
+                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hp_last_updated) AS last_updated", "hp_last_updated AS last_updated", "EXTRACT(EPOCH FROM hp_last_updated)::integer AS last_updated"),
                       "where",
                         "hp_sub", sub,
                         "hp_deleted", 0);

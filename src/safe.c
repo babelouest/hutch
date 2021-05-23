@@ -34,7 +34,7 @@ json_t * safe_list(struct config_elements * config, json_t * j_profile) {
                         "hs_name AS name",
                         "hs_display_name AS display_name",
                         "hs_enc_type AS enc_type",
-                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hs_last_updated) AS last_updated", "strftime('%s', hs_last_updated) AS last_updated", "EXTRACT(EPOCH FROM hs_last_updated)::integer AS last_updated"),
+                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hs_last_updated) AS last_updated", "hs_last_updated AS last_updated", "EXTRACT(EPOCH FROM hs_last_updated)::integer AS last_updated"),
                       "where",
                         "hp_id", json_object_get(j_profile, "hp_id"));
   res = h_select(config->conn, j_query, &j_result, NULL);
@@ -60,7 +60,7 @@ json_t * safe_get(struct config_elements * config, json_t * j_profile, const cha
                         "hs_name AS name",
                         "hs_display_name AS display_name",
                         "hs_enc_type AS enc_type",
-                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hs_last_updated) AS last_updated", "strftime('%s', hs_last_updated) AS last_updated", "EXTRACT(EPOCH FROM hs_last_updated)::integer AS last_updated"),
+                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hs_last_updated) AS last_updated", "hs_last_updated AS last_updated", "EXTRACT(EPOCH FROM hs_last_updated)::integer AS last_updated"),
                       "where",
                         "hp_id", json_object_get(j_profile, "hp_id"),
                         "hs_name", name,

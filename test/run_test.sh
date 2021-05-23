@@ -12,7 +12,7 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 COMMAND=$1
 CHRLEN=${#COMMAND}
-NBSP=$((48-$CHRLEN))
+NBSP=$((16-$CHRLEN))
 
 printf "Run $1"
 printf_new " " $NBSP

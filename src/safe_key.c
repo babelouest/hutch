@@ -34,7 +34,7 @@ json_t * safe_key_list(struct config_elements * config, json_t * j_profile, cons
                         "hk_name AS name",
                         "hk_display_name AS display_name",
                         "hk_data AS data",
-                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hk_last_updated) AS last_updated", "strftime('%s', hk_last_updated) AS last_updated", "EXTRACT(EPOCH FROM hk_last_updated)::integer AS last_updated"),
+                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hk_last_updated) AS last_updated", "hk_last_updated AS last_updated", "EXTRACT(EPOCH FROM hk_last_updated)::integer AS last_updated"),
                       "where",
                         "hs_id", safe_get_id(config, j_profile, safe),
                         "hk_deleted", 0);
@@ -60,7 +60,7 @@ json_t * safe_key_get(struct config_elements * config, json_t * j_profile, const
                         "hk_name AS name",
                         "hk_display_name AS display_name",
                         "hk_data AS data",
-                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hk_last_updated) AS last_updated", "strftime('%s', hk_last_updated) AS last_updated", "EXTRACT(EPOCH FROM hk_last_updated)::integer AS last_updated"),
+                        SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hk_last_updated) AS last_updated", "hk_last_updated AS last_updated", "EXTRACT(EPOCH FROM hk_last_updated)::integer AS last_updated"),
                       "where",
                         "hs_id", safe_get_id(config, j_profile, safe),
                         "hk_name", name,
