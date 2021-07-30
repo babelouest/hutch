@@ -41,7 +41,7 @@ json_t * safe_key_list(struct config_elements * config, json_t * j_profile, cons
   res = h_select(config->conn, j_query, &j_result, NULL);
   json_decref(j_query);
   if (res == H_OK) {
-    j_return = json_pack("{siso}", "result", HU_OK, "key", j_result);
+    j_return = json_pack("{sis{so}}", "result", HU_OK, "key", "list", j_result);
   } else {
     y_log_message(Y_LOG_LEVEL_ERROR, "safe_key_list - Error executing j_query");
     j_return = json_pack("{si}", "result", HU_ERROR_DB);

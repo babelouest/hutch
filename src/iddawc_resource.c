@@ -229,7 +229,6 @@ int i_jwt_profile_access_token_load_jwks(struct _iddawc_resource_config * config
   return ret;
 }
 
-
 void i_jwt_profile_access_token_close_config(struct _iddawc_resource_config * config) {
   if (config != NULL) {
     i_clean_session(config->session);

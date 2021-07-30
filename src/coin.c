@@ -39,7 +39,7 @@ json_t * coin_list(struct config_elements * config, json_t * j_profile, const ch
   res = h_select(config->conn, j_query, &j_result, NULL);
   json_decref(j_query);
   if (res == H_OK) {
-    j_return = json_pack("{siso}", "result", HU_OK, "coin", j_result);
+    j_return = json_pack("{sis{so}}", "result", HU_OK, "coin", "list", j_result);
   } else {
     y_log_message(Y_LOG_LEVEL_ERROR, "coin_list - Error executing j_query");
     j_return = json_pack("{si}", "result", HU_ERROR_DB);
