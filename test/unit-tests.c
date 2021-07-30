@@ -148,7 +148,9 @@ int test_request(struct _u_request * req, long int expected_status, json_t * exp
   struct _u_response response;
   json_t * json_body;
   jwt_t * jwt;
+  time_t now;
   
+  time(&now);
   ulfius_init_response(&response);
   res = ulfius_send_http_request(req, &response);
   if (res == U_OK) {
@@ -164,22 +166,26 @@ int test_request(struct _u_request * req, long int expected_status, json_t * exp
       r_jwt_parsen(jwt, response.binary_body, response.binary_body_length, 0);
       if (jwks == NULL || r_jwt_verify_signature(jwt, NULL, 0) == RHN_OK) {
         json_body = r_jwt_get_full_claims_json_t(jwt);
-        if (expected_json_body != NULL) {
-          if (json_body == NULL || json_search(json_body, expected_json_body) == NULL) {
-            char * dump_expected = json_dumps(expected_json_body, JSON_ENCODE_ANY), * dump_response = json_dumps(json_body, JSON_ENCODE_ANY);
-            printf("##########################\nError json (%s %s)\n", req->http_verb, req->http_url);
-            printf("Expected result in response:\n%s\nWhile response is:\n%s\n", dump_expected, dump_response);
-            printf("##########################\n\n");
-            free(dump_expected);
-            free(dump_response);
+        if (is_around_now_timestamp((time_t)r_jwt_get_header_int_value(jwt, "iat")) && (time_t)r_jwt_get_header_int_value(jwt, "exp") >= now) {
+          if (expected_json_body != NULL) {
+            if (json_body == NULL || (json_search(json_body, expected_json_body) == NULL && json_search(json_object_get(json_body, "list"), expected_json_body) == NULL)) {
+              char * dump_expected = json_dumps(expected_json_body, JSON_ENCODE_ANY), * dump_response = json_dumps(json_body, JSON_ENCODE_ANY);
+              printf("##########################\nError json (%s %s)\n", req->http_verb, req->http_url);
+              printf("Expected result in response:\n%s\nWhile response is:\n%s\n", dump_expected, dump_response);
+              printf("##########################\n\n");
+              free(dump_expected);
+              free(dump_response);
+            } else {
+              to_return = 1;
+            }
           } else {
             to_return = 1;
           }
+          if (json_is_object(j_result)) {
+            json_object_update(j_result, json_body);
+          }
         } else {
-          to_return = 1;
-        }
-        if (json_is_object(j_result)) {
-          json_object_update(j_result, json_body);
+          printf("##########################\nError invalid header claims\n##########################\n");
         }
         json_decref(json_body);
       } else {
