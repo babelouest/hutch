@@ -16,7 +16,7 @@ CREATE TABLE h_profile (
   hp_id INTEGER PRIMARY KEY AUTOINCREMENT,
   hp_sub TEXT NOT NULL,
   hp_name TEXT,
-  hp_fortune TEXT,
+  hp_message TEXT,
   hp_picture TEXT,
   hp_sign_kid TEXT,
   hp_deleted INTEGER DEFAULT 0,
@@ -31,6 +31,7 @@ CREATE TABLE h_safe (
   hs_name TEXT NOT NULL,
   hs_display_name TEXT,
   hs_enc_type TEXT,
+  hs_alg_type TEXT,
   hs_deleted INTEGER DEFAULT 0,
   hs_last_updated TIMESTAMP,
   FOREIGN KEY(hp_id) REFERENCES h_profile(hp_id) ON DELETE CASCADE
