@@ -1,0 +1,109 @@
+/*
+ * Hutch specific css file
+ * Copyright 2019-2021 Nicolas Mora <mail@babelouest.org>
+ */
+.btn-icon {
+  margin-right: 5px;
+}
+.btn-icon-right {
+  margin-left: 5px;
+}
+.error-input {
+  width: 100%;
+  margin-top: .25rem;
+  font-size: 80%;
+  color: #dc3545;
+}
+.img-thumb {
+  width: 100%;
+  max-width: 50px;
+  height: 100%;
+  max-height: 50px;
+}
+.img-medium {
+  width: 100%;
+  max-width: 100px;
+  height: 100%;
+  max-height: 100px;
+}
+.input-hidden {
+  position: absolute;
+  left: -9999px;
+}
+.toast-container {
+  position: absolute;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  background: white;
+  z-index: 9999;
+}
+.perfect-centering {
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+}
+.on-top {
+  z-index: 9999;
+}
+.v-center {
+  display: flex;
+  align-items: center;
+}
+.required-field::before {
+  margin-right: 5px;
+  content: "*";
+  color: red;
+}
+.logo-img {
+  max-width: 40px;
+  max-height: 40px;
+}
+.v-align-middle {
+  vertical-align: middle;
+}
+.upload {
+  display:none;
+}
+.profile-image {
+  width:100%;
+  max-width:200px;
+}
+.toast-container{
+  position:fixed;
+  z-index:1055;
+  border:none;
+  background-color: transparent;
+}
+.top-right{
+  top:0;
+  right:0
+}
+.top-left{
+  top:0;
+  left:0
+}
+.bottom-right{
+  right:0;
+  bottom:0
+}
+.bottom-left{
+  left:0;
+  bottom:0
+}
+.toast-container>.toast{
+  min-width:150px;
+  background:0 0;
+  border:none;
+  opacity: 0.9; important!
+}
+.toast-container>.toast>.toast-header{
+  border:none
+}
+.toast-container>.toast>.toast-header strong{
+  padding-right:20px
+}
+.toast-container>.toast>.toast-body{
+  background:#fff
+}

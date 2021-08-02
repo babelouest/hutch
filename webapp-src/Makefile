@@ -1,9 +1,9 @@
 #
-# Taliesin media server
+# Glewlwyd SSO Server
 #
 # Makefile used to build and install the front-end webapp
 #
-# Copyright 2017-2018 Nicolas Mora <mail@babelouest.org>
+# Copyright 2017-2021 Nicolas Mora <mail@babelouest.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU GENERAL PUBLIC LICENSE
@@ -20,15 +20,34 @@
 #
 
 WEBAPP_DEST=../webapp
+JSC=npm
+
+all: webapp
 
 install-dev:
-	npm install
+	$(JSC) install
 
 dev:
-	npm start
+	$(JSC) run dev
+
+webapp: build-webapp install-webapp
+
+polyfill: build-polyfill-webapp install-polyfill
 
 build-webapp:
-	npm run build
-	rm -f dist/config.json
-	find $(WEBAPP_DEST) ! -name config.json ! -name webapp -delete
-	cp -R dist/* $(WEBAPP_DEST)
+	rm -f output/*
+	$(JSC) run build
+
+build-polyfill-webapp:
+	rm -f output/*
+	$(JSC) run polyfill
+
+install-webapp:
+	find $(WEBAPP_DEST) ! -name config.json ! -name webapp ! -name .gitignore -delete
+	cp -R index.html login.html profile.html callback.html config.json.sample favicon.ico css/ js/ locales/ fonts/ img/ $(WEBAPP_DEST)
+	cp output/*.js $(WEBAPP_DEST)
+
+install-polyfill:
+	find $(WEBAPP_DEST) ! -name config.json ! -name webapp ! -name .gitignore -delete
+	cp -R polyfill/index.html polyfill/login.html polyfill/profile.html polyfill/callback.html config.json.sample favicon.ico css/ js/ locales/ fonts/ img/ $(WEBAPP_DEST)
+	cp output/*.js $(WEBAPP_DEST)
