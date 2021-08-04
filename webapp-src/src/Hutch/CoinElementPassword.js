@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import i18next from 'i18next';
 
-class CoinElementUrl extends Component {
+class CoinElementPassword extends Component {
   constructor(props) {
     super(props);
 
@@ -12,10 +12,12 @@ class CoinElementUrl extends Component {
       index: props.index,
       cbEdit: props.cbEdit,
       cbRemove: props.cbRemove,
-      cbTags: props.cbTags
+      cbTags: props.cbTags,
+      showPassword: false
     };
     
     this.copyToClipboard = this.copyToClipboard.bind(this);
+    this.toggleShowPassword = this.toggleShowPassword.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -28,28 +30,46 @@ class CoinElementUrl extends Component {
     });
   }
   
+  toggleShowPassword(e) {
+    e.preventDefault();
+    this.setState({showPassword: !this.state.showPassword});
+  }
+  
 	render() {
     var tagListJsx = [];
     this.state.element.tags && this.state.element.tags.forEach((tag, index) => {
       tagListJsx.push(<span key={index} className="badge rounded-pill bg-secondary btn-icon">{tag}</span>);
     });
+    var password;
+    if (this.state.showPassword) {
+      password = 
+        <code>
+          {this.state.element.value}
+        </code>
+    } else {
+      password =
+        <span className="btn-icon-right">
+          ********
+        </span>
+    }
     return (
         <div>
           <div className="row btn-icon-bottom">
-            <div className="col">
+            <div className="col text-truncate">
               <span className="btn-icon-right">
                 <span className="badge bg-primary">
-                  {i18next.t("coinElementUrl")}
+                  {i18next.t("coinElementPassword")}
                 </span>
               </span>
             </div>
             <div className="col text-truncate">
-              <span className="btn-icon-right">
-                <a href={this.state.element.value} target="_blank" title={this.state.element.value} className="link-secondary">{this.state.element.value}</a>
-              </span>
+              {password}
             </div>
             <div className="col">
               <div className="btn-group float-end btn-icon" role="group">
+                <button type="button" className="btn btn-outline-secondary btn-sm" title={i18next.t("coinElementShowPassword")} onClick={this.toggleShowPassword}>
+                  <i className="fa fa-eye" aria-hidden="true"></i>
+                </button>
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementCopy")} onClick={this.copyToClipboard}>
                   <i className="fa fa-files-o" aria-hidden="true"></i>
                 </button>
@@ -75,4 +95,4 @@ class CoinElementUrl extends Component {
 	}
 }
 
-export default CoinElementUrl;
+export default CoinElementPassword;

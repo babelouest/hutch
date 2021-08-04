@@ -4,9 +4,11 @@ import i18next from 'i18next';
 
 import CoinEditElementUrl from './CoinEditElementUrl';
 import CoinEditElementUsername from './CoinEditElementUsername';
+import CoinEditElementPassword from './CoinEditElementPassword';
 
 import CoinElementUrl from './CoinElementUrl';
 import CoinElementUsername from './CoinElementUsername';
+import CoinElementPassword from './CoinElementPassword';
 
 import ModalCoinElementTags from './ModalCoinElementTags';
 
@@ -169,6 +171,13 @@ class Coin extends Component {
                                                  cbSave={this.saveElement}
                                                  cbCancel={this.cancelEditElement} />
         break;
+      case "password":
+        newElementJsx = <CoinEditElementPassword coin={this.state.coin}
+                                                 element={{type: "password", value: ""}}
+                                                 index={-1}
+                                                 cbSave={this.saveElement}
+                                                 cbCancel={this.cancelEditElement} />
+        break;
       default:
     }
     if (this.state.showConfirm) {
@@ -208,6 +217,24 @@ class Coin extends Component {
                                                      cbTags={(e) => this.setElementTags(e, index)} />);
             } else {
             elementListJsx.push(<CoinEditElementUsername key={index}
+                                                         coin={this.state.coin}
+                                                         element={row}
+                                                         index={index}
+                                                         cbSave={this.saveElement}
+                                                         cbCancel={this.cancelEditElement} />);
+            }
+          break;
+        case "password":
+          if (this.state.editElementList.indexOf(index) === -1) {
+            elementListJsx.push(<CoinElementPassword key={index}
+                                                     coin={this.state.coin}
+                                                     element={row}
+                                                     index={index}
+                                                     cbEdit={this.editElement}
+                                                     cbRemove={this.removeElement}
+                                                     cbTags={(e) => this.setElementTags(e, index)} />);
+            } else {
+            elementListJsx.push(<CoinEditElementPassword key={index}
                                                          coin={this.state.coin}
                                                          element={row}
                                                          index={index}

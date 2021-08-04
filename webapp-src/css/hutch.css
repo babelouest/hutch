@@ -8,6 +8,12 @@
 .btn-icon-right {
   margin-left: 5px;
 }
+.btn-icon-top {
+  margin-bottom: 5px;
+}
+.btn-icon-bottom {
+  margin-top: 5px;
+}
 .error-input {
   width: 100%;
   margin-top: .25rem;
@@ -106,4 +112,20 @@
 }
 .toast-container>.toast>.toast-body{
   background:#fff
+}
+.icon-list {
+  max-height: 300px;
+  overflow-y:scroll;
+}
+.ellipsis {
+  display: block;
+  display: -webkit-box;
+  max-width: 400px;
+  height: 50px;
+  margin: 0 auto;
+  line-height: 1.2;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
