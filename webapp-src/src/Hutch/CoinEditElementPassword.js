@@ -17,7 +17,9 @@ class CoinEditElementPassword extends Component {
       cbCancel: props.cbCancel,
       password: "",
       passwordConfirm: "",
-      showModalGeneratePassword: false
+      showModalGeneratePassword: false,
+      modalElement: false,
+      originalPassword: false
     };
     
     this.changePassword = this.changePassword.bind(this);
@@ -48,7 +50,7 @@ class CoinEditElementPassword extends Component {
   }
   
   openGenerateModal() {
-    var element = this.state.element;
+    var element = Object.assign({}, this.state.element);
     if (!element.params) {
       element.params = {
         type: "chars",
@@ -64,7 +66,7 @@ class CoinEditElementPassword extends Component {
         wordSeparator: " "
       };
     }
-    this.setState({showModalGeneratePassword: true, element: element}, () => {
+    this.setState({showModalGeneratePassword: true, modalElement: element, originalPassword: this.state.element.value}, () => {
       var modalGeneratePassword = new bootstrap.Modal(document.getElementById('modalGeneratePassword'), {
         keyboard: false
       });
@@ -81,13 +83,13 @@ class CoinEditElementPassword extends Component {
     }
     var modalGeneratePassword = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalGeneratePassword'));
     modalGeneratePassword.hide();
-    this.setState({showModalGeneratePassword: false});
+    this.setState({showModalGeneratePassword: false, modalElement: false, originalPassword: false});
   }
 
 	render() {
     var modalGenerate;
     if (this.state.showModalGeneratePassword) {
-      modalGenerate = <ModalGeneratePassword config={this.state.config} element={this.state.element} callback={this.getGeneratedPassword} />
+      modalGenerate = <ModalGeneratePassword config={this.state.config} element={this.state.modalElement} originalPassword={this.state.originalPassword} callback={this.getGeneratedPassword} />
     }
     return (
       <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>

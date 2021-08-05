@@ -11,6 +11,7 @@ class ModalGeneratePassword extends Component {
       config: props.config,
       cb: props.callback,
       element: props.element,
+      originalPassword: props.originalPassword,
       wordsLists: {},
       showPassword: false,
       passwordGenerated: false
@@ -23,6 +24,8 @@ class ModalGeneratePassword extends Component {
     this.changePasswordWordsNumber = this.changePasswordWordsNumber.bind(this);
     this.changePasswordWordsSeparator = this.changePasswordWordsSeparator.bind(this);
     this.generateRandomWords = this.generateRandomWords.bind(this);
+    this.copyOriginalPassword = this.copyOriginalPassword.bind(this);
+    this.copyNewPassword = this.copyNewPassword.bind(this);
     
     this.state.config.frontend.lang.forEach(lang => {
       apiManager.request("words-" + lang + ".json")
@@ -168,6 +171,18 @@ class ModalGeneratePassword extends Component {
     this.setState({element: element, passwordGenerated: true});
   }
 
+  copyOriginalPassword() {
+    navigator.clipboard.writeText(this.state.originalPassword).then(() => {
+      $.snack("info", i18next.t("messageCopyOriginalPasswordToClipboard"));
+    });
+  }
+  
+  copyNewPassword() {
+    navigator.clipboard.writeText(this.state.element.value).then(() => {
+      $.snack("info", i18next.t("messageCopyNewPasswordToClipboard"));
+    });
+  }
+  
 	render() {
     var showRandomChars = (this.state.element.params.type === "chars"), showRandomWords = (this.state.element.params.type !== "chars");
     if (this.state.element.params.type === "chars") {
@@ -176,7 +191,7 @@ class ModalGeneratePassword extends Component {
       showRandomWords = " show";
     }
     var passwordOutput = <div className="alert alert-primary" role="alert">{i18next.t("newPassword")}</div>
-    if (this.state.showPassword && this.state.element.value) {
+    if (this.state.showPassword && this.state.passwordGenerated) {
       passwordOutput = <div className="alert alert-secondary" role="alert"><code>{this.state.element.value}</code></div>
     } else if (this.state.passwordGenerated) {
       passwordOutput = <div className="alert alert-success" role="alert">{i18next.t("messagePasswordGenerated")}</div>
@@ -281,9 +296,21 @@ class ModalGeneratePassword extends Component {
                 {passwordOutput}
               </div>
               <div className="mb-3">
-                <button className="btn btn-outline-secondary" type="button" onClick={this.toggleShowPassword}>
-                  <i className="fa fa-eye" aria-hidden="true"></i>
-                </button>
+                <div className="btn-toolbar justify-content-between" role="toolbar">
+                  <div className="btn-group" role="group">
+                    <button className="btn btn-outline-secondary" type="button" onClick={this.toggleShowPassword} title={i18next.t("coinElementShowPassword")} disabled={!this.state.passwordGenerated}>
+                      <i className="fa fa-eye" aria-hidden="true"></i>
+                    </button>
+                    <button className="btn btn-outline-secondary" type="button" onClick={this.copyNewPassword} title={i18next.t("passwordCopyNewPassword")} disabled={!this.state.passwordGenerated}>
+                      <i className="fa fa-files-o" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  <div className="btn-group" role="group">
+                    <button className="btn btn-outline-secondary" type="button" onClick={this.copyOriginalPassword} title={i18next.t("passwordCopyOriginalPassword")} disabled={!this.state.originalPassword}>
+                      <i className="fa fa-files-o" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="modal-footer">
