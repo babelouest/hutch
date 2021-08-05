@@ -1,0 +1,12 @@
+{
+  "hutchRootUrl": "http://localhost:4884/",
+  "lang": ["en","fr"],
+  "profile_endpoint": "http://localhost:4884/api/profile",
+  "safe_endpoint": "http://localhost:4884/api/safe",
+  "storageType": "local",
+  "oidc": {
+    "responseType": "code",
+    "redirectUri": "http://localhost:3000/",
+    "clientId": "hutch"
+  }
+}
