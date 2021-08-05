@@ -10,11 +10,77 @@
 # port to open for remote commands
 port=4884
 
-# api_prefix
+# url prefix
 api_prefix="api"
 
-# path to static files to access webapp
-app_files_path="/usr/share/hutch/webapp"
+# external url to access this instance
+external_url="http://localhost:4884/"
+
+# path to static files for /webapp url
+app_files_path="/usr/share/hutch/webapp/"
+
+# access-control-allow-origin value
+allow_origin="*"
+
+# log mode (console, syslog, file)
+log_mode="file"
+
+# log level: NONE, ERROR, WARNING, INFO, DEBUG
+log_level="INFO"
+
+# output to log file (required if log_mode is file)
+log_file="/tmp/hutch.log"
+
+# scope name
+oauth_scope="hutch openid"
+
+# sign content
+sign_key="/etc/hutch/sign.jwks"
+
+# signature expiration
+sign_exp = 600
+
+# TLS/SSL configuration values
+use_secure_connection=false
+secure_connection_key_file="/etc/hutch/cert.key"
+secure_connection_pem_file="/etc/hutch/cert.pem"
+
+# MariaDB/Mysql database connection
+database =
+{
+  type = "mariadb";
+  host = "localhost";
+  user = "hutch";
+  password = "hutch";
+  dbname = "hutch";
+  port = 0;
+};
+
+# SQLite database connection
+#database =
+#{
+#   type               = "sqlite3";
+#   path               = "/var/cache/hutch/hutch.db";
+#};
+
+# PostgreSQL database connection
+#database =
+#{
+#   type     = "postgre"
+#   conninfo = "host=localhost dbname=hutch user=hutch password=hutch"
+#}
+
+# oidc parameters
+oidc =
+{
+  server_remote_config = "https://example.com/.well-known/openid-configuration"
+#  server_remote_config_verify_cert = true
+#  server_public_jwks = "/etc/hutch/public-test.jwks"
+#  iss = "https://example.com/"
+#  realm = "hutch"
+#  aud = "me"
+#  dpop_max_iat = 60
+}
 
 # mime types for webapp files
 app_files_mime_types =
@@ -56,10 +122,6 @@ app_files_mime_types =
     type = "font/woff2"
   },
   {
-    extension = ".map"
-    type = "application/octet-stream"
-  },
-  {
     extension = ".json"
     type = "text/json"
   },
@@ -68,56 +130,3 @@ app_files_mime_types =
     type = "image/x-icon"
   }
 )
-
-# access-control-allow-origin value
-allow_origin="*"
-
-# log mode (console, syslog, file)
-log_mode="file"
-
-# log level: NONE, ERROR, WARNING, INFO, DEBUG
-log_level="INFO"
-
-# output to log file (required if log_mode is file)
-log_file="/tmp/hutch.log"
-
-# admin scope name
-oauth_scope="hutch"
-
-# TLS/SSL configuration values
-use_secure_connection=false
-secure_connection_key_file="cert.key"
-secure_connection_pem_file="cert.pem"
-
-# MariaDB/Mysql database connection
-#database =
-#{
-#  type = "mariadb";
-#  host = "localhost";
-#  user = "hutch";
-#  password = "hutch";
-#  dbname = "hutch";
-#  port = 0;
-#};
-
-# SQLite database connection
-database =
-{
-   type               = "sqlite3";
-   path               = "/var/cache/hutch/hutch.db";
-};
-
-# jwt parameters, these parameters correspond to the JWT configuration of the OAuth2 server you rely on
-jwt =
-{
-   key_size = 512
-	 
-   use_rsa = true
-   rsa_pub_file = "/usr/etc/hutch/public-rsa.pem"
-   
-	 use_ecdsa = false
-	 ecdsa_pub_file = "/usr/etc/hutch/public-ecdsa.pem"
-	 
-   use_sha = false
-   sha_secret = "secret"
-}
