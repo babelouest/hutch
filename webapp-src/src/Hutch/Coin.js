@@ -125,7 +125,7 @@ class Coin extends Component {
   }
   
   cancelEditElement(e, index) {
-    e.preventDefault();
+    e && e.preventDefault();
     if (index === -1) {
       this.setState({showAddElement: false, newElementType: false});
     } else {
@@ -172,7 +172,8 @@ class Coin extends Component {
                                                  cbCancel={this.cancelEditElement} />
         break;
       case "password":
-        newElementJsx = <CoinEditElementPassword coin={this.state.coin}
+        newElementJsx = <CoinEditElementPassword config={this.state.config}
+                                                 coin={this.state.coin}
                                                  element={{type: "password", value: ""}}
                                                  index={-1}
                                                  cbSave={this.saveElement}
@@ -235,6 +236,7 @@ class Coin extends Component {
                                                      cbTags={(e) => this.setElementTags(e, index)} />);
             } else {
             elementListJsx.push(<CoinEditElementPassword key={index}
+                                                         config={this.state.config}
                                                          coin={this.state.coin}
                                                          element={row}
                                                          index={index}

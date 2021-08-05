@@ -9,6 +9,7 @@ class CoinEditElementPassword extends Component {
     super(props);
 
     this.state = {
+      config: props.config,
       coin: props.coin,
       element: props.element,
       index: props.index,
@@ -47,7 +48,23 @@ class CoinEditElementPassword extends Component {
   }
   
   openGenerateModal() {
-    this.setState({showModalGeneratePassword: true}, () => {
+    var element = this.state.element;
+    if (!element.params) {
+      element.params = {
+        type: "chars",
+        lowercase: true,
+        upprcase: true,
+        numbers: true,
+        special: true,
+        spaces: true,
+        noSimilarFollowingChars: false,
+        passwordCharLength: 32,
+        wordsNumber: 4,
+        wordsLangsList: [i18next.language],
+        wordSeparator: " "
+      };
+    }
+    this.setState({showModalGeneratePassword: true, element: element}, () => {
       var modalGeneratePassword = new bootstrap.Modal(document.getElementById('modalGeneratePassword'), {
         keyboard: false
       });
@@ -55,13 +72,11 @@ class CoinEditElementPassword extends Component {
     });
   }
   
-  getGeneratedPassword(result, newPassword) {
+  getGeneratedPassword(result, element) {
     if (result) {
-      navigator.clipboard.writeText(newPassword).then(() => {
+      navigator.clipboard.writeText(element.value).then(() => {
         $.snack("info", i18next.t("messageCopyToClipboard"));
-        var element = this.state.element;
-        element.value = this.state.newPassword;
-        this.setState({element: element, password: newPassword, passwordConfirm: newPassword});
+        this.state.cbSave(false, element, this.state.index);
       });
     }
     var modalGeneratePassword = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalGeneratePassword'));
@@ -72,7 +87,7 @@ class CoinEditElementPassword extends Component {
 	render() {
     var modalGenerate;
     if (this.state.showModalGeneratePassword) {
-      modalGenerate = <ModalGeneratePassword element={this.state.element} callback={this.getGeneratedPassword} />
+      modalGenerate = <ModalGeneratePassword config={this.state.config} element={this.state.element} callback={this.getGeneratedPassword} />
     }
     return (
       <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>

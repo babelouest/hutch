@@ -120,6 +120,7 @@
   "coinElementPasswordConfirm": "Confirmer",
   "coinElementShowPassword": "Voir le mot de passe",
   "coinPasswordGenerate": "Générateur aléatoire",
+  "modalGeneratePassword": "Générer un mot de passe aléatoire",
   "newPassword": "Nouveau mot de passe",
   "passwordRandomCharacters": "Caractères aléatoire",
   "passwordRandomWords": "Mots au hasard",
@@ -130,5 +131,17 @@
   "passwordRandomSpaces": "Espaces",
   "passwordNoSimilarFollowingChars": "Pas de caractères identiques adjacents",
   "passwordGenerate": "Générer",
-  "passwordCharLength": "Taille du mot de passe"
+  "passwordCharLength": "Taille du mot de passe",
+  "messagePasswordGenerated": "Mot de passe généré",
+  "passwordWordsNumber": "Nombre de mots",
+  "passwordWordsLangs": "Langages",
+  "passwordWordsLangs-fr": "Français",
+  "passwordWordsLangs-en": "Anglais",
+  "passwordWordsSeparator": "Séparateur de mots",
+  "passwordWordsSeparatorSpace": "Espace ' '",
+  "passwordWordsSeparatorDot": "Point '.'",
+  "passwordWordsSeparatorDash": "Tiret '-'",
+  "passwordWordsSeparatorUnderscore": "Underscore '_'",
+  "passwordWordsSeparatorComma": "Virgule ','",
+  "passwordWordsSeparatorNone": "Aucun"
 }
