@@ -32,6 +32,9 @@
 
 #include "hutch.h"
 
+pthread_mutex_t global_handler_close_lock;
+pthread_cond_t  global_handler_close_cond;
+
 /**
  *
  * Main function

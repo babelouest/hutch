@@ -80,9 +80,6 @@
 /** Macro to avoid compiler warning when some parameters are unused and that's ok **/
 #define UNUSED(x) (void)(x)
 
-pthread_mutex_t global_handler_close_lock;
-pthread_cond_t  global_handler_close_cond;
-
 typedef enum {
   access_create,
   access_read,
