@@ -9,6 +9,7 @@ import messageDispatcher from '../lib/MessageDispatcher';
 
 import ModalSafeUnlock from './ModalSafeUnlock';
 import ModalCoinEdit from './ModalCoinEdit';
+import ModalManageSafe from './ModalManageSafe';
 import Coin from './Coin';
 import Confirm from './Confirm';
 
@@ -36,7 +37,7 @@ class SafeView extends Component {
     this.changeFilter = this.changeFilter.bind(this);
     this.addCoin = this.addCoin.bind(this);
     this.editCoinHeader = this.editCoinHeader.bind(this);
-    this.exportSafe = this.exportSafe.bind(this);
+    this.manageSafe = this.manageSafe.bind(this);
     this.removeCoin = this.removeCoin.bind(this);
     this.removeCoinConfirm = this.removeCoinConfirm.bind(this);
     this.coinSaveCallback = this.coinSaveCallback.bind(this);
@@ -187,8 +188,16 @@ class SafeView extends Component {
     document.getElementById("coin-" + name).scrollIntoView();
   }
   
-  exportSafe() {
-    // TODO
+  manageSafe() {
+    var manageSafeModal = new bootstrap.Modal(document.getElementById('manageSafe'), {
+      keyboard: false
+    });
+    manageSafeModal.show();
+  }
+  
+  manageSafeClose() {
+    var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
+    manageSafeModal.hide();
   }
 
 	render() {
@@ -233,10 +242,10 @@ class SafeView extends Component {
             </button>
             <button type="button"
                     className="btn btn-secondary btn-sm"
-                    onClick={this.exportSafe}
+                    onClick={this.manageSafe}
                     disabled={!isUnlocked}
-                    title={i18next.t("exportSafe")}>
-              <i className="fa fa-cloud-download" aria-hidden="true"></i>
+                    title={i18next.t("manageSafe")}>
+              <i className="fa fa-cogs" aria-hidden="true"></i>
             </button>
             <button type="button"
                     className="btn btn-secondary btn-sm"
@@ -255,7 +264,9 @@ class SafeView extends Component {
           </div>
         </div>
         {secretHeaderJsx}
-        {secretListJsx}
+        <div className="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
+          {secretListJsx}
+        </div>
         <ModalSafeUnlock config={this.state.config}
                          safe={this.state.safe}
                          safeContent={this.state.safeContent}
@@ -265,6 +276,11 @@ class SafeView extends Component {
                        name={this.state.coinEditName}
                        content={this.state.coinEditContent}
                        cb={this.coinSaveCallback} />
+        <ModalManageSafe config={this.state.config}
+                         safe={this.state.safe}
+                         safeContent={this.state.safeContent}
+                         cbSaveCoin={this.coinSaveCallback}
+                         cbClose={this.manageSafeClose} />
         <Confirm name={"removeSafe"} title={i18next.t("removeSafeTitle")} message={i18next.t("removeSafeMessage", {name: this.state.safe.display_name||this.state.safe.name})} cb={this.removeSafeConfirm} />
         <Confirm name={"removeCoin"} title={i18next.t("removeCoinTitle")} message={this.state.removeCoinMessage} cb={this.removeCoinConfirm} />
       </div>

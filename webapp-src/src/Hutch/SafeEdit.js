@@ -156,8 +156,14 @@ class SafeEdit extends Component {
     .then((exportedKey) => {
       fromKeyLike(containerKey)
       .then((pwdKey) => {
+        var lockAlg = "PBES2-HS256+A128KW";
+        if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW" || this.state.safe.alg_type === "PBES2-HS384+A192KW") {
+          lockAlg = "PBES2-HS384+A192KW";
+        } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW" || this.state.safe.alg_type === "PBES2-HS512+A256KW") {
+          lockAlg = "PBES2-HS512+A256KW";
+        }
         new EncryptJWT(exportedKey)
-        .setProtectedHeader({alg: "PBES2-HS256+A128KW", enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
+        .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
         .encrypt(containerKey)
         .then((jwt) => {
           newSafeKey.data = jwt;
@@ -227,8 +233,14 @@ class SafeEdit extends Component {
   completeSetSafeKey(containerKey, newSafeKey) {
     fromKeyLike(containerKey)
     .then((pwdKey) => {
+      var lockAlg = "PBES2-HS256+A128KW";
+      if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW" || this.state.safe.alg_type === "PBES2-HS384+A192KW") {
+        lockAlg = "PBES2-HS384+A192KW";
+      } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW" || this.state.safe.alg_type === "PBES2-HS512+A256KW") {
+        lockAlg = "PBES2-HS512+A256KW";
+      }
       new EncryptJWT(this.state.safe.key)
-      .setProtectedHeader({alg: "PBES2-HS256+A128KW", enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
+      .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
       .encrypt(containerKey)
       .then((jwt) => {
         newSafeKey.data = jwt;

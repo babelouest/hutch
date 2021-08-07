@@ -19,7 +19,8 @@ class CoinEditElementPassword extends Component {
       passwordConfirm: "",
       showModalGeneratePassword: false,
       modalElement: false,
-      originalPassword: false
+      originalPassword: false,
+      pwdScore: -1
     };
     
     this.changePassword = this.changePassword.bind(this);
@@ -34,7 +35,11 @@ class CoinEditElementPassword extends Component {
   }
   
   changePassword(e) {
-    this.setState({password: e.target.value});
+    var pwdScore = -1;
+    if (e.target.value) {
+      pwdScore = zxcvbn(e.target.value).score;
+    }
+    this.setState({password: e.target.value, pwdScore: pwdScore});
   }
 
   changePasswordConfirm(e) {
@@ -76,6 +81,8 @@ class CoinEditElementPassword extends Component {
   
   getGeneratedPassword(result, element) {
     if (result) {
+      var pwdScore = -1;
+      pwdScore = zxcvbn(element.value).score;
       navigator.clipboard.writeText(element.value).then(() => {
         $.snack("info", i18next.t("messageCopyToClipboard"));
         this.state.cbSave(false, element, this.state.index);
@@ -83,13 +90,25 @@ class CoinEditElementPassword extends Component {
     }
     var modalGeneratePassword = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalGeneratePassword'));
     modalGeneratePassword.hide();
-    this.setState({showModalGeneratePassword: false, modalElement: false, originalPassword: false});
+    this.setState({showModalGeneratePassword: false, modalElement: false, originalPassword: false, pwdScore: pwdScore});
   }
 
 	render() {
     var modalGenerate;
     if (this.state.showModalGeneratePassword) {
       modalGenerate = <ModalGeneratePassword config={this.state.config} element={this.state.modalElement} originalPassword={this.state.originalPassword} callback={this.getGeneratedPassword} />
+    }
+    var pwdScoreJsx;
+    if (this.state.pwdScore === 0) {
+      pwdScoreJsx = <span className="badge bg-danger">{i18next.t("pwdScoreTooGuessable")}</span>
+    } else if (this.state.pwdScore === 1) {
+      pwdScoreJsx = <span className="badge bg-warning">{i18next.t("pwdScoreVeryGuessable")}</span>
+    } else if (this.state.pwdScore === 2) {
+      pwdScoreJsx = <span className="badge bg-secondary">{i18next.t("pwdScoreSomewhatGuessable")}</span>
+    } else if (this.state.pwdScore === 3) {
+      pwdScoreJsx = <span className="badge bg-primary">{i18next.t("pwdScoreSafelyUnguessable")}</span>
+    } else if (this.state.pwdScore === 4) {
+      pwdScoreJsx = <span className="badge bg-success">{i18next.t("pwdScoreVeryUnguessable")}</span>
     }
     return (
       <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>
@@ -100,6 +119,7 @@ class CoinEditElementPassword extends Component {
                  id={this.state.coin.name+"-"+this.state.index}
                  value={this.state.password}
                  onChange={this.changePassword} />
+          {pwdScoreJsx}
         </div>
         <div className="mb-3">
           <label htmlFor={this.state.coin.name+"-"+this.state.index} className="form-label">{i18next.t("coinElementPasswordConfirm")}</label>

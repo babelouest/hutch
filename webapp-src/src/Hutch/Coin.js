@@ -5,10 +5,15 @@ import i18next from 'i18next';
 import CoinEditElementUrl from './CoinEditElementUrl';
 import CoinEditElementUsername from './CoinEditElementUsername';
 import CoinEditElementPassword from './CoinEditElementPassword';
+import CoinEditElementFile from './CoinEditElementFile';
+import CoinEditElementMisc from './CoinEditElementMisc';
 
 import CoinElementUrl from './CoinElementUrl';
 import CoinElementUsername from './CoinElementUsername';
 import CoinElementPassword from './CoinElementPassword';
+import CoinElementSecretQuestions from './CoinElementSecretQuestions';
+import CoinElementFile from './CoinElementFile';
+import CoinElementMisc from './CoinElementMisc';
 
 import ModalCoinElementTags from './ModalCoinElementTags';
 
@@ -138,7 +143,7 @@ class Coin extends Component {
   }
 
 	render() {
-    var coinIconJsx, addElementJsx, newElementJsx, elementListJsx = [], confirmJsx, editTagsJsx;
+    var coinIconJsx, addElementJsx, newElementJsx, newElementSeparator, elementListJsx = [], confirmJsx, editTagsJsx;
     if (this.state.coin.data.icon) {
       coinIconJsx = <i className={this.state.coin.data.icon + " btn-icon"} aria-hidden="true"></i>;
     }
@@ -159,25 +164,56 @@ class Coin extends Component {
     switch (this.state.newElementType) {
       case "url":
         newElementJsx = <CoinEditElementUrl coin={this.state.coin}
-                                            element={{type: "url", value: ""}}
+                                            element={{type: this.state.newElementType, value: ""}}
                                             index={-1}
                                             cbSave={this.saveElement}
                                             cbCancel={this.cancelEditElement} />
+        newElementSeparator = <hr/>
         break;
       case "login":
         newElementJsx = <CoinEditElementUsername coin={this.state.coin}
-                                                 element={{type: "login", value: ""}}
+                                                 element={{type: this.state.newElementType, value: ""}}
                                                  index={-1}
                                                  cbSave={this.saveElement}
                                                  cbCancel={this.cancelEditElement} />
+        newElementSeparator = <hr/>
         break;
       case "password":
         newElementJsx = <CoinEditElementPassword config={this.state.config}
                                                  coin={this.state.coin}
-                                                 element={{type: "password", value: ""}}
+                                                 element={{type: this.state.newElementType, value: ""}}
                                                  index={-1}
                                                  cbSave={this.saveElement}
                                                  cbCancel={this.cancelEditElement} />
+        newElementSeparator = <hr/>
+        break;
+      case "secretQuestion":
+        newElementJsx = <CoinElementSecretQuestions config={this.state.config}
+                                                    coin={this.state.coin}
+                                                    element={{type: this.state.newElementType, value: []}}
+                                                    index={-1}
+                                                    closeButon={true}
+                                                    cbSave={this.saveElement}
+                                                    cbRemove={this.removeElement}
+                                                    cbCancel={this.cancelEditElement}
+                                                    cbTags={(e) => this.setElementTags(e, index)} />
+        newElementSeparator = <hr/>
+        break;
+      case "file":
+        newElementJsx = <CoinEditElementFile coin={this.state.coin}
+                                             element={{type: this.state.newElementType, value: {}}}
+                                             index={-1}
+                                             cbSave={this.saveElement}
+                                             cbCancel={this.cancelEditElement} />
+        newElementSeparator = <hr/>
+        break;
+      case "misc":
+        newElementJsx = <CoinEditElementMisc coin={this.state.coin}
+                                             element={{type: this.state.newElementType, value: ""}}
+                                             index={-1}
+                                             cbSave={this.saveElement}
+                                             cbCancel={this.cancelEditElement} />
+        newElementSeparator = <hr/>
         break;
       default:
     }
@@ -244,56 +280,107 @@ class Coin extends Component {
                                                          cbCancel={this.cancelEditElement} />);
             }
           break;
+        case "secretQuestion":
+          elementListJsx.push(<CoinElementSecretQuestions key={index}
+                                                          config={this.state.config}
+                                                          coin={this.state.coin}
+                                                          element={row}
+                                                          index={index}
+                                                          closeButon={false}
+                                                          cbSave={this.saveElement}
+                                                          cbRemove={this.removeElement}
+                                                          cbCancel={this.cancelEditElement}
+                                                          cbTags={(e) => this.setElementTags(e, index)} />);
+          break;
+        case "file":
+          if (this.state.editElementList.indexOf(index) === -1) {
+            elementListJsx.push(<CoinElementFile key={index}
+                                                 coin={this.state.coin}
+                                                 element={row}
+                                                 index={index}
+                                                 cbEdit={this.editElement}
+                                                 cbRemove={this.removeElement}
+                                                 cbTags={(e) => this.setElementTags(e, index)} />);
+            } else {
+            elementListJsx.push(<CoinEditElementFile key={index}
+                                                     coin={this.state.coin}
+                                                     element={row}
+                                                     index={index}
+                                                     cbSave={this.saveElement}
+                                                     cbCancel={this.cancelEditElement} />);
+            }
+          break;
+        case "misc":
+          if (this.state.editElementList.indexOf(index) === -1) {
+            elementListJsx.push(<CoinElementMisc key={index}
+                                                 coin={this.state.coin}
+                                                 element={row}
+                                                 index={index}
+                                                 cbEdit={this.editElement}
+                                                 cbRemove={this.removeElement}
+                                                 cbTags={(e) => this.setElementTags(e, index)} />);
+            } else {
+            elementListJsx.push(<CoinEditElementMisc key={index}
+                                                     coin={this.state.coin}
+                                                     element={row}
+                                                     index={index}
+                                                     cbSave={this.saveElement}
+                                                     cbCancel={this.cancelEditElement} />);
+            }
+          break;
         default:
       }
     });
     return (
-      <div className="accordion" id={"coin-"+this.state.coin.name}>
-        <div className="accordion-item">
-          <h2 className="accordion-header" id={"heading-"+this.state.coin.name}>
-            <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse-"+this.state.coin.name} aria-expanded="false" aria-controls={"collapse-"+this.state.coin.name}>
-              {coinIconJsx}{this.state.coin.data.displayName}
-            </button>
-          </h2>
-          <div id={"collapse-"+this.state.coin.name} className="accordion-collapse collapse" aria-labelledby={"heading-"+this.state.coin.name} data-bs-parent={"#coin-"+this.state.coin.name}>
-            <div className="accordion-body">
-              <div className="mb-3" role="group">
-                <div className="btn-group float-end" role="group">
-                  <button type="button"
-                          className="btn btn-secondary btn-sm"
-                          onClick={(e) => this.state.cbEditHeader(this.state.coin.name, this.state.coin.data)}
-                          title={i18next.t("editCoinHeader")}>
-                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                  </button>
-                  <button type="button"
-                          className="btn btn-secondary btn-sm"
-                          onClick={this.exportCoin}
-                          title={i18next.t("exportCoin")}>
-                    <i className="fa fa-cloud-download" aria-hidden="true"></i>
-                  </button>
-                  <button type="button"
-                          className="btn btn-secondary btn-sm"
-                          onClick={this.addSecretElement}
-                          title={i18next.t("addSecretElement")}>
-                    <i className="fa fa-plus" aria-hidden="true"></i>
-                  </button>
-                  <button type="button"
-                          className="btn btn-secondary btn-sm"
-                          onClick={(e) => this.state.cbRemoveCoin(this.state.coin.name, this.state.coin.data.displayName)}
-                          title={i18next.t("removeCoin")}>
-                    <i className="fa fa-trash-o" aria-hidden="true"></i>
-                  </button>
+      <div className="col">
+        <div className="accordion" id={"coin-"+this.state.coin.name}>
+          <div className="accordion-item">
+            <h2 className="accordion-header" id={"heading-"+this.state.coin.name}>
+              <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse-"+this.state.coin.name} aria-expanded="false" aria-controls={"collapse-"+this.state.coin.name}>
+                {coinIconJsx}{this.state.coin.data.displayName}
+              </button>
+            </h2>
+            <div id={"collapse-"+this.state.coin.name} className="accordion-collapse collapse" aria-labelledby={"heading-"+this.state.coin.name} data-bs-parent={"#coin-"+this.state.coin.name}>
+              <div className="accordion-body">
+                <div className="mb-3" role="group">
+                  <div className="btn-group float-end" role="group">
+                    <button type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={(e) => this.state.cbEditHeader(this.state.coin.name, this.state.coin.data)}
+                            title={i18next.t("editCoinHeader")}>
+                      <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    </button>
+                    <button type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={this.exportCoin}
+                            title={i18next.t("exportCoin")}>
+                      <i className="fa fa-cloud-download" aria-hidden="true"></i>
+                    </button>
+                    <button type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={this.addSecretElement}
+                            title={i18next.t("addSecretElement")}>
+                      <i className="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                    <button type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={(e) => this.state.cbRemoveCoin(this.state.coin.name, this.state.coin.data.displayName)}
+                            title={i18next.t("removeCoin")}>
+                      <i className="fa fa-trash-o" aria-hidden="true"></i>
+                    </button>
+                  </div>
                 </div>
+                &nbsp;
+                {addElementJsx}
+                {newElementJsx}
+                {newElementSeparator}
+                {elementListJsx}
               </div>
-              &nbsp;
-              {addElementJsx}
-              {newElementJsx}
-              {elementListJsx}
             </div>
           </div>
+          {confirmJsx}
+          {editTagsJsx}
         </div>
-        {confirmJsx}
-        {editTagsJsx}
       </div>
     );
 	}
