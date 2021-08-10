@@ -28,7 +28,6 @@ class CoinEditElementFile extends Component {
     fr.onload = (ev2) => {
       element.value = {filename: file.name, data: btoa(ev2.target.result)};
       this.setState({element: element});
-      console.log(element);
     };
     fr.readAsBinaryString(file);
   }

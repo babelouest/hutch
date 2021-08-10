@@ -140,10 +140,10 @@ class SafeView extends Component {
     modalCoinEditModal.hide();
   }
   
-  coinSaveCallback(result, name, content) {
+  coinSaveCallback(result, name, content, toast = false) {
     if (result) {
       if (name) {
-        new EncryptJWT(content)
+        return new EncryptJWT(content)
         .setProtectedHeader({ alg: this.state.safe.alg_type, enc: this.state.safe.enc_type, sign_thumb: this.state.config.sign_thumb })
         .encrypt(this.state.safeContent[this.state.safe.name].key)
         .then((data) => {
@@ -151,17 +151,17 @@ class SafeView extends Component {
             name: name,
             data: data
           }
-          apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin/" + name, "PUT", body)
+          return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin/" + name, "PUT", body)
           .then(() => {
-            $.snack("info", i18next.t("messageSuccessCoinSave"));
+            toast && $.snack("info", i18next.t("messageSuccessCoinSave"));
             messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: name, data: content}});
           })
           .fail(() => {
-            $.snack("warning", i18next.t("messageErrorCoinSave"));
+            toast && $.snack("warning", i18next.t("messageErrorCoinSave"));
           })
         });
       } else {
-        new EncryptJWT(content)
+        return new EncryptJWT(content)
         .setProtectedHeader({ alg: this.state.safe.alg_type, enc: this.state.safe.enc_type, sign_thumb: this.state.config.sign_thumb })
         .encrypt(this.state.safeContent[this.state.safe.name].key)
         .then((data) => {
@@ -169,19 +169,21 @@ class SafeView extends Component {
             name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
             data: data
           }
-          apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin", "POST", body)
+          return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin", "POST", body)
           .then(() => {
-            $.snack("info", i18next.t("messageSuccessCoinSave"));
+            toast && $.snack("info", i18next.t("messageSuccessCoinSave"));
             messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: body.name, data: content}, cb: this.scrollToCoin});
           })
           .fail(() => {
-            $.snack("warning", i18next.t("messageErrorCoinSave"));
+            toast && $.snack("warning", i18next.t("messageErrorCoinSave"));
           })
         });
       }
+    } else {
+      return Promise.reject("No can do");
     }
     var modalCoinEditModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalCoinEdit'));
-    modalCoinEditModal.hide();
+    modalCoinEditModal && modalCoinEditModal.hide();
   }
   
   scrollToCoin(name) {
