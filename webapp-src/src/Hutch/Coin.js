@@ -16,6 +16,7 @@ import CoinElementFile from './CoinElementFile';
 import CoinElementMisc from './CoinElementMisc';
 
 import ModalCoinElementTags from './ModalCoinElementTags';
+import ModalCoinExport from './ModalCoinExport';
 
 import Confirm from './Confirm';
 
@@ -25,6 +26,7 @@ class Coin extends Component {
 
     this.state = {
       config: props.config,
+      safe: props.safe,
       coin: props.coin,
       cbEditHeader: props.cbEditHeader,
       cbRemoveCoin: props.cbRemoveCoin,
@@ -34,10 +36,12 @@ class Coin extends Component {
       editElementList: [],
       curElementIndex: -1,
       showConfirm: false,
-      showEditTags: false
+      showEditTags: false,
+      showExportCoin: false
     };
 
     this.exportCoin = this.exportCoin.bind(this);
+    this.exportCoinClose = this.exportCoinClose.bind(this);
     this.addSecretElement = this.addSecretElement.bind(this);
     this.cancelEditElement = this.cancelEditElement.bind(this);
     this.editElement = this.editElement.bind(this);
@@ -53,6 +57,19 @@ class Coin extends Component {
   }
 
   exportCoin() {
+    this.setState({showExportCoin: true}, () => {
+      var exportCoinModal = new bootstrap.Modal(document.getElementById('exportCoinModal'), {
+        keyboard: false
+      });
+      exportCoinModal.show();
+    });
+  }
+  
+  exportCoinClose() {
+    console.log("close?");
+    var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
+    exportCoinModal.hide();
+    this.setState({showExportCoin: false});
   }
 
   addSecretElement() {
@@ -143,7 +160,7 @@ class Coin extends Component {
   }
 
 	render() {
-    var coinIconJsx, addElementJsx, newElementJsx, newElementSeparator, elementListJsx = [], confirmJsx, editTagsJsx;
+    var coinIconJsx, addElementJsx, newElementJsx, newElementSeparator, elementListJsx = [], confirmJsx, editTagsJsx, exportCoinJsx;
     if (this.state.coin.data.icon) {
       coinIconJsx = <i className={this.state.coin.data.icon + " btn-icon"} aria-hidden="true"></i>;
     }
@@ -222,6 +239,9 @@ class Coin extends Component {
     }
     if (this.state.showEditTags) {
       editTagsJsx = <ModalCoinElementTags index={this.state.curElementIndex} tags={this.state.curTags} cb={this.setElementTagsConfirm} />
+    }
+    if (this.state.showExportCoin) {
+      exportCoinJsx = <ModalCoinExport config={this.state.config} cb={this.exportCoinClose} safe={this.state.safe} coin={this.state.coin} />
     }
     this.state.coin.data.rows.forEach((row, index) => {
       switch (row.type) {
@@ -380,6 +400,7 @@ class Coin extends Component {
           </div>
           {confirmJsx}
           {editTagsJsx}
+          {exportCoinJsx}
         </div>
       </div>
     );

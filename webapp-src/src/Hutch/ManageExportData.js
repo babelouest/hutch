@@ -13,6 +13,8 @@ class ManageExportData extends Component {
       config: props.config,
       safe: props.safe,
       content: props.content,
+      id: props.id,
+      name: props.name,
       exportSafeWithSecurity: false,
       exportSecurityType: "password",
       pwdScore: -1,
@@ -83,7 +85,7 @@ class ManageExportData extends Component {
 
   exportSafe() {
     var exported = [];
-    this.state.content[this.state.safe.name].unlockedCoinList.forEach(coin => {
+    this.state.content.forEach(coin => {
       exported.push(coin.data);
     });
     if (this.state.exportSafeWithSecurity) {
@@ -100,9 +102,9 @@ class ManageExportData extends Component {
         .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
         .encrypt(containerKey)
         .then((jwt) => {
-          var $anchor = $("#"+this.state.safe.name+"-download");
+          var $anchor = $("#"+this.state.id+"-download");
           $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(jwt));
-          $anchor.attr("download", this.state.safe.display_name+".jwt");
+          $anchor.attr("download", this.state.name+".jwt");
           $anchor[0].click();
         });
       } else if (this.state.exportSecurityType === "jwk") {
@@ -115,9 +117,9 @@ class ManageExportData extends Component {
             .setProtectedHeader({alg: key.alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
             .encrypt(exportKey)
             .then((jwt) => {
-              var $anchor = $("#"+this.state.safe.name+"-download");
+              var $anchor = $("#"+this.state.id+"-download");
               $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(jwt));
-              $anchor.attr("download", this.state.safe.display_name+".jwt");
+              $anchor.attr("download", this.state.name+".jwt");
               $anchor[0].click();
             });
           } else {
@@ -126,9 +128,9 @@ class ManageExportData extends Component {
         });
       }
     } else {
-      var $anchor = $("#"+this.state.safe.name+"-download");
+      var $anchor = $("#"+this.state.id+"-download");
       $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(JSON.stringify(exported)));
-      $anchor.attr("download", this.state.safe.display_name+".json");
+      $anchor.attr("download", this.state.name+".json");
       $anchor[0].click();
     }
   }
@@ -158,12 +160,12 @@ class ManageExportData extends Component {
         <div>
           <div className="mb-3">
             <label htmlFor="newPassword" className="form-label">{i18next.t("newPassword")}</label>
-            <input type="password" className="form-control" id="newPassword" value={this.state.password} onChange={this.changePassword}/>
+            <input type="password" autoComplete="off" className="form-control" id="newPassword" value={this.state.password} onChange={this.changePassword}/>
             {pwdScoreJsx}
           </div>
           <div className="mb-3">
             <label htmlFor="confirmNewPassword" className="form-label">{i18next.t("confirmNewPassword")}</label>
-            <input type="password" className="form-control" id="confirmNewPassword" value={this.state.confirmPassword} onChange={this.changeConfirmPassword}/>
+            <input type="password" autoComplete="off" className="form-control" id="confirmNewPassword" value={this.state.confirmPassword} onChange={this.changeConfirmPassword}/>
           </div>
         </div>
       } else if (this.state.exportSecurityType === "jwk") {
@@ -178,7 +180,7 @@ class ManageExportData extends Component {
         exportSecurityJsx =
           <div className="mb-3">
             <label htmlFor="exportJwk" className="form-label">{i18next.t("exportJwk")}</label>
-            <textarea className={messageClass} id="exportJwk" value={this.state.exportJwk} onChange={(e) => this.editExportJwk(e)}></textarea>
+            <textarea className={messageClass} id="exportJwk" autoComplete="off" value={this.state.exportJwk} onChange={(e) => this.editExportJwk(e)}></textarea>
             {messageErrorJsx}
           </div>
       }
@@ -194,13 +196,15 @@ class ManageExportData extends Component {
           </div>
         </div>
         {exportSecurityTypeJsx}
-        {exportSecurityJsx}
+        <form>
+          {exportSecurityJsx}
+        </form>
         <div className="mb-3">
           <button type="button" className="btn btn-secondary" onClick={this.exportSafe} title={i18next.t("downloadExport")} disabled={this.state.exportInvalid}>
             <i className="fa fa-cloud-download" aria-hidden="true"></i>
           </button>
         </div>
-        <a className="upload" id={this.state.safe.name+"-download"} />
+        <a className="upload" id={this.state.id+"-download"} />
       </div>
     );
 	}

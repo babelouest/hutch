@@ -21,11 +21,13 @@ class SafeView extends Component {
       config: props.config,
       safe: props.safe,
       safeContent: props.safeContent,
+      filteredCoinList: props.safeContent[props.safe.name].unlockedCoinList,
       filter: "",
       coinEditMode: 0,
       coinEditName: false,
       coinEditContent: false,
-      removeCoinMessage: false
+      removeCoinMessage: false,
+      filterTimeout: false
     };
     
     this.editSafe = this.editSafe.bind(this);
@@ -44,7 +46,10 @@ class SafeView extends Component {
   }
   
   static getDerivedStateFromProps(props, state) {
-    return props;
+    var newState = Object.assign({}, props);
+    newState.filteredCoinList = props.safeContent[props.safe.name].unlockedCoinList;
+    newState.filter = "";
+    return newState;
   }
   
   editSafe() {
@@ -95,7 +100,18 @@ class SafeView extends Component {
   }
 
   changeFilter(e) {
-    this.setState({filter: e.target.value});
+    this.setState({filter: e.target.value}, () => {
+      clearTimeout(this.state.filterTimeout);
+      var filterTimeout = setTimeout(() => {
+        var filteredCoinList = [];
+        this.state.safeContent[this.state.safe.name].unlockedCoinList.forEach((coin) => {
+          if (coin.data.displayName.toUpperCase().search(this.state.filter.toUpperCase()) > -1) {
+            filteredCoinList.push(coin);
+          }
+        });
+        this.setState({filteredCoinList: filteredCoinList});
+      }, 3000);
+    });
   }
   
   addCoin() {
@@ -211,7 +227,9 @@ class SafeView extends Component {
         </button>
       secretHeaderJsx =
         <div className="mb-3">
-          <input type="text" className="form-control" placeholder={i18next.t("secretFilter")} id="filter" value={this.state.filter} onChange={this.changeFilter}/>
+          <form>
+            <input type="text" className="form-control" autoComplete="off" placeholder={i18next.t("secretFilter")} id="coinFilter" name="coinFilter" value={this.state.filter} onChange={this.changeFilter}/>
+          </form>
         </div>
     } else {
       lockButtonJsx =
@@ -220,9 +238,10 @@ class SafeView extends Component {
         </button>
     }
     if (isUnlocked) {
-      this.state.safeContent[this.state.safe.name].unlockedCoinList.forEach((coin, index) => {
+      this.state.filteredCoinList.forEach((coin, index) => {
         secretListJsx.push(<Coin config={this.state.config}
                                  coin={coin}
+                                 safe={this.state.safe}
                                  cbEditHeader={this.editCoinHeader}
                                  cbRemoveCoin={this.removeCoin}
                                  cbSaveCoin={this.coinSaveCallback}

@@ -257,7 +257,11 @@ class ModalManageSafe extends Component {
                   {i18next.t("exportSafe")}
                 </div>
               </div>
-              <ManageExportData config={this.state.config} safe={this.state.safe} content={this.state.safeContent} />
+              <ManageExportData config={this.state.config}
+                                safe={this.state.safe}
+                                content={this.state.safeContent[this.state.safe.name].unlockedCoinList}
+                                id={this.state.safe.name}
+                                name={this.state.safe.display_name} />
               <hr/>
               <div className="mb-3">
                 <div className="alert alert-primary" role="alert">
