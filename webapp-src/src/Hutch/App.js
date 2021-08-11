@@ -75,8 +75,12 @@ class App extends Component {
         if (message.lang !== i18next.language) {
           i18next.changeLanguage(message.lang)
           .then(() => {
-            // Fony refresh state to force re-render
-            this.setState({langChanged: true});
+            apiManager.request("words-" + i18next.language + ".json")
+            .then(words => {
+              var config = this.state.config;
+              config.wordsList = words;
+              this.setState({config: config});
+            });
           });
         }
       } else if (message.action === "editProfile") {
@@ -248,6 +252,13 @@ class App extends Component {
         });
         this.setState({safeContent: safeContent});
       }
+    });
+
+    apiManager.request("words-" + i18next.language + ".json")
+    .then(words => {
+      var config = this.state.config;
+      config.wordsList = words;
+      this.setState({config: config});
     });
 
     this.getHutchProfile = this.getHutchProfile.bind(this);

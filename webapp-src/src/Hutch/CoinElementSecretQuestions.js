@@ -5,8 +5,6 @@ import i18next from 'i18next';
 import CoinElementSecretQuestionsRow from './CoinElementSecretQuestionsRow';
 import CoinElementSecretQuestionsRowEdit from './CoinElementSecretQuestionsRowEdit';
 
-import apiManager from '../lib/APIManager';
-
 class CoinElementSecretQuestions extends Component {
   constructor(props) {
     super(props);
@@ -17,7 +15,6 @@ class CoinElementSecretQuestions extends Component {
       index: props.index,
       closeButon: props.closeButon,
       editList: [],
-      wordsList: [],
       cbRemove: props.cbRemove,
       cbSave: props.cbSave,
       cbTags: props.cbTags
@@ -30,10 +27,6 @@ class CoinElementSecretQuestions extends Component {
     this.removeRow = this.removeRow.bind(this);
     this.cbAddQuestion = this.cbAddQuestion.bind(this);
 
-    apiManager.request("words-" + i18next.language + ".json")
-    .then(words => {
-      this.setState({wordsList: words});
-    });
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -103,13 +96,13 @@ class CoinElementSecretQuestions extends Component {
     });
     if (!this.state.element.value.length) {
       questionList.push(
-        <CoinElementSecretQuestionsRowEdit value={{question: "", answer: ""}} index={0} wordsList={this.state.wordsList} cbSave={this.saveRow} cbCancel={this.cancelRow} key={-1}/>
+        <CoinElementSecretQuestionsRowEdit value={{question: "", answer: ""}} index={0} wordsList={this.state.config.wordsList} cbSave={this.saveRow} cbCancel={this.cancelRow} key={-1}/>
       );
     } else {
       this.state.element.value.forEach((value, index) => {
         if (this.state.editList.indexOf(index) !== -1) {
           questionList.push(
-            <CoinElementSecretQuestionsRowEdit value={Object.assign({}, value)} index={index} wordsList={this.state.wordsList} cbSave={this.saveRow} cbCancel={this.cancelRow} key={index}/>
+            <CoinElementSecretQuestionsRowEdit value={Object.assign({}, value)} index={index} wordsList={this.state.config.wordsList} cbSave={this.saveRow} cbCancel={this.cancelRow} key={index}/>
           );
         } else {
           questionList.push(
