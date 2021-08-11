@@ -138,7 +138,7 @@ class ModalCoinEdit extends Component {
                          className="form-control"
                          id="coinIconFilter"
                          placeholder={i18next.t("coinIconFilterPh")}
-                         value={this.state.iconFilter}
+                         value={this.state.iconFilter||""}
                          onChange={(e) => this.changeIconFilter(e)} />
                   <ul className="list-group icon-list">
                     {iconListJsx}

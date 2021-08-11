@@ -20,7 +20,7 @@ class SafeEdit extends Component {
       config: props.config,
       safe: props.safe,
       safeContent: props.safeContent,
-      editMode: props.editMode,
+      editMode: props.editMode, // 0: read, 1: add, 2: edit
       nameMandatory: false,
       namePresent: false,
       safeKey: props.safeKey,

@@ -115,12 +115,12 @@ class ModalSafeKeyPassword extends Component {
                 </div>
                 <div className="mb-3">
                   <label htmlFor="newPassword" className="form-label">{i18next.t("newPassword")}</label>
-                  <input type="password" className="form-control" id="newPassword" value={this.state.newPassword} onChange={(e) => this.changeNewPassword(e)}/>
+                  <input type="password" autoComplete="off" className="form-control" id="newPassword" value={this.state.newPassword} onChange={(e) => this.changeNewPassword(e)}/>
                   {pwdScoreJsx}
                 </div>
                 <div className="mb-3">
                   <label htmlFor="confirmNewPassword" className="form-label">{i18next.t("confirmNewPassword")}</label>
-                  <input type="password" className="form-control" id="confirmNewPassword" value={this.state.confirmNewPassword} onChange={(e) => this.changeConfirmNewPassword(e)}/>
+                  <input type="password" autoComplete="off" className="form-control" id="confirmNewPassword" value={this.state.confirmNewPassword} onChange={(e) => this.changeConfirmNewPassword(e)}/>
                 </div>
               </form>
             </div>

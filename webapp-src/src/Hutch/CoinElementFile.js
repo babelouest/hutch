@@ -25,7 +25,6 @@ class CoinElementFile extends Component {
   downloadFile() {
     if (this.state.element.value.data) {
       var $anchor = $("#"+this.state.coin.name+"-"+this.state.index+"-download");
-      console.log($anchor);
       $anchor.attr("href", "data:application/octet-stream;base64,"+this.state.element.value.data);
       $anchor[0].click();
     }

@@ -141,8 +141,7 @@ class ModalManageSafe extends Component {
         .then((decImport) => {
           this.importContent(decImport.payload.data);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           this.setState({importDataResult: "invalidJwk"});
         });
       });

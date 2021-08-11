@@ -66,7 +66,6 @@ class Coin extends Component {
   }
   
   exportCoinClose() {
-    console.log("close?");
     var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
     exportCoinModal.hide();
     this.setState({showExportCoin: false});
@@ -159,8 +158,14 @@ class Coin extends Component {
     }
   }
 
+  copyToClipboard(value) {
+    navigator.clipboard.writeText(value).then(() => {
+      $.snack("info", i18next.t("messageCopyToClipboard"));
+    });
+  }
+
 	render() {
-    var coinIconJsx, addElementJsx, newElementJsx, newElementSeparator, elementListJsx = [], confirmJsx, editTagsJsx, exportCoinJsx;
+    var coinIconJsx, addElementJsx, newElementJsx, newElementSeparator, elementListJsx = [], confirmJsx, editTagsJsx, exportCoinJsx, headerButtonsJsx = [];
     if (this.state.coin.data.icon) {
       coinIconJsx = <i className={this.state.coin.data.icon + " btn-icon"} aria-hidden="true"></i>;
     }
@@ -264,6 +269,11 @@ class Coin extends Component {
             }
           break;
         case "login":
+          headerButtonsJsx.push(
+          <button key={index} type="button" className="btn btn-secondary" onClick={(e) => this.copyToClipboard(row.value)} title={(row.tags||[]).join(" ")}>
+            <i className="fa fa-user" aria-hidden="true"></i>
+          </button>
+          );
           if (this.state.editElementList.indexOf(index) === -1) {
             elementListJsx.push(<CoinElementUsername key={index}
                                                      coin={this.state.coin}
@@ -282,6 +292,11 @@ class Coin extends Component {
             }
           break;
         case "password":
+          headerButtonsJsx.push(
+          <button key={index} type="button" className="btn btn-secondary" onClick={(e) => this.copyToClipboard(row.value)} title={(row.tags||[]).join(" ")}>
+            <i className="fa fa-key" aria-hidden="true"></i>
+          </button>
+          );
           if (this.state.editElementList.indexOf(index) === -1) {
             elementListJsx.push(<CoinElementPassword key={index}
                                                      coin={this.state.coin}
@@ -290,7 +305,7 @@ class Coin extends Component {
                                                      cbEdit={this.editElement}
                                                      cbRemove={this.removeElement}
                                                      cbTags={(e) => this.setElementTags(e, index)} />);
-            } else {
+          } else {
             elementListJsx.push(<CoinEditElementPassword key={index}
                                                          config={this.state.config}
                                                          coin={this.state.coin}
@@ -356,9 +371,16 @@ class Coin extends Component {
         <div className="accordion" id={"coin-"+this.state.coin.name}>
           <div className="accordion-item">
             <h2 className="accordion-header" id={"heading-"+this.state.coin.name}>
-              <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse-"+this.state.coin.name} aria-expanded="false" aria-controls={"collapse-"+this.state.coin.name}>
-                {coinIconJsx}{this.state.coin.data.displayName}
-              </button>
+              <div className="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div className="btn-group" role="group" aria-label="First group">
+                  <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse-"+this.state.coin.name} aria-expanded="false" aria-controls={"collapse-"+this.state.coin.name}>
+                    {coinIconJsx}{this.state.coin.data.displayName}
+                  </button>
+                </div>
+                <div className="input-group">
+                  {headerButtonsJsx}
+                </div>
+              </div>
             </h2>
             <div id={"collapse-"+this.state.coin.name} className="accordion-collapse collapse" aria-labelledby={"heading-"+this.state.coin.name} data-bs-parent={"#coin-"+this.state.coin.name}>
               <div className="accordion-body">

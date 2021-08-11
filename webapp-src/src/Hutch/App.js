@@ -145,7 +145,7 @@ class App extends Component {
       } else if (message.action === "updateSafeKey") {
         this.getSafeKeyList(message.safe.name)
         .then(() => {
-          this.setState({nav: "safe", curSafe: message.safe, editSafeMode: 1});
+          this.setState({nav: "safe", curSafe: message.safe, editSafeMode: 2});
         });
       } else if (message.action === "setSafeKey") {
         var safeContent = this.state.safeContent;
