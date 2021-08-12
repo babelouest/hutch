@@ -65,7 +65,12 @@ class SafeView extends Component {
   
   unlockSafeCallback(result, masterKey, keepUnlocked, unlockKeyName, masterkeyData) {
     if (result) {
-      messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, key: masterKey, keepUnlocked: keepUnlocked, unlockKeyName: unlockKeyName, masterkeyData: masterkeyData});
+      messageDispatcher.sendMessage('App', {action: "setSafeKey",
+                                            target: this.state.safe,
+                                            key: masterKey,
+                                            keepUnlocked: keepUnlocked,
+                                            unlockKeyName: unlockKeyName,
+                                            masterkeyData: masterkeyData});
       $.snack("info", i18next.t("unlockedSafe"));
     }
     var unlockSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalUnlockSafe'));

@@ -8,7 +8,6 @@ class ModalSafeKeyPassword extends Component {
     this.state = {
       safeKey: props.safeKey,
       cb: props.callback,
-      newSafeKey: {name: (props.safeKey.name||""), display_name: (props.safeKey.display_name||""), type: "password", data: ""},
       newPassword: "",
       confirmNewPassword: "",
       pwdScore: -1,
@@ -20,23 +19,13 @@ class ModalSafeKeyPassword extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    var newState = Object.assign({}, props);
-    if (props.safeKey) {
-      newState.newSafeKey = {name: (props.safeKey.name||""), display_name: (props.safeKey.display_name||""), type: "password", data: ""};
-    }
-    return newState;
-  }
-
-  changeName(e) {
-    var newSafeKey = this.state.newSafeKey;
-    newSafeKey.name = e.target.value;
-    this.setState({newSafeKey: newSafeKey}, () => {this.isSafeKeyValid()});
+    return props;
   }
 
   changeDisplayName(e) {
-    var newSafeKey = this.state.newSafeKey;
-    newSafeKey.display_name = e.target.value;
-    this.setState({newSafeKey: newSafeKey});
+    var safeKey = this.state.safeKey;
+    safeKey.display_name = e.target.value;
+    this.setState({safeKey: safeKey});
   }
 
   changeNewPassword(e) {
@@ -59,7 +48,7 @@ class ModalSafeKeyPassword extends Component {
     if (this.state.newPassword !== this.state.confirmNewPassword) {
       isValid = false;
     }
-    if (!this.state.newSafeKey.name) {
+    if (!this.state.safeKey.name) {
       isValid = false;
     }
     this.setState({isValid: isValid});
@@ -68,12 +57,11 @@ class ModalSafeKeyPassword extends Component {
   closeModal(e, result) {
     if (this.state.cb) {
       this.state.cb(result, {
-        newSafeKey: this.state.newSafeKey,
+        safeKey: this.state.safeKey,
         password: this.state.newPassword,
         safeKey: this.state.safeKey
       });
-      this.setState({newSafeKey: {name: "", display_name: "", type: "password", data: ""},
-                    newPassword: "",
+      this.setState({newPassword: "",
                     confirmNewPassword: "",
                     pwdScore: -1,
                     isValid: false});
@@ -105,13 +93,10 @@ class ModalSafeKeyPassword extends Component {
             </div>
             <div className="modal-body">
               <form onSubmit={this.saveSafe}>
-                <div className="mb-3">
-                  <label htmlFor="safeKeyName" className="form-label">{i18next.t("safeKeyName")}</label>
-                  <input type="text" maxLength="128" className="form-control" id="safeKeyName" value={this.state.newSafeKey.name} onChange={(e) => this.changeName(e)} disabled={!!this.state.safeKey}/>
-                </div>
+                <input type="hidden" maxLength="128" id="safeKeyName" value={this.state.safeKey.name}/>
                 <div className="mb-3">
                   <label htmlFor="safeKeyDisplayName" className="form-label">{i18next.t("safeKeyDisplayName")}</label>
-                  <input type="text" maxLength="512" className="form-control" id="safeKeyDisplayName" value={this.state.newSafeKey.display_name} onChange={(e) => this.changeDisplayName(e)}/>
+                  <input type="text" maxLength="512" className="form-control" id="safeKeyDisplayName" value={this.state.safeKey.display_name} onChange={(e) => this.changeDisplayName(e)}/>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="newPassword" className="form-label">{i18next.t("newPassword")}</label>

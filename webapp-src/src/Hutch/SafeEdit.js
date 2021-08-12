@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { generateSecret } from 'jose/util/generate_secret';
 import { fromKeyLike } from 'jose/jwk/from_key_like';
 import { EncryptJWT } from 'jose/jwt/encrypt';
+import { parseJwk } from 'jose/jwk/parse';
 
 import i18next from 'i18next';
 
@@ -24,6 +25,7 @@ class SafeEdit extends Component {
       nameMandatory: false,
       namePresent: false,
       safeKey: props.safeKey,
+      addKey: false,
       curSafeKeyContainer: false,
       nextStep: false,
       removeSafeKeyMessage: false
@@ -38,16 +40,12 @@ class SafeEdit extends Component {
     this.editSafeKeyPassword = this.editSafeKeyPassword.bind(this);
     this.completeAddSafeKey = this.completeAddSafeKey.bind(this);
     this.unlockSafeCallback = this.unlockSafeCallback.bind(this);
-    this.isSafeUnlockedClose = this.isSafeUnlockedClose.bind(this);
+    this.createKeyForSafe = this.createKeyForSafe.bind(this);
     
   }
   
   static getDerivedStateFromProps(props, state) {
     return props;
-  }
-  
-  isSafeUnlockedClose() {
-    return (this.state.safeContent[this.state.safe.name].keyList.length && this.state.safeContent[this.state.safe.name].lastUnlock + 600 < (Date.now()/1000));
   }
   
   editDisplayName(e) {
@@ -97,22 +95,23 @@ class SafeEdit extends Component {
     messageDispatcher.sendMessage('App', {action: "nav", target: this.state.editMode===1?false:this.state.safe.name});
   }
   
-  addSafeKeyPassword() {
-    if (this.isSafeUnlockedClose()) {
-      this.setState({nextStep: this.addSafeKeyPassword}, () => {
-        var unlockSafeModal = new bootstrap.Modal(document.getElementById('modalUnlockSafe'), {
-          keyboard: false
+  createKeyForSafe() {
+    return generateSecret(this.state.safe.alg_type, {extractable: true})
+    .then((newKey) => {
+      return fromKeyLike(newKey)
+      .then((extractableKey) => {
+        return parseJwk(extractableKey, this.state.safe.alg_type)
+        .then((key) => {
+          return {key: key, extractableKey: extractableKey};
+          setTimeout(() => {
+            var curSafeContent = this.state.safeContent;
+            delete(curSafeContent[this.state.safe.name].extractableKey);
+            this.setState({safeContent: curSafeContent});
+          //}, 600000);
+          }, 10000);
         });
-        unlockSafeModal.show();
       });
-    } else {
-      this.setState({curSafeKeyContainer: false}, () => {
-        var addSafeKeyModal = new bootstrap.Modal(document.getElementById('modalSafeKey'), {
-          keyboard: false
-        });
-        addSafeKeyModal.show();
-      });
-    }
+    });
   }
   
   saveSafeKeyPassword(result, data) {
@@ -121,29 +120,58 @@ class SafeEdit extends Component {
     if (result) {
       var enc = new TextEncoder();
       var containerKey = enc.encode(data.password);
-      if (!this.state.curSafeKeyContainer) {
-        generateSecret(this.state.safe.alg_type, {extractable: true})
-        .then((newKey) => {
-          this.completeAddSafeKey(newKey, containerKey, data.newSafeKey);
-        });
+      if (this.state.addKey) {
+        if (!this.state.safeContent[this.state.safe.name].key) {
+          this.createKeyForSafe()
+          .then((keyData) => {
+            var curSafeContent = this.state.safeContent;
+            curSafeContent[this.state.safe.name].extractableKey = keyData.extractableKey;
+            curSafeContent[this.state.safe.name].key = keyData.key;
+            this.setState({safeContent: curSafeContent}, () => {
+              this.completeAddSafeKey(containerKey, data.safeKey);
+            });
+          });
+        } else {
+          this.completeAddSafeKey(containerKey, data.safeKey);
+        }
       } else {
-        this.completeSetSafeKey(containerKey, data.newSafeKey);
+        this.completeSetSafeKey(containerKey, data.safeKey);
       }
     }
   }
   
-  completeAddSafeKey(key, containerKey, newSafeKey) {
-    fromKeyLike(key)
-    .then((exportedKey) => {
-      fromKeyLike(containerKey)
-      .then((pwdKey) => {
-        var lockAlg = "PBES2-HS256+A128KW";
-        if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW" || this.state.safe.alg_type === "PBES2-HS384+A192KW") {
-          lockAlg = "PBES2-HS384+A192KW";
-        } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW" || this.state.safe.alg_type === "PBES2-HS512+A256KW") {
-          lockAlg = "PBES2-HS512+A256KW";
-        }
-        new EncryptJWT(exportedKey)
+  addSafeKeyPassword() {
+    if (!this.state.safeContent[this.state.safe.name].extractableKey && this.state.safeContent[this.state.safe.name].keyList.length) {
+      this.setState({nextStep: this.addSafeKeyPassword}, () => {
+        var unlockSafeModal = new bootstrap.Modal(document.getElementById('modalUnlockSafe'), {
+          keyboard: false
+        });
+        unlockSafeModal.show();
+      });
+    } else {
+      this.setState({addKey: true, curSafeKeyContainer: {name: (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)),
+                                                         display_name: "",
+                                                         type: "password",
+                                                         data: ""}}, () => {
+        var addSafeKeyModal = new bootstrap.Modal(document.getElementById('modalSafeKey'), {
+          keyboard: false
+        });
+        addSafeKeyModal.show();
+      });
+    }
+  }
+  
+  completeAddSafeKey(containerKey, newSafeKey) {
+    fromKeyLike(containerKey)
+    .then((pwdKey) => {
+      var lockAlg = "PBES2-HS256+A128KW";
+      if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW" || this.state.safe.alg_type === "PBES2-HS384+A192KW") {
+        lockAlg = "PBES2-HS384+A192KW";
+      } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW" || this.state.safe.alg_type === "PBES2-HS512+A256KW") {
+        lockAlg = "PBES2-HS512+A256KW";
+      }
+      if (this.state.safeContent[this.state.safe.name].extractableKey) {
+        new EncryptJWT(this.state.safeContent[this.state.safe.name].extractableKey)
         .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
         .encrypt(containerKey)
         .then((jwt) => {
@@ -151,29 +179,87 @@ class SafeEdit extends Component {
           apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/key", "POST", newSafeKey)
           .then(() => {
             messageDispatcher.sendMessage('App', {action: "updateSafeKey", safe: this.state.safe});
+            $.snack("info", i18next.t("safeLockAdded"));
           });
         });
-      });
+      } else {
+        $.snack("warning", i18next.t("lockedSafe"));
+      }
+    });
+  }
+  
+  editSafeKeyPassword(e, safeKey) {
+    var newState = {addKey: false};
+    if (safeKey) {
+      newState.curSafeKeyContainer = safeKey;
+    }
+    this.setState(newState, () => {
+      if (!this.state.safeContent[this.state.safe.name].extractableKey) {
+        this.setState({nextStep: this.editSafeKeyPassword}, () => {
+          var unlockSafeModal = new bootstrap.Modal(document.getElementById('modalUnlockSafe'), {
+            keyboard: false
+          });
+          unlockSafeModal.show();
+        });
+      } else {
+          var addSafeKeyModal = new bootstrap.Modal(document.getElementById('modalSafeKey'), {
+            keyboard: false
+          });
+          addSafeKeyModal.show();
+      }
+    });
+  }
+  
+  completeSetSafeKey(containerKey, newSafeKey) {
+    fromKeyLike(containerKey)
+    .then((pwdKey) => {
+      var lockAlg = "PBES2-HS256+A128KW";
+      if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW" || this.state.safe.alg_type === "PBES2-HS384+A192KW") {
+        lockAlg = "PBES2-HS384+A192KW";
+      } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW" || this.state.safe.alg_type === "PBES2-HS512+A256KW") {
+        lockAlg = "PBES2-HS512+A256KW";
+      }
+      if (this.state.safeContent[this.state.safe.name].extractableKey) {
+        new EncryptJWT(this.state.safeContent[this.state.safe.name].extractableKey)
+        .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
+        .encrypt(containerKey)
+        .then((jwt) => {
+          newSafeKey.data = jwt;
+          apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/key/" + newSafeKey.name, "PUT", newSafeKey)
+          .then(() => {
+            messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, newSafeKey: newSafeKey});
+            this.setState({curSafeKeyContainer: false});
+            $.snack("info", i18next.t("safeLockUpdated"));
+          });
+        });
+      } else {
+        $.snack("warning", i18next.t("lockedSafe"));
+      }
     });
   }
   
   removeSafeKey(e, safeKey) {
-    e.preventDefault();
-    if (this.isSafeUnlockedClose()) {
-      this.setState({nextStep: this.removeSafeKey}, () => {
-        var unlockSafeModal = new bootstrap.Modal(document.getElementById('modalUnlockSafe'), {
-          keyboard: false
-        });
-        unlockSafeModal.show();
-      });
-    } else {
-      this.setState({curSafeKeyContainer: safeKey, removeSafeKeyMessage: i18next.t("removeSafeKeyMessage", {name: safeKey.display_name||safeKey.name})}, () => {
-        var removeKeyModal = new bootstrap.Modal(document.getElementById('removeSafeKey'), {
-          keyboard: false
-        });
-        removeKeyModal.show();
-      })
+    e && e.preventDefault();
+    var newState = {};
+    if (safeKey) {
+      newState.curSafeKeyContainer = safeKey;
+      newState.removeSafeKeyMessage = i18next.t("removeSafeKeyMessage", {name: safeKey.display_name});
     }
+    this.setState(newState, () => {
+      if (!this.state.safeContent[this.state.safe.name].extractableKey) {
+        this.setState({nextStep: this.removeSafeKey}, () => {
+          var unlockSafeModal = new bootstrap.Modal(document.getElementById('modalUnlockSafe'), {
+            keyboard: false
+          });
+          unlockSafeModal.show();
+        });
+      } else {
+          var removeKeyModal = new bootstrap.Modal(document.getElementById('removeSafeKey'), {
+            keyboard: false
+          });
+          removeKeyModal.show();
+      }
+    });
   }
   
   removeSafeKeyConfirm(result) {
@@ -193,60 +279,19 @@ class SafeEdit extends Component {
     removeKeyModal.hide();
   }
   
-  editSafeKeyPassword(e, safeKey) {
-    if (this.isSafeUnlockedClose()) {
-      this.setState({nextStep: this.editSafeKeyPassword}, () => {
-        var unlockSafeModal = new bootstrap.Modal(document.getElementById('modalUnlockSafe'), {
-          keyboard: false
-        });
-        unlockSafeModal.show();
-      });
-    } else {
-      this.setState({curSafeKeyContainer: safeKey}, () => {
-        var addSafeKeyModal = new bootstrap.Modal(document.getElementById('modalSafeKey'), {
-          keyboard: false
-        });
-        addSafeKeyModal.show();
-      });
-    }
-  }
-  
-  completeSetSafeKey(containerKey, newSafeKey) {
-    fromKeyLike(containerKey)
-    .then((pwdKey) => {
-      var lockAlg = "PBES2-HS256+A128KW";
-      if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW" || this.state.safe.alg_type === "PBES2-HS384+A192KW") {
-        lockAlg = "PBES2-HS384+A192KW";
-      } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW" || this.state.safe.alg_type === "PBES2-HS512+A256KW") {
-        lockAlg = "PBES2-HS512+A256KW";
-      }
-      new EncryptJWT(this.state.safe.key)
-      .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
-      .encrypt(containerKey)
-      .then((jwt) => {
-        newSafeKey.data = jwt;
-        apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/key/" + newSafeKey.name, "PUT", newSafeKey)
-        .then(() => {
-          messageDispatcher.sendMessage('App', {action: "setSafeKey", safe: this.state.safe, newSafeKey: newSafeKey});
-        });
-      });
-    });
-  }
-  
-  unlockSafeCallback(result) {
+  unlockSafeCallback(result, masterKey, keepUnlocked, unlockKeyName, masterkeyData) {
     var unlockSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalUnlockSafe'));
     unlockSafeModal.hide();
     if (result) {
-      messageDispatcher.sendMessage('App', {action: "unlockSafe", safe: this.state.safe, cb: () => {
-        if (this.state.nextStep) {
-          this.state.nextStep();
-        }
-      }});
+      messageDispatcher.sendMessage('App', {action: "unlockSafe", safe: this.state.safe, extractableKey: masterkeyData});
+      if (this.state.nextStep) {
+        this.state.nextStep();
+      }
     }
   }
 
 	render() {
-    var safeKeyListJsx = [];
+    var safeKeyListJsx = [], modalSafeKeyPasswordJsx;
     if (this.state.safeContent && this.state.safe && this.state.safeContent[this.state.safe.name]) {
       this.state.safeContent[this.state.safe.name].keyList.forEach((safeKey, index) => {
         safeKeyListJsx.push(
@@ -263,6 +308,9 @@ class SafeEdit extends Component {
           </div>
         );
       });
+    }
+    if (this.state.curSafeKeyContainer) {
+      modalSafeKeyPasswordJsx = <ModalSafeKeyPassword safeKey={this.state.curSafeKeyContainer} callback={this.saveSafeKeyPassword}/>
     }
     return (
       <div>
@@ -317,8 +365,8 @@ class SafeEdit extends Component {
             </div>
           </div>
         </form>
-        <Confirm name={"removeSafeKey"} title={i18next.t("removeSafeKeyTitle")} message={i18next.t("removeSafeKeyMessage")} cb={this.removeSafeKeyConfirm} />
-        <ModalSafeKeyPassword safeKey={this.state.curSafeKeyContainer} callback={this.saveSafeKeyPassword}/>
+        <Confirm name={"removeSafeKey"} title={i18next.t("removeSafeKeyTitle")} message={this.state.removeSafeKeyMessage} cb={this.removeSafeKeyConfirm} />
+        {modalSafeKeyPasswordJsx}
         <ModalSafeUnlock config={this.state.config}
                          safe={this.state.safe}
                          safeContent={this.state.safeContent}

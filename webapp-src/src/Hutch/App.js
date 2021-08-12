@@ -149,7 +149,10 @@ class App extends Component {
         });
       } else if (message.action === "setSafeKey") {
         var safeContent = this.state.safeContent;
-        safeContent[message.target.name].key = message.key;
+        if (!safeContent[message.target.name].key && message.key) {
+          safeContent[message.target.name].key = message.key;
+        }
+        safeContent[message.target.name].extractableKey = message.masterkeyData;
         safeContent[message.target.name].lastUnlock = (message.key?Date.now()/1000:0);
         if (!message.key) {
           var localStorageKey = "hutchsafe-"+message.target.name;
@@ -157,6 +160,9 @@ class App extends Component {
             localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
           }
           storage.removeValue(localStorageKey);
+          safeContent[message.target.name].key = false;
+          safeContent[message.target.name].extractableKey = false;
+          safeContent[message.target.name].lastUnlock = 0;
         } else {
           if (message.keepUnlocked) {
             var unlockAlg = "A128KW";
@@ -195,18 +201,30 @@ class App extends Component {
             });
           }
         }
-        this.setState({safeContent: safeContent});
+        this.setState({safeContent: safeContent}, () => {
+          if (this.state.safeContent[message.target.name].extractableKey) {
+            setTimeout(() => {
+              var curSafeContent = this.state.safeContent;
+              delete(curSafeContent[message.target.name].extractableKey);
+              this.setState({safeContent: curSafeContent}, () => {
+              });
+            //}, 600000);
+            }, 10000);
+          }
+        });
       } else if (message.action === "unlockSafe") {
         var safeContent = this.state.safeContent;
-        safeContent[message.safe.name].lastUnlock = Date.now()/1000;
+        safeContent[message.safe.name].extractableKey = message.extractableKey;
         this.setState({safeContent: safeContent}, () => {
+          setTimeout(() => {
+            var curSafeContent = this.state.safeContent;
+            delete(curSafeContent[message.safe.name].extractableKey);
+            this.setState({safeContent: curSafeContent}, () => {
+            });
+          //}, 600000);
+          }, 10000);
           if (safeContent[message.safe.name].unlockedCoinList.length !== safeContent[message.safe.name].coinList.length) {
             this.unlockCoinList(message.safe.name)
-            .then(() => {
-              if (message.cb) {
-                message.cb();
-              }
-            });
           }
         });
       } else if (message.action === "lockAllSafe") {
