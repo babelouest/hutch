@@ -13,6 +13,9 @@ class CoinElementPassword extends Component {
       cbEdit: props.cbEdit,
       cbRemove: props.cbRemove,
       cbTags: props.cbTags,
+      isDraggable: props.isDraggable,
+      cbOnDragStart: props.cbOnDragStart,
+      cbOnDragOver: props.cbOnDragOver,
       showPassword: false
     };
     
@@ -53,7 +56,7 @@ class CoinElementPassword extends Component {
         </span>
     }
     return (
-        <div>
+        <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>
           <div className="row btn-icon-bottom">
             <div className="col text-truncate">
               <span className="btn-icon-right">

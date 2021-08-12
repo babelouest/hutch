@@ -24,9 +24,7 @@
   "profileMessageMandatory": "Vous devez utiliser un message de profil",
   "profileNameMandatory": "Vous devez utiliser un nom",
   "addSafe": "Ajouter un coffre",
-  "safeName": "Nom",
-  "safeNameMandatory": "Le nom est obligatoire",
-  "safeDisplayName": "Nom long",
+  "safeDisplayName": "Nom",
   "safeEncType": "Type de chiffrement (enc)",
   "safeAlgType": "Algorithme de gestion de clé (alg)",
   "safeKeyList": "Clés pour vérouiller et ouvrir le coffre",
@@ -172,5 +170,7 @@
   "importInvalidPassword": "Mot de passe invalide",
   "importInvalidKey": "Clé invalide",
   "importPassword": "Mot de passe",
-  "importJwk": "Clé JWK pour déchiffrer l'export"
+  "importJwk": "Clé JWK pour déchiffrer l'export",
+  "messageSortEnabled": "Tri activé",
+  "messageSortDisabled": "Tri désactivé"
 }

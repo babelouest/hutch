@@ -12,7 +12,10 @@ class CoinElementFile extends Component {
       index: props.index,
       cbEdit: props.cbEdit,
       cbRemove: props.cbRemove,
-      cbTags: props.cbTags
+      cbTags: props.cbTags,
+      isDraggable: props.isDraggable,
+      cbOnDragStart: props.cbOnDragStart,
+      cbOnDragOver: props.cbOnDragOver
     };
     
     this.downloadFile = this.downloadFile.bind(this);
@@ -36,7 +39,7 @@ class CoinElementFile extends Component {
       tagListJsx.push(<span key={index} className="badge rounded-pill bg-secondary btn-icon">{tag}</span>);
     });
     return (
-        <div>
+        <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>
           <div className="row btn-icon-bottom">
             <div className="col">
               <span className="btn-icon-right">

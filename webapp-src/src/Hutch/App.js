@@ -103,7 +103,7 @@ class App extends Component {
           });
         }
       } else if (message.action === "addSafe") {
-        this.setState({nav: "safe", curSafe: {name: "", display_name: "", enc_type: "A256GCM", alg_type: "A256GCMKW"}, editSafeMode: 1});
+        this.setState({nav: "safe", curSafe: {name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), display_name: "", enc_type: "A256GCM", alg_type: "A256GCMKW"}, editSafeMode: 1});
       } else if (message.action === "editSafe") {
         this.state.safeList.forEach((safe) => {
           if (safe.name === message.target) {

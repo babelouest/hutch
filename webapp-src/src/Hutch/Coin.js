@@ -37,7 +37,9 @@ class Coin extends Component {
       curElementIndex: -1,
       showConfirm: false,
       showEditTags: false,
-      showExportCoin: false
+      showExportCoin: false,
+      sortRowsEnabled: false,
+      overId: false
     };
 
     this.exportCoin = this.exportCoin.bind(this);
@@ -50,6 +52,8 @@ class Coin extends Component {
     this.setElementTags = this.setElementTags.bind(this);
     this.setElementTagsConfirm = this.setElementTagsConfirm.bind(this);
     this.saveElement = this.saveElement.bind(this);
+    this.onDrop = this.onDrop.bind(this);
+    this.onDragOver = this.onDragOver.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -64,7 +68,7 @@ class Coin extends Component {
       exportCoinModal.show();
     });
   }
-  
+
   exportCoinClose() {
     var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
     exportCoinModal.hide();
@@ -74,18 +78,18 @@ class Coin extends Component {
   addSecretElement() {
     this.setState({showAddElement: true, newElementType: "url"});
   }
-  
+
   setNewElementType(e) {
     this.setState({newElementType: e.target.value});
   }
-  
+
   editElement(e, index) {
     e.preventDefault();
     var editElementList = this.state.editElementList;
     editElementList.push(index);
     this.setState({editElementList: editElementList});
   }
-  
+
   removeElement(e, index) {
     e.preventDefault();
     this.setState({curElementIndex: index, showConfirm: true}, () => {
@@ -95,18 +99,18 @@ class Coin extends Component {
       removeModal.show();
     });
   }
-  
+
   removeElementConfirm(result) {
     if (result) {
       var coin = this.state.coin;
       coin.data.rows.splice(this.state.curElementIndex, 1);
-      this.state.cbSaveCoin(true, coin.name, coin.data);
+      this.state.cbSaveCoin(true, coin.name, coin.data, true);
     }
     var removeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#removeElement'));
     removeModal.hide();
     this.setState({showConfirm: false});
   }
-  
+
   setElementTags(e, index) {
     e.preventDefault();
     this.setState({curElementIndex: index, curTags: this.state.coin.data.rows[index].tags||[], showEditTags: true}, () => {
@@ -116,7 +120,7 @@ class Coin extends Component {
       modalCoinElementTags.show();
     });
   }
-  
+
   setElementTagsConfirm(result, tags) {
     if (result) {
       var coin = this.state.coin;
@@ -125,13 +129,13 @@ class Coin extends Component {
       } else {
         delete(coin.data.rows[this.state.curElementIndex].tags);
       }
-      this.state.cbSaveCoin(true, coin.name, coin.data);
+      this.state.cbSaveCoin(true, coin.name, coin.data, true);
     }
     var modalCoinElementTags = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalCoinElementTags'));
     modalCoinElementTags.hide();
     this.setState({showEditTags: false});
   }
-  
+
   saveElement(e, element, index) {
     var coin = this.state.coin;
     if (index === -1) {
@@ -141,10 +145,10 @@ class Coin extends Component {
       this.cancelEditElement(e, index);
     }
     this.setState({showAddElement: false, newElementType: false}, () => {
-      this.state.cbSaveCoin(true, coin.name, coin.data);
+      this.state.cbSaveCoin(true, coin.name, coin.data, true);
     });
   }
-  
+
   cancelEditElement(e, index) {
     e && e.preventDefault();
     if (index === -1) {
@@ -162,6 +166,51 @@ class Coin extends Component {
     navigator.clipboard.writeText(value).then(() => {
       $.snack("info", i18next.t("messageCopyToClipboard"));
     });
+  }
+
+  sortRows() {
+    this.setState({sortRowsEnabled: !this.state.sortRowsEnabled}, () => {
+      if (this.state.sortRowsEnabled) {
+        $.snack("info", i18next.t("messageSortEnabled"));
+      } else {
+        $.snack("info", i18next.t("messageSortDisabled"));
+      }
+    });
+  }
+
+  switchRows(indexSource, indexOver) {
+    var coin = this.state.coin;
+    var row = coin.data.rows[indexSource];
+    coin.data.rows.splice(indexSource, 1);
+    coin.data.rows.splice(indexOver, 0, row);
+    this.state.cbSaveCoin(true, coin.name, coin.data, true);
+  }
+
+  onDragStart(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+  }
+
+  onDrop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text").split("-");
+    if (data && data.length === 2 && data[0] === this.state.coin.name) {
+      this.switchRows(parseInt(data[1]), parseInt(this.state.overId));
+    }
+  }
+
+  onDragOver(ev) {
+    var elt = ev.target;
+    while (elt) {
+      if (elt.draggable) {
+        var data = elt.id.split("-");
+        if (data && data.length === 2 && data[0] === this.state.coin.name) {
+          this.setState({overId: data[1]});
+        }
+        break;
+      }
+      elt = elt.parentElement;
+    }
+    ev.preventDefault();
   }
 
 	render() {
@@ -258,14 +307,20 @@ class Coin extends Component {
                                                 index={index}
                                                 cbEdit={this.editElement}
                                                 cbRemove={this.removeElement}
-                                                cbTags={(e) => this.setElementTags(e, index)} />);
+                                                cbTags={(e) => this.setElementTags(e, index)}
+                                                isDraggable={this.state.sortRowsEnabled}
+                                                cbOnDragStart={this.onDragStart}
+                                                cbOnDragOver={this.onDragOver}/>);
             } else {
             elementListJsx.push(<CoinEditElementUrl key={index}
                                                     coin={this.state.coin}
                                                     element={row}
                                                     index={index}
                                                     cbSave={this.saveElement}
-                                                    cbCancel={this.cancelEditElement} />);
+                                                    cbCancel={this.cancelEditElement}
+                                                    isDraggable={this.state.sortRowsEnabled}
+                                                    cbOnDragStart={this.onDragStart}
+                                                    cbOnDragOver={this.onDragOver}/>);
             }
           break;
         case "login":
@@ -281,14 +336,20 @@ class Coin extends Component {
                                                      index={index}
                                                      cbEdit={this.editElement}
                                                      cbRemove={this.removeElement}
-                                                     cbTags={(e) => this.setElementTags(e, index)} />);
+                                                     cbTags={(e) => this.setElementTags(e, index)}
+                                                     isDraggable={this.state.sortRowsEnabled}
+                                                     cbOnDragStart={this.onDragStart}
+                                                     cbOnDragOver={this.onDragOver}/>);
             } else {
             elementListJsx.push(<CoinEditElementUsername key={index}
                                                          coin={this.state.coin}
                                                          element={row}
                                                          index={index}
                                                          cbSave={this.saveElement}
-                                                         cbCancel={this.cancelEditElement} />);
+                                                         cbCancel={this.cancelEditElement}
+                                                         isDraggable={this.state.sortRowsEnabled}
+                                                         cbOnDragStart={this.onDragStart}
+                                                         cbOnDragOver={this.onDragOver}/>);
             }
           break;
         case "password":
@@ -304,7 +365,10 @@ class Coin extends Component {
                                                      index={index}
                                                      cbEdit={this.editElement}
                                                      cbRemove={this.removeElement}
-                                                     cbTags={(e) => this.setElementTags(e, index)} />);
+                                                     cbTags={(e) => this.setElementTags(e, index)}
+                                                     isDraggable={this.state.sortRowsEnabled}
+                                                     cbOnDragStart={this.onDragStart}
+                                                     cbOnDragOver={this.onDragOver}/>);
           } else {
             elementListJsx.push(<CoinEditElementPassword key={index}
                                                          config={this.state.config}
@@ -312,7 +376,10 @@ class Coin extends Component {
                                                          element={row}
                                                          index={index}
                                                          cbSave={this.saveElement}
-                                                         cbCancel={this.cancelEditElement} />);
+                                                         cbCancel={this.cancelEditElement}
+                                                         isDraggable={this.state.sortRowsEnabled}
+                                                         cbOnDragStart={this.onDragStart}
+                                                         cbOnDragOver={this.onDragOver}/>);
             }
           break;
         case "secretQuestion":
@@ -325,7 +392,10 @@ class Coin extends Component {
                                                           cbSave={this.saveElement}
                                                           cbRemove={this.removeElement}
                                                           cbCancel={this.cancelEditElement}
-                                                          cbTags={(e) => this.setElementTags(e, index)} />);
+                                                          cbTags={(e) => this.setElementTags(e, index)}
+                                                          isDraggable={this.state.sortRowsEnabled}
+                                                          cbOnDragStart={this.onDragStart}
+                                                          cbOnDragOver={this.onDragOver}/>);
           break;
         case "file":
           if (this.state.editElementList.indexOf(index) === -1) {
@@ -335,14 +405,20 @@ class Coin extends Component {
                                                  index={index}
                                                  cbEdit={this.editElement}
                                                  cbRemove={this.removeElement}
-                                                 cbTags={(e) => this.setElementTags(e, index)} />);
+                                                 cbTags={(e) => this.setElementTags(e, index)}
+                                                 isDraggable={this.state.sortRowsEnabled}
+                                                 cbOnDragStart={this.onDragStart}
+                                                 cbOnDragOver={this.onDragOver}/>);
             } else {
             elementListJsx.push(<CoinEditElementFile key={index}
                                                      coin={this.state.coin}
                                                      element={row}
                                                      index={index}
                                                      cbSave={this.saveElement}
-                                                     cbCancel={this.cancelEditElement} />);
+                                                     cbCancel={this.cancelEditElement}
+                                                     isDraggable={this.state.sortRowsEnabled}
+                                                     cbOnDragStart={this.onDragStart}
+                                                     cbOnDragOver={this.onDragOver}/>);
             }
           break;
         case "misc":
@@ -353,19 +429,31 @@ class Coin extends Component {
                                                  index={index}
                                                  cbEdit={this.editElement}
                                                  cbRemove={this.removeElement}
-                                                 cbTags={(e) => this.setElementTags(e, index)} />);
+                                                 cbTags={(e) => this.setElementTags(e, index)}
+                                                 isDraggable={this.state.sortRowsEnabled}
+                                                 cbOnDragStart={this.onDragStart}
+                                                 cbOnDragOver={this.onDragOver}/>);
             } else {
             elementListJsx.push(<CoinEditElementMisc key={index}
                                                      coin={this.state.coin}
                                                      element={row}
                                                      index={index}
                                                      cbSave={this.saveElement}
-                                                     cbCancel={this.cancelEditElement} />);
+                                                     cbCancel={this.cancelEditElement}
+                                                     isDraggable={this.state.sortRowsEnabled}
+                                                     cbOnDragStart={this.onDragStart}
+                                                     cbOnDragOver={this.onDragOver}/>);
             }
           break;
         default:
       }
     });
+    var sortBtnClass = "btn btn-sm";
+    if (this.state.sortRowsEnabled) {
+      sortBtnClass += " btn-primary";
+    } else {
+      sortBtnClass += " btn-secondary";
+    }
     return (
       <div className="col">
         <div className="accordion" id={"coin-"+this.state.coin.name}>
@@ -393,6 +481,12 @@ class Coin extends Component {
                       <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                     </button>
                     <button type="button"
+                            className={sortBtnClass}
+                            onClick={(e) => this.sortRows()}
+                            title={i18next.t("sortCoin")}>
+                      <i className="fa fa-sort" aria-hidden="true"></i>
+                    </button>
+                    <button type="button"
                             className="btn btn-secondary btn-sm"
                             onClick={this.exportCoin}
                             title={i18next.t("exportCoin")}>
@@ -416,7 +510,9 @@ class Coin extends Component {
                 {addElementJsx}
                 {newElementJsx}
                 {newElementSeparator}
-                {elementListJsx}
+                <div onDrop={this.onDrop} onDragOver={this.onDragOver}>
+                  {elementListJsx}
+                </div>
               </div>
             </div>
           </div>

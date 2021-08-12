@@ -11,7 +11,10 @@ class CoinEditElementUrl extends Component {
       element: props.element,
       index: props.index,
       cbSave: props.cbSave,
-      cbCancel: props.cbCancel
+      cbCancel: props.cbCancel,
+      isDraggable: props.isDraggable,
+      cbOnDragStart: props.cbOnDragStart,
+      cbOnDragOver: props.cbOnDragOver
     };
     
     this.changeValue = this.changeValue.bind(this);
@@ -29,21 +32,23 @@ class CoinEditElementUrl extends Component {
 
 	render() {
     return (
-      <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>
-        <div className="mb-3">
-          <label htmlFor={this.state.coin.name+"-"+this.state.index} className="form-label">{i18next.t("coinElementUrl")}</label>
-          <input type="text"
-                 className="form-control"
-                 id={this.state.coin.name+"-"+this.state.index}
-                 value={this.state.element.value}
-                 placeholder={i18next.t("coinElementUrlPh")}
-                 onChange={this.changeValue} />
-        </div>
-        <div className="mb-3 btn-group">
-          <button type="button" className="btn btn-secondary" onClick={(e) => this.state.cbCancel(e, this.state.index)}>{i18next.t("modalClose")}</button>
-          <button type="submit" className="btn btn-primary" onClick={(e) => this.state.cbSave(e, this.state.element, this.state.index)} disabled={!this.state.element.value}>{i18next.t("modalOk")}</button>
-        </div>
-      </form>
+      <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>
+        <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>
+          <div className="mb-3">
+            <label htmlFor={this.state.coin.name+"-"+this.state.index} className="form-label">{i18next.t("coinElementUrl")}</label>
+            <input type="text"
+                   className="form-control"
+                   id={this.state.coin.name+"-"+this.state.index}
+                   value={this.state.element.value}
+                   placeholder={i18next.t("coinElementUrlPh")}
+                   onChange={this.changeValue} />
+          </div>
+          <div className="mb-3 btn-group">
+            <button type="button" className="btn btn-secondary" onClick={(e) => this.state.cbCancel(e, this.state.index)}>{i18next.t("modalClose")}</button>
+            <button type="submit" className="btn btn-primary" onClick={(e) => this.state.cbSave(e, this.state.element, this.state.index)} disabled={!this.state.element.value}>{i18next.t("modalOk")}</button>
+          </div>
+        </form>
+      </div>
     );
 	}
 }

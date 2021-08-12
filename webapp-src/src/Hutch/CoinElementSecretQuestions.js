@@ -17,7 +17,10 @@ class CoinElementSecretQuestions extends Component {
       editList: [],
       cbRemove: props.cbRemove,
       cbSave: props.cbSave,
-      cbTags: props.cbTags
+      cbTags: props.cbTags,
+      isDraggable: props.isDraggable,
+      cbOnDragStart: props.cbOnDragStart,
+      cbOnDragOver: props.cbOnDragOver
     };
     
     this.copyToClipboard = this.copyToClipboard.bind(this);
@@ -124,7 +127,7 @@ class CoinElementSecretQuestions extends Component {
         </div>
     }
     return (
-      <div>
+      <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>
         <div className="row btn-icon-bottom">
           <div className="col">
             <span className="btn-icon-right">

@@ -11,7 +11,10 @@ class CoinEditElementFile extends Component {
       element: props.element,
       index: props.index,
       cbSave: props.cbSave,
-      cbCancel: props.cbCancel
+      cbCancel: props.cbCancel,
+      isDraggable: props.isDraggable,
+      cbOnDragStart: props.cbOnDragStart,
+      cbOnDragOver: props.cbOnDragOver
     };
     
     this.getFile = this.getFile.bind(this);
@@ -38,22 +41,24 @@ class CoinEditElementFile extends Component {
       filenameJsx = <code className="btn-icon-right">{this.state.element.value.filename}</code>
     }
     return (
-      <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>
-        <div className="mb-3">
-          <input type="file"
-                 className="upload"
-                 id={this.state.coin.name+"-"+this.state.index}
-                 onChange={this.getFile} />
-          <label htmlFor={this.state.coin.name+"-"+this.state.index} className="btn btn-outline-secondary btn-sm">
-            <i className="fa fa-cloud-upload" aria-hidden="true"></i>
-          </label>
-          {filenameJsx}
-        </div>
-        <div className="mb-3 btn-group">
-          <button type="button" className="btn btn-secondary" onClick={(e) => this.state.cbCancel(e, this.state.index)}>{i18next.t("modalClose")}</button>
-          <button type="submit" className="btn btn-primary" onClick={(e) => this.state.cbSave(e, this.state.element, this.state.index)} disabled={!this.state.element.value}>{i18next.t("modalOk")}</button>
-        </div>
-      </form>
+      <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>
+        <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>
+          <div className="mb-3">
+            <input type="file"
+                   className="upload"
+                   id={this.state.coin.name+"-"+this.state.index}
+                   onChange={this.getFile} />
+            <label htmlFor={this.state.coin.name+"-"+this.state.index} className="btn btn-outline-secondary btn-sm">
+              <i className="fa fa-cloud-upload" aria-hidden="true"></i>
+            </label>
+            {filenameJsx}
+          </div>
+          <div className="mb-3 btn-group">
+            <button type="button" className="btn btn-secondary" onClick={(e) => this.state.cbCancel(e, this.state.index)}>{i18next.t("modalClose")}</button>
+            <button type="submit" className="btn btn-primary" onClick={(e) => this.state.cbSave(e, this.state.element, this.state.index)} disabled={!this.state.element.value}>{i18next.t("modalOk")}</button>
+          </div>
+        </form>
+      </div>
     );
 	}
 }

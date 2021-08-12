@@ -50,12 +50,6 @@ class SafeEdit extends Component {
     return (this.state.safeContent[this.state.safe.name].keyList.length && this.state.safeContent[this.state.safe.name].lastUnlock + 600 < (Date.now()/1000));
   }
   
-  editName(e) {
-    var safe = this.state.safe;
-    safe.name = e.target.value;
-    this.setState({safe: safe});
-  }
-
   editDisplayName(e) {
     var safe = this.state.safe;
     safe.display_name = e.target.value;
@@ -77,38 +71,25 @@ class SafeEdit extends Component {
   saveSafe(e) {
     e.preventDefault();
     var safe = this.state.safe;
-    if (!safe.name) {
-      $.snack("warning", i18next.t("safeNameMandatory"));
-      this.setState({nameMandatory: true, namePresent: false});
+    if (this.state.editMode === 1) {
+      apiManager.request(this.state.config.safe_endpoint, "POST", safe)
+      .then(() => {
+        messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
+        $.snack("info", i18next.t("messageSaveSafe"));
+      })
+      .fail(() => {
+        $.snack("warning", i18next.t("messageErrorSaveSafe"));
+      });
+      this.setState({nameMandatory: false, namePresent: false});
     } else {
-      if (this.state.editMode === 1) {
-        var found = false;
-        if (this.state.safeContent[safe.name]) {
-          $.snack("warning", i18next.t("safeNamePresent"));
-          found = true;
-          this.setState({nameMandatory: false, namePresent: true});
-        }
-        if (!found) {
-          apiManager.request(this.state.config.safe_endpoint, "POST", safe)
-          .then(() => {
-            messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
-            $.snack("info", i18next.t("messageSaveSafe"));
-          })
-          .fail(() => {
-            $.snack("warning", i18next.t("messageErrorSaveSafe"));
-          });
-          this.setState({nameMandatory: false, namePresent: false});
-        }
-      } else {
-        apiManager.request(this.state.config.safe_endpoint + "/" + safe.name, "PUT", safe)
-        .then(() => {
-          messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
-          $.snack("info", i18next.t("messageSaveSafe"));
-        })
-        .fail(() => {
-          $.snack("warning", i18next.t("messageErrorSaveSafe"));
-        });
-      }
+      apiManager.request(this.state.config.safe_endpoint + "/" + safe.name, "PUT", safe)
+      .then(() => {
+        messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
+        $.snack("info", i18next.t("messageSaveSafe"));
+      })
+      .fail(() => {
+        $.snack("warning", i18next.t("messageErrorSaveSafe"));
+      });
     }
   }
   
@@ -265,21 +246,7 @@ class SafeEdit extends Component {
   }
 
 	render() {
-    var nameClass = "form-control", nameErrorJsx, safeKeyListJsx = [];
-    if (this.state.nameMandatory) {
-      nameClass += " is-invalid";
-      nameErrorJsx =
-        <div className="invalid-feedback">
-          {i18next.t("safeNameMandatory")}
-        </div>
-    }
-    if (this.state.namePresent) {
-      nameClass += " is-invalid";
-      nameErrorJsx =
-        <div className="invalid-feedback">
-          {i18next.t("safeNamePresent")}
-        </div>
-    }
+    var safeKeyListJsx = [];
     if (this.state.safeContent && this.state.safe && this.state.safeContent[this.state.safe.name]) {
       this.state.safeContent[this.state.safe.name].keyList.forEach((safeKey, index) => {
         safeKeyListJsx.push(
@@ -300,11 +267,7 @@ class SafeEdit extends Component {
     return (
       <div>
         <form onSubmit={this.saveSafe}>
-          <div className="mb-3">
-            <label htmlFor="safeName" className="form-label">{i18next.t("safeName")}</label>
-            <input disabled={this.state.editMode===2} type="text" className={nameClass} id="safeName" value={this.state.safe.name||""} onChange={(e) => this.editName(e)}/>
-            {nameErrorJsx}
-          </div>
+          <input type="hidden" id="safeName" value={this.state.safe.name}/>
           <div className="mb-3">
             <label htmlFor="safeDisplayName" className="form-label">{i18next.t("safeDisplayName")}</label>
             <input type="text" className="form-control" id="safeDisplayName" value={this.state.safe.display_name||""} onChange={(e) => this.editDisplayName(e)}/>
