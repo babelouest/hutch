@@ -208,8 +208,7 @@ class App extends Component {
               delete(curSafeContent[message.target.name].extractableKey);
               this.setState({safeContent: curSafeContent}, () => {
               });
-            //}, 600000);
-            }, 10000);
+            }, 600000);
           }
         });
       } else if (message.action === "unlockSafe") {
@@ -221,8 +220,7 @@ class App extends Component {
             delete(curSafeContent[message.safe.name].extractableKey);
             this.setState({safeContent: curSafeContent}, () => {
             });
-          //}, 600000);
-          }, 10000);
+          }, 600000);
           if (safeContent[message.safe.name].unlockedCoinList.length !== safeContent[message.safe.name].coinList.length) {
             this.unlockCoinList(message.safe.name)
           }

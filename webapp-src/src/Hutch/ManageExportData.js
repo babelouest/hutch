@@ -140,8 +140,8 @@ class ManageExportData extends Component {
     if (this.state.exportSafeWithSecurity) {
       exportSecurityTypeJsx =
         <select className="form-select" value={this.state.exportSecurityType} onChange={this.changeExportSecurityType}>
-          <option value="password">{i18next.t("exportSecurityTypePassword")}</option>
-          <option value="jwk">{i18next.t("exportSecurityTypeJwk")}</option>
+          <option value="password">{i18next.t("securityTypePassword")}</option>
+          <option value="jwk">{i18next.t("securityTypeJwk")}</option>
         </select>
       if (this.state.exportSecurityType === "password") {
         var pwdScoreJsx;
@@ -174,7 +174,7 @@ class ManageExportData extends Component {
           messageClass += " is-invalid";
           messageErrorJsx =
             <div className="invalid-feedback">
-              {i18next.t("exportJwkError")}
+              {i18next.t("jwkError")}
             </div>
         }
         exportSecurityJsx =

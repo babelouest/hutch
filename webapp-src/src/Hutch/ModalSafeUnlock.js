@@ -84,6 +84,7 @@ class ModalSafeUnlock extends Component {
   }
   
   verifyPassword(e) {
+    e.preventDefault();
     if (this.state.safeKey) {
       var enc = new TextEncoder();
       jwtDecrypt(this.state.safeKey.data, enc.encode(this.state.safePassword))
@@ -113,7 +114,7 @@ class ModalSafeUnlock extends Component {
     var keyListJsx = [], safePasswordErrorJsx, safePasswordClass = "form-control", keepUnlockedJsx;
     if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].keyList) {
       this.state.safeContent[this.state.safe.name].keyList.forEach((safeKey, index) => {
-        if (safeKey.type === "password") {
+        if (safeKey.type === "password" || safeKey.type === "master-password") {
           keyListJsx.push(
             <li key={index}><a className="dropdown-item" href="#" onClick={(e) => this.setSafeKey(e, safeKey)}>{safeKey.display_name||safeKey.name}</a></li>
           );
@@ -158,21 +159,28 @@ class ModalSafeUnlock extends Component {
               <h5 className="modal-title">{i18next.t("safeUnlockTitle")}</h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={(e) => this.closeModal(e, false)}></button>
             </div>
-            <div className="modal-body">
-              <div className="input-group mb-3">
-                <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">{this.state.safeKey.display_name||this.state.safeKey.name}</button>
-                <ul className="dropdown-menu">
-                  {keyListJsx}
-                </ul>
-                <input type="password" className={safePasswordClass} placeholder={i18next.t("safePassword")} onChange={(e) => this.changePassword(e)} value={this.state.safePassword} />
-                {safePasswordErrorJsx}
+            <form onSubmit={this.verifyPassword}>
+              <div className="modal-body">
+                <div className="input-group mb-3">
+                  <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">{this.state.safeKey.display_name||this.state.safeKey.name}</button>
+                  <ul className="dropdown-menu">
+                    {keyListJsx}
+                  </ul>
+                  <input type="password"
+                         className={safePasswordClass}
+                         autoComplete="off"
+                         placeholder={i18next.t("safePassword")}
+                         onChange={(e) => this.changePassword(e)}
+                         value={this.state.safePassword} />
+                  {safePasswordErrorJsx}
+                </div>
+                {keepUnlockedJsx}
               </div>
-              {keepUnlockedJsx}
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)}>{i18next.t("modalClose")}</button>
-              <button type="button" className="btn btn-primary" onClick={(e) => this.verifyPassword(e)}>{i18next.t("modalOk")}</button>
-            </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)}>{i18next.t("modalClose")}</button>
+                <button type="submit" className="btn btn-primary" onClick={(e) => this.verifyPassword(e)}>{i18next.t("modalOk")}</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
