@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
 
+import JwkInput from './JwkInput';
+
 class ModalSafeKey extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +30,7 @@ class ModalSafeKey extends Component {
   changeDisplayName(e) {
     var safeKey = this.state.safeKey;
     safeKey.display_name = e.target.value;
-    this.setState({safeKey: safeKey});
+    this.setState({safeKey: safeKey}, () => {this.isSafeKeyValid()});
   }
 
   changeNewPassword(e) {
@@ -43,13 +45,13 @@ class ModalSafeKey extends Component {
     this.setState({confirmNewPassword: e.target.value}, () => {this.isSafeKeyValid()});
   }
   
-  editSafeKeyJwk(e) {
-    this.setState({safeKeyJwk: e.target.value}, () => {this.isSafeKeyValid()});
+  editSafeKeyJwk(safeKeyJwk) {
+    this.setState({safeKeyJwk: safeKeyJwk}, () => {this.isSafeKeyValid()});
   }
   
   isSafeKeyValid() {
     var isValid = true;
-    if (!this.state.safeKey.name) {
+    if (!this.state.safeKey.display_name) {
       isValid = false;
     }
     if (this.state.safeKey.type === "password") {
@@ -83,11 +85,17 @@ class ModalSafeKey extends Component {
   }
 
   closeModal(e, result) {
+    var jwk;
+    try {
+      jwk = JSON.parse(this.state.safeKeyJwk);
+    } catch (err) {
+      jwk = false;
+    }
     if (this.state.cb) {
       this.state.cb(result, {
         safeKey: this.state.safeKey,
         password: this.state.newPassword,
-        jwk: (result?JSON.parse(this.state.safeKeyJwk):false)
+        jwk: jwk
       });
       this.setState({newPassword: "",
                     confirmNewPassword: "",
@@ -159,12 +167,7 @@ class ModalSafeKey extends Component {
       inputJsx =
         <div className="mb-3">
           <label htmlFor="safeKeyJwk" className="form-label">{i18next.t("safeKeyJwk")}</label>
-          <textarea className={messageClass}
-                    id="safeKeyJwk"
-                    autoComplete="off"
-                    placeholder={i18next.t("safeKeyJwkPh")}
-                    value={this.state.safeKeyJwk}
-                    onChange={(e) => this.editSafeKeyJwk(e)}></textarea>
+          <JwkInput isError={!this.state.isValid} ph={i18next.t("safeKeyJwkPh")} cb={this.editSafeKeyJwk}/>
           {messageErrorJsx}
         </div>
     }

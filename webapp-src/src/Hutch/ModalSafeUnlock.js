@@ -4,6 +4,8 @@ import i18next from 'i18next';
 import { jwtDecrypt } from 'jose/jwt/decrypt';
 import { parseJwk } from 'jose/jwk/parse'
 
+import JwkInput from './JwkInput';
+
 function getPreferredKey(safeContent, safe) {
   var curKey = false;
   if (safeContent && safe && safeContent[safe.name] && safeContent[safe.name].keyList) {
@@ -28,7 +30,8 @@ class ModalSafeUnlock extends Component {
       allowKeepUnlocked: props.allowKeepUnlocked,
       safeKey: getPreferredKey(props.safeContent, props.safe),
       safePassword: "",
-      safePasswordError: false,
+      safeKeyJwk: "",
+      safeSecretError: false,
       keepUnlocked: false,
       unlockKeyName: this.getBrowserInfo()
     }
@@ -37,6 +40,7 @@ class ModalSafeUnlock extends Component {
     this.setSafeKey = this.setSafeKey.bind(this);
     this.toggleKeepUnlocked = this.toggleKeepUnlocked.bind(this);
     this.changeUnlockKeyName = this.changeUnlockKeyName.bind(this);
+    this.editSafeKeyJwk = this.editSafeKeyJwk.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -51,6 +55,10 @@ class ModalSafeUnlock extends Component {
     this.setState({safePassword: e.target.value});
   }
   
+  editSafeKeyJwk(safeKeyJwk) {
+    this.setState({safeKeyJwk: safeKeyJwk});
+  }
+  
   toggleKeepUnlocked(e) {
     var newKeepUnlocked = !this.state.keepUnlocked;
     this.setState({keepUnlocked: newKeepUnlocked});
@@ -62,7 +70,7 @@ class ModalSafeUnlock extends Component {
   
   setSafeKey(e, safeKey) {
     e.preventDefault();
-    this.setState({safeKey: safeKey});
+    this.setState({safeKey: safeKey, safeSecretError: false});
   }
   
   getBrowserInfo() {
@@ -86,21 +94,47 @@ class ModalSafeUnlock extends Component {
   verifyPassword(e) {
     e.preventDefault();
     if (this.state.safeKey) {
-      var enc = new TextEncoder();
-      jwtDecrypt(this.state.safeKey.data, enc.encode(this.state.safePassword))
-      .then((result) => {
-        this.setState({safePasswordError: false}, () => {
-          parseJwk(result.payload, this.state.safe.alg_type)
-          .then((masterKey) => {
-            this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);
+      if (this.state.safeKey.type === "password" || this.state.safeKey.type === "master-password") {
+        var enc = new TextEncoder();
+        jwtDecrypt(this.state.safeKey.data, enc.encode(this.state.safePassword))
+        .then((result) => {
+          this.setState({safeSecretError: false}, () => {
+            parseJwk(result.payload, this.state.safe.alg_type)
+            .then((masterKey) => {
+              this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);
+            });
           });
+        })
+        .catch(() => {
+          this.setState({safeSecretError: true});
         });
-      })
-      .catch(() => {
-        this.setState({safePasswordError: true});
-      })
+      } else if (this.state.safeKey.type === "jwk") {
+        try {
+          var parsedKey = JSON.parse(this.state.safeKeyJwk);
+          parseJwk(parsedKey, parsedKey.alg)
+          .then(decKey => {
+            jwtDecrypt(this.state.safeKey.data, decKey)
+            .then((result) => {
+              this.setState({safeSecretError: false}, () => {
+                parseJwk(result.payload, this.state.safe.alg_type)
+                .then((masterKey) => {
+                  this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);
+                });
+              });
+            })
+            .catch(() => {
+              this.setState({safeSecretError: true});
+            });
+          })
+          .catch(() => {
+            this.setState({safeSecretError: true});
+          });
+        } catch (e) {
+          this.setState({safeSecretError: true});
+        }
+      }
     } else {
-      this.setState({safePasswordError: true});
+      this.setState({safeSecretError: true});
     }
   }
 
@@ -111,22 +145,37 @@ class ModalSafeUnlock extends Component {
   }
 
 	render() {
-    var keyListJsx = [], safePasswordErrorJsx, safePasswordClass = "form-control", keepUnlockedJsx;
+    var keyListJsx = [], safeSecretErrorJsx, safePasswordClass = "form-control", keepUnlockedJsx, inputSecretJsx;
     if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].keyList) {
+      if (this.state.safeKey.type === "password" || this.state.safeKey.type === "master-password") {
+        if (this.state.safeSecretError) {
+          safePasswordClass += " is-invalid"
+          safeSecretErrorJsx =
+            <div className="invalid-feedback">
+              {i18next.t("safeKeyError")}
+            </div>
+        }
+        inputSecretJsx =
+          <input type="password"
+                 className={safePasswordClass}
+                 autoComplete="off"
+                 placeholder={i18next.t("safePassword")}
+                 onChange={(e) => this.changePassword(e)}
+                 value={this.state.safePassword} />
+      } else if (this.state.safeKey.type === "jwk") {
+        inputSecretJsx = <JwkInput isError={this.state.safeSecretError} errorMessage={i18next.t("safeKeyError")} ph={i18next.t("safeKeyJwkPh")} cb={this.editSafeKeyJwk}/>
+      }
       this.state.safeContent[this.state.safe.name].keyList.forEach((safeKey, index) => {
         if (safeKey.type === "password" || safeKey.type === "master-password") {
           keyListJsx.push(
             <li key={index}><a className="dropdown-item" href="#" onClick={(e) => this.setSafeKey(e, safeKey)}>{safeKey.display_name||safeKey.name}</a></li>
           );
+        } else if (safeKey.type === "jwk") {
+          keyListJsx.push(
+            <li key={index}><a className="dropdown-item" href="#" onClick={(e) => this.setSafeKey(e, safeKey)}>{safeKey.display_name||safeKey.name}</a></li>
+          );
         }
       });
-    }
-    if (this.state.safePasswordError) {
-      safePasswordClass += " is-invalid"
-      safePasswordErrorJsx =
-        <div className="invalid-feedback">
-          {i18next.t("safePasswordError")}
-        </div>
     }
     if (this.state.allowKeepUnlocked) {
       keepUnlockedJsx =
@@ -162,17 +211,25 @@ class ModalSafeUnlock extends Component {
             <form onSubmit={this.verifyPassword}>
               <div className="modal-body">
                 <div className="input-group mb-3">
-                  <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">{this.state.safeKey.display_name||this.state.safeKey.name}</button>
+                  <div className="input-group-prepend">
+                    <label className="input-group-text" htmlFor="safeKeySelect">
+                      {i18next.t("safeKeySelect")}
+                    </label>
+                  </div>
+                  <button className="btn btn-outline-secondary dropdown-toggle"
+                          type="button"
+                          id="safeKeySelect"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false">
+                    {this.state.safeKey.display_name||this.state.safeKey.name}
+                  </button>
                   <ul className="dropdown-menu">
                     {keyListJsx}
                   </ul>
-                  <input type="password"
-                         className={safePasswordClass}
-                         autoComplete="off"
-                         placeholder={i18next.t("safePassword")}
-                         onChange={(e) => this.changePassword(e)}
-                         value={this.state.safePassword} />
-                  {safePasswordErrorJsx}
+                </div>
+                <div className="input-group mb-3">
+                  {inputSecretJsx}
+                  {safeSecretErrorJsx}
                 </div>
                 {keepUnlockedJsx}
               </div>

@@ -7,6 +7,7 @@ import { jwtDecrypt } from 'jose/jwt/decrypt';
 import { parseJwk } from 'jose/jwk/parse';
 
 import ManageExportData from './ManageExportData';
+import JwkInput from './JwkInput';
 
 class ModalManageSafe extends Component {
   constructor(props) {
@@ -39,6 +40,7 @@ class ModalManageSafe extends Component {
     this.parseContent = this.parseContent.bind(this);
     this.importContent = this.importContent.bind(this);
     this.completeImportContent = this.completeImportContent.bind(this);
+    this.editImportJwk = this.editImportJwk.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -74,8 +76,8 @@ class ModalManageSafe extends Component {
     return false;
   }
 
-  editExportJwk(e) {
-    this.setState({importJwk: e.target.value}, () => {
+  editImportJwk(importJwk) {
+    this.setState({importJwk: importJwk}, () => {
       this.setState({exportInvalid: this.isImportInvalid()});
     });
   }
@@ -133,18 +135,22 @@ class ModalManageSafe extends Component {
         this.setState({importDataResult: "invalidPassword"});
       });
     } else if (this.state.importSecurityType === "jwk") {
-      var key = JSON.parse(this.state.importJwk);
-      key.use = "enc";
-      parseJwk(key, key.alg)
-      .then((exportKey) => {
-        jwtDecrypt(this.state.importData, exportKey)
-        .then((decImport) => {
-          this.importContent(decImport.payload.data);
-        })
-        .catch(() => {
-          this.setState({importDataResult: "invalidJwk"});
+      try {
+        var key = JSON.parse(this.state.importJwk);
+        key.use = "enc";
+        parseJwk(key, key.alg)
+        .then((exportKey) => {
+          jwtDecrypt(this.state.importData, exportKey)
+          .then((decImport) => {
+            this.importContent(decImport.payload.data);
+          })
+          .catch(() => {
+            this.setState({importDataResult: "invalidJwk"});
+          });
         });
-      });
+      } catch (err) {
+        this.setState({importDataResult: "invalidJwk"});
+      }
     }
   }
   
@@ -239,7 +245,7 @@ class ModalManageSafe extends Component {
       importSecurityJsx =
         <div className="mb-3">
           <label htmlFor="importJwk" className="form-label">{i18next.t("importJwk")}</label>
-          <textarea className="form-control" id="importJwk" value={this.state.importJwk} onChange={(e) => this.editExportJwk(e)}></textarea>
+          <JwkInput isError={false} ph={i18next.t("safeKeyJwkPh")} cb={this.editImportJwk}/>
         </div>
     }
     return (

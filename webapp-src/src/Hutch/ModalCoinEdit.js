@@ -78,7 +78,7 @@ class ModalCoinEdit extends Component {
 
   closeModal(e, result) {
     if (this.state.cb) {
-      this.state.cb(result, this.state.name, this.state.content);
+      this.state.cb(result, this.state.name, this.state.content, true);
     }
   }
 

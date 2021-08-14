@@ -155,14 +155,16 @@ class App extends Component {
         safeContent[message.target.name].extractableKey = message.masterkeyData;
         safeContent[message.target.name].lastUnlock = (message.key?Date.now()/1000:0);
         if (!message.key) {
-          var localStorageKey = "hutchsafe-"+message.target.name;
-          if (window.location.pathname !== "/") {
-            localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
+          if (message.removeStorage) {
+            var localStorageKey = "hutchsafe-"+message.target.name;
+            if (window.location.pathname !== "/") {
+              localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
+            }
+            storage.removeValue(localStorageKey);
+            safeContent[message.target.name].key = false;
+            safeContent[message.target.name].extractableKey = false;
+            safeContent[message.target.name].lastUnlock = 0;
           }
-          storage.removeValue(localStorageKey);
-          safeContent[message.target.name].key = false;
-          safeContent[message.target.name].extractableKey = false;
-          safeContent[message.target.name].lastUnlock = 0;
         } else {
           if (message.keepUnlocked) {
             var unlockAlg = "A128KW";
@@ -184,6 +186,9 @@ class App extends Component {
                   type: "browser",
                   data: jwt
                 };
+                var curSafeContent = this.state.safeContent;
+                curSafeContent[message.target.name].keyList.push(safeKey);
+                this.setState({safeContent: curSafeContent});
                 apiManager.request(this.state.config.safe_endpoint + "/" + message.target.name + "/key", "POST", safeKey)
                 .then(() => {
                   fromKeyLike(unlockKey)
@@ -202,6 +207,7 @@ class App extends Component {
           }
         }
         this.setState({safeContent: safeContent}, () => {
+          this.unlockCoinList(message.target.name);
           if (this.state.safeContent[message.target.name].extractableKey) {
             setTimeout(() => {
               var curSafeContent = this.state.safeContent;
@@ -227,7 +233,7 @@ class App extends Component {
         });
       } else if (message.action === "lockAllSafe") {
         this.state.safeList.forEach((safe) => {
-          messageDispatcher.sendMessage('App', {action: "setSafeKey", target: safe, key: false});
+          messageDispatcher.sendMessage('App', {action: "setSafeKey", target: safe, removeStorage: true, key: false});
         });
       } else if (message.action === "updateCoin") {
         var safeContent = this.state.safeContent;
@@ -414,16 +420,21 @@ class App extends Component {
   unlockCoinList(safeName) {
     var safeContent = this.state.safeContent;
     var key = safeContent[safeName].key;
-    safeContent[safeName].coinList.forEach((encCoin, index) => {
-      jwtDecrypt(encCoin.data, key)
-      .then((decCoin) => {
-        safeContent[safeName].unlockedCoinList.push({name: encCoin.name, data: decCoin.payload});
-        if (index === safeContent[safeName].coinList.length-1) {
-          safeContent[safeName].unlockedCoinList.sort(this.compareCoin);
-          this.setState({safeContent: safeContent});
-        }
+    if (key) {
+      safeContent[safeName].coinList.forEach((encCoin, index) => {
+        jwtDecrypt(encCoin.data, key)
+        .then((decCoin) => {
+          safeContent[safeName].unlockedCoinList.push({name: encCoin.name, data: decCoin.payload});
+          if (index === safeContent[safeName].coinList.length-1) {
+            safeContent[safeName].unlockedCoinList.sort(this.compareCoin);
+            this.setState({safeContent: safeContent});
+          }
+        });
       });
-    });
+    } else {
+      safeContent[safeName].unlockedCoinList = [];
+      this.setState({safeContent: safeContent});
+    }
   }
   
   getSafeKeyList(safe) {

@@ -171,6 +171,13 @@ class SafeEdit extends Component {
             this.completeSetSafeKey(containerKey, data.safeKey, data.jwk.alg);
           });
         }
+      } else if (data.safeKey.type === "browser") {
+        apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/key/" + data.safeKey.name, "PUT", data.safeKey)
+        .then(() => {
+          messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, newSafeKey: data.safeKey, removeStorage: false});
+          this.setState({curSafeKeyContainer: false});
+          $.snack("info", i18next.t("safeLockUpdated"));
+        });
       }
     }
   }
@@ -246,7 +253,7 @@ class SafeEdit extends Component {
         newSafeKey.data = jwt;
         apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/key/" + newSafeKey.name, "PUT", newSafeKey)
         .then(() => {
-          messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, newSafeKey: newSafeKey});
+          messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, newSafeKey: newSafeKey, removeStorage: false});
           this.setState({curSafeKeyContainer: false});
           $.snack("info", i18next.t("safeLockUpdated"));
         });
@@ -323,8 +330,8 @@ class SafeEdit extends Component {
           faIcon += "fa-key";
         } else if (safeKey.type === "master-password") {
           faIcon += "fa-unlock";
-        } else if (safeKey.type === "public-key") {
-          faIcon += "fa-wikidata";
+        } else if (safeKey.type === "jwk") {
+          faIcon += "fa-file-code-o";
         } else if (safeKey.type === "browser") {
           faIcon += "fa-firefox";
         }

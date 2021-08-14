@@ -5,6 +5,8 @@ import i18next from 'i18next';
 import { parseJwk } from 'jose/jwk/parse';
 import { EncryptJWT } from 'jose/jwt/encrypt';
 
+import JwkInput from './JwkInput';
+
 class ManageExportData extends Component {
   constructor(props) {
     super(props);
@@ -28,6 +30,7 @@ class ManageExportData extends Component {
     this.changePassword = this.changePassword.bind(this);
     this.changeConfirmPassword = this.changeConfirmPassword.bind(this);
     this.exportSafe = this.exportSafe.bind(this);
+    this.editExportJwk = this.editExportJwk.bind(this);
   }
   
   toggleExportSafeWithSecurity() {
@@ -58,8 +61,8 @@ class ManageExportData extends Component {
     });
   }
   
-  editExportJwk(e) {
-    this.setState({exportJwk: e.target.value}, () => {
+  editExportJwk(exportJwk) {
+    this.setState({exportJwk: exportJwk}, () => {
       this.setState({exportInvalid: this.isExportInvalid()});
     });
   }
@@ -180,7 +183,7 @@ class ManageExportData extends Component {
         exportSecurityJsx =
           <div className="mb-3">
             <label htmlFor="exportJwk" className="form-label">{i18next.t("exportJwk")}</label>
-            <textarea className={messageClass} id="exportJwk" autoComplete="off" value={this.state.exportJwk} onChange={(e) => this.editExportJwk(e)}></textarea>
+            <JwkInput isError={this.state.exportInvalid} errorMessage={i18next.t("safeSecretError")} ph={i18next.t("safeKeyJwkPh")} cb={this.editExportJwk}/>
             {messageErrorJsx}
           </div>
       }

@@ -70,6 +70,7 @@ class SafeView extends Component {
                                             key: masterKey,
                                             keepUnlocked: keepUnlocked,
                                             unlockKeyName: unlockKeyName,
+                                            removeStorage: false,
                                             masterkeyData: masterkeyData});
       $.snack("info", i18next.t("unlockedSafe"));
     }
@@ -78,7 +79,7 @@ class SafeView extends Component {
   }
   
   lockSafe() {
-    messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, key: false});
+    messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, key: false, removeStorage: true});
     $.snack("info", i18next.t("lockedSafe"));
   }
   
@@ -162,6 +163,8 @@ class SafeView extends Component {
   }
   
   coinSaveCallback(result, name, content, toast = false) {
+    var modalCoinEditModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalCoinEdit'));
+    modalCoinEditModal && modalCoinEditModal.hide();
     if (result) {
       if (name) {
         return new EncryptJWT(content)
@@ -203,8 +206,6 @@ class SafeView extends Component {
     } else {
       return Promise.reject("No can do");
     }
-    var modalCoinEditModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalCoinEdit'));
-    modalCoinEditModal && modalCoinEditModal.hide();
   }
   
   scrollToCoin(name) {
