@@ -40,5 +40,5 @@ build-webapp:
 
 install-webapp:
 	find $(WEBAPP_DEST) ! -name config.json ! -name webapp ! -name .gitignore -delete
-	cp -R index.html config.json.sample favicon.ico css/ js/ locales/ fonts/ img/ $(WEBAPP_DEST)
+	cp -R index.html words-??.json config.json.sample favicon.ico css/ js/ locales/ fonts/ img/ $(WEBAPP_DEST)
 	cp output/*.js $(WEBAPP_DEST)
