@@ -93,11 +93,11 @@ var initApp = () => {
       ReactDOM.render(<App config={config} />, document.getElementById('root'));
     })
     .fail((error) => {
-      ReactDOM.render(<ErrorConfig/>, document.getElementById('root'));
+      ReactDOM.render(<ErrorConfig message={"Error getting hutch backend config"}/>, document.getElementById('root'));
     });
   })
   .fail((error) => {
-    ReactDOM.render(<ErrorConfig/>, document.getElementById('root'));
+    ReactDOM.render(<ErrorConfig message={"Error getting hutch frontend config"}/>, document.getElementById('root'));
   });
 }
 
