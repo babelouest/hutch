@@ -6,14 +6,29 @@ import { parseJwk } from 'jose/jwk/parse'
 
 import JwkInput from './JwkInput';
 
+import storage from '../lib/Storage';
+
 function getPreferredKey(safeContent, safe) {
   var curKey = false;
-  if (safeContent && safe && safeContent[safe.name] && safeContent[safe.name].keyList) {
-    safeContent[safe.name].keyList.forEach((key) => {
-      if (key.type === "password") {
+  var localStorageKey = "hutchsafekey-"+safe.name;
+  if (window.location.pathname !== "/") {
+    localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
+  }
+  var curKeyName = storage.getValue(localStorageKey)
+  if (curKeyName) {
+    safeContent[safe.name] && safeContent[safe.name].keyList && safeContent[safe.name].keyList.forEach((key) => {
+      if (key.name === curKeyName) {
         curKey = key;
       }
     });
+  } else {
+    if (safeContent && safe && safeContent[safe.name] && safeContent[safe.name].keyList) {
+      safeContent[safe.name].keyList.forEach((key) => {
+        if (!curKey && (key.type === "password" || key.type === "master-password" || key.type === "jwk")) {
+          curKey = key;
+        }
+      });
+    }
   }
   return curKey;
 }
@@ -70,7 +85,13 @@ class ModalSafeUnlock extends Component {
   
   setSafeKey(e, safeKey) {
     e.preventDefault();
-    this.setState({safeKey: safeKey, safeSecretError: false});
+    this.setState({safeKey: safeKey, safeSecretError: false}, () => {
+      var localStorageKey = "hutchsafekey-"+this.state.safe.name;
+      if (window.location.pathname !== "/") {
+        localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
+      }
+      storage.setValue(localStorageKey, safeKey.name);
+    });
   }
   
   getBrowserInfo() {
@@ -91,7 +112,7 @@ class ModalSafeUnlock extends Component {
     return M.join(' ');
   }
   
-  verifyPassword(e) {
+  verifyKey(e) {
     e.preventDefault();
     if (this.state.safeKey) {
       if (this.state.safeKey.type === "password" || this.state.safeKey.type === "master-password") {
@@ -208,7 +229,7 @@ class ModalSafeUnlock extends Component {
               <h5 className="modal-title">{i18next.t("safeUnlockTitle")}</h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={(e) => this.closeModal(e, false)}></button>
             </div>
-            <form onSubmit={this.verifyPassword}>
+            <form onSubmit={this.verifyKey}>
               <div className="modal-body">
                 <div className="input-group mb-3">
                   <div className="input-group-prepend">
@@ -235,7 +256,7 @@ class ModalSafeUnlock extends Component {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)}>{i18next.t("modalClose")}</button>
-                <button type="submit" className="btn btn-primary" onClick={(e) => this.verifyPassword(e)}>{i18next.t("modalOk")}</button>
+                <button type="submit" className="btn btn-primary" onClick={(e) => this.verifyKey(e)}>{i18next.t("modalOk")}</button>
               </div>
             </form>
           </div>

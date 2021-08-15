@@ -160,6 +160,22 @@ class App extends Component {
             if (window.location.pathname !== "/") {
               localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
             }
+            var keyStorageName = storage.getValue(localStorageKey);
+            if (keyStorageName) {
+              apiManager.request(this.state.config.safe_endpoint + "/" + message.target.name + "/key/" + keyStorageName.kid, "DELETE")
+              .then(() => {
+                var curSafeContent = this.state.safeContent;
+                curSafeContent[message.target.name].keyList.forEach((key, index) => {
+                  if (key.name === keyStorageName.kid) {
+                    curSafeContent[message.target.name].keyList.splice(index, 1);
+                  }
+                });
+                this.setState({safeContent: curSafeContent});
+              })
+              .fail((error) => {
+                $.snack("danger", i18next.t("messageErrorSaveSafeKey"));
+              });
+            }
             storage.removeValue(localStorageKey);
             safeContent[message.target.name].key = false;
             safeContent[message.target.name].extractableKey = false;
@@ -390,11 +406,13 @@ class App extends Component {
               });
             })
             .fail((error) => {
+              console.log(error);
               $.snack("warning", i18next.t("messageErrorCoinList"));
               this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
             });
           })
           .fail((error) => {
+            console.log(error);
             $.snack("warning", i18next.t("messageErrorKeyList"));
             this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
           });
@@ -402,6 +420,7 @@ class App extends Component {
       });
     })
     .fail((error) => {
+      console.log(error);
       $.snack("warning", i18next.t("messageErrorSafeList"));
       this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
     });

@@ -222,7 +222,7 @@ class Coin extends Component {
       addElementJsx =
         <div className="input-group mb-3">
           <span className="input-group-text" id="basic-addon1">{i18next.t("coinElementType")}</span>
-          <select className="form-select" id="addElement" onChange={(e) => this.setNewElementType(e)}>
+          <select className="form-select" id="addElement" onChange={(e) => this.setNewElementType(e)} value={this.state.newElementType}>
             <option value="url">{i18next.t("coinElementTypeUrl")}</option>
             <option value="login">{i18next.t("coinElementTypeLogin")}</option>
             <option value="password">{i18next.t("coinElementTypePassword")}</option>
