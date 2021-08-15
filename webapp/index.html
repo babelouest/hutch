@@ -1,30 +1,55 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <base href="/">
     <title>Hutch</title>
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-    <script src="js/jquery-3.2.0.min.js" crossorigin="anonymous"></script>
-    <!-- Latest compiled and minified CSS -->
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    <meta name="keywords" content="hutch">
+    <meta name="description" content="Online password and secret locker">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="referrer" content="no-referrer">
+
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="css/font-awesome.min.css">
-    <!-- Angular 2 Drag-and-Drop -->
-    <link rel="stylesheet" href="css/dnd.css">
-    <!-- toastr-ng2 css -->
-    <link rel="stylesheet" href="css/toastr.css">
-    <!-- zxcvbn password strength meter -->
-    <script type="text/javascript" src="js/zxcvbn.js"></script>
-  <link href="/css/app.8478a64368d787986f87.css" rel="stylesheet"></head>
+    <link rel="stylesheet" href="css/fork-awesome.min.css">
+    <link rel="stylesheet" href="css/v5-compat.min.css">
+    <link rel="stylesheet" href="css/hutch.css">
+  </head>
   <body>
-    <div class="container-fluid">
-      <input type="hidden" id="copy_id" name="copy_id">
-      <my-hutch-app>Loading...</my-hutch-app>
+    <div class="container" id="root">
+      <div class="alert alert-info perfect-centering" role="alert">
+        <i class="fa fa-spinner fa-spin fa-fw"></i><span class="btn-icon-right">Loading...</span>
+      </div>
     </div>
-  <script type="text/javascript" src="/js/polyfills.8478a64368d787986f87.js"></script><script type="text/javascript" src="/js/vendor.8478a64368d787986f87.js"></script><script type="text/javascript" src="/js/app.8478a64368d787986f87.js"></script></body>
+    <div class="container">
+      <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <img src="..." class="rounded me-2" alt="...">
+          <strong class="me-auto">Bootstrap</strong>
+          <small>11 mins ago</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Hello, world! This is a toast message.
+        </div>
+      </div>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/zxcvbn.js"></script>
+    <script src="hutch.js"></script>
+  </body>
 </html>
+<!--
+ * 
+ * Hutch
+ *
+ * Default page
+ *
+ * Copyright 2017-2021 Nicolas Mora <mail@babelouest.org>
+ * 
+ * The front-end application is under AGPL License
+ * 
+ -->
