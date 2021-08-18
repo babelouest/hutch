@@ -15,7 +15,8 @@ class TopMenu extends Component {
     this.state = {
       config: props.config,
       oidcStatus: props.oidcStatus,
-      safeList: props.safeList
+      safeList: props.safeList,
+      safeContent: props.safeContent
     };
     
     this.navigateTo = this.navigateTo.bind(this);
@@ -40,13 +41,22 @@ class TopMenu extends Component {
 	render() {
     var safeListJsx = [], addSafeJsx;
     this.state.safeList.forEach((safe, index) => {
+      var safeIconJsx;
+      if (this.state.safeContent && this.state.safeContent[safe.name] && this.state.safeContent[safe.name].key) {
+        safeIconJsx = <i className="fa fa-unlock btn-icon-right" aria-hidden="true"></i>;
+      } else {
+        safeIconJsx = <i className="fa fa-lock btn-icon-right" aria-hidden="true"></i>;
+      }
       safeListJsx.push(
         <li className="nav-item" key={index}>
           <a className="nav-link active"
               data-bs-toggle="collapse"
               data-bs-target=".navbar-collapse.show"
               href="#" aria-current="page"
-              onClick={(e) => this.navigateTo(e, safe.name)}>{safe.display_name||safe.name}</a>
+              onClick={(e) => this.navigateTo(e, safe.name)}>
+            {safe.display_name||safe.name}
+            {safeIconJsx}
+          </a>
         </li>
       );
     });

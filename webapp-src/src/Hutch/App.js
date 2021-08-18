@@ -513,7 +513,8 @@ class App extends Component {
       <div className="container-fluid">
         <TopMenu config={this.state.config}
                  oidcStatus={this.state.oidcStatus}
-                 safeList={safeList}/>
+                 safeList={safeList}
+                 safeContent={this.state.safeContent}/>
         {trustworthyJsx}
         {bodyJsx}
       </div>
