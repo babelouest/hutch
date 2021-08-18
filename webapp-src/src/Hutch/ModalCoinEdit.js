@@ -92,7 +92,7 @@ class ModalCoinEdit extends Component {
         faBtnList.push(
           <a key={category+"-"+index} href="" onClick={e => this.useIcon(e, icon)} className="btn btn-primary btn-icon btn-icon-top">
             <span className="btn-icon">{icon.label}</span>
-            <i className={icon.icon} aria-hidden="true"></i>
+            <i className={"fa "+icon.icon} aria-hidden="true"></i>
           </a>);
       });
       iconListJsx.push(
@@ -101,7 +101,7 @@ class ModalCoinEdit extends Component {
         </li>);
     });
     if (this.state.content.icon) {
-      iconUsedJsx = <i className={"btn-icon-right "+this.state.content.icon} aria-hidden="true"></i>;
+      iconUsedJsx = <i className={"btn-icon-right fa "+this.state.content.icon} aria-hidden="true"></i>;
     }
     if (this.state.displayNameError) {
       displayNameClass += " is-invalid";

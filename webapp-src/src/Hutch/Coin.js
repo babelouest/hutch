@@ -216,7 +216,7 @@ class Coin extends Component {
 	render() {
     var coinIconJsx, addElementJsx, newElementJsx, newElementSeparator, elementListJsx = [], confirmJsx, editTagsJsx, exportCoinJsx, headerButtonsJsx = [];
     if (this.state.coin.data.icon) {
-      coinIconJsx = <i className={this.state.coin.data.icon + " btn-icon"} aria-hidden="true"></i>;
+      coinIconJsx = <i className={this.state.coin.data.icon + " fa btn-icon"} aria-hidden="true"></i>;
     }
     if (this.state.showAddElement) {
       addElementJsx =
