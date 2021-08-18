@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import { generateSecret } from 'jose/util/generate_secret';
-import { fromKeyLike } from 'jose/jwk/from_key_like';
-import { EncryptJWT } from 'jose/jwt/encrypt';
-import { parseJwk } from 'jose/jwk/parse';
+import { generateSecret } from 'jose-browser-runtime/util/generate_secret';
+import { fromKeyLike } from 'jose-browser-runtime/jwk/from_key_like';
+import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
+import { parseJwk } from 'jose-browser-runtime/jwk/parse';
 
 import i18next from 'i18next';
 

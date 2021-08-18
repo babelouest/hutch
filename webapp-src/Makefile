@@ -35,10 +35,9 @@ webapp: build-webapp install-webapp
 polyfill: build-polyfill-webapp install-polyfill
 
 build-webapp:
-	rm -f output/*
+	rm -f dist/hutch.js*
 	$(JSC) run build
 
 install-webapp:
 	find $(WEBAPP_DEST) ! -name config.json ! -name webapp ! -name .gitignore -delete
-	cp -R index.html words-??.json config.json.sample favicon.ico css/ js/ locales/ fonts/ img/ $(WEBAPP_DEST)
-	cp output/*.js $(WEBAPP_DEST)
+	cp -R dist/* $(WEBAPP_DEST)

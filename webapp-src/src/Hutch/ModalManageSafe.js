@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 
 import i18next from 'i18next';
 
-import { decodeProtectedHeader } from 'jose/util/decode_protected_header';
-import { jwtDecrypt } from 'jose/jwt/decrypt';
-import { parseJwk } from 'jose/jwk/parse';
+import { decodeProtectedHeader } from 'jose-browser-runtime/util/decode_protected_header';
+import { jwtDecrypt } from 'jose-browser-runtime/jwt/decrypt';
+import { parseJwk } from 'jose-browser-runtime/jwk/parse';
 
 import ManageExportData from './ManageExportData';
 import JwkInput from './JwkInput';

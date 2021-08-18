@@ -3,7 +3,7 @@
   "connecting": "Connecting",
   "log_out": "Log out",
   "log_in": "Log in",
-  "lang": "Langue",
+  "lang": "Language",
   "connectingMessage": "Connecting to the profile",
   "disconnectedMessage": "Please connect to the application",
   "profileMissing": "Welcome {{- name}}, You must set a profile first",

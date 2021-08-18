@@ -14,8 +14,8 @@ import i18next from 'i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-import { parseJwk } from 'jose/jwk/parse';
-import { jwtVerify } from 'jose/jwt/verify';
+import { parseJwk } from 'jose-browser-runtime/jwk/parse';
+import { jwtVerify } from 'jose-browser-runtime/jwt/verify';
 
 import App from './Hutch/App';
 

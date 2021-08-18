@@ -89,14 +89,6 @@ class TopMenu extends Component {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
-              <li className="nav-item">
-                <a className="nav-link active"
-                   data-bs-toggle="collapse"
-                   data-bs-target=".navbar-collapse.show"
-                   aria-current="page"
-                   href="#"
-                   onClick={(e) => this.navigateTo(e, false)}>{i18next.t("profile")}</a>
-              </li>
               {safeListJsx}
               {addSafeJsx}
             </ul>

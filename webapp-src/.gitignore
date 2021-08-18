@@ -1,3 +1,4 @@
 node_modules/
 package-lock.json
-output/
+dist/hutch.js
+dist/hutch.js.LICENSE.txt

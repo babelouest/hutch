@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import { parseJwk } from 'jose/jwk/parse';
-import { jwtVerify } from 'jose/jwt/verify';
-import { calculateThumbprint } from 'jose/jwk/thumbprint';
-import { generateSecret } from 'jose/util/generate_secret';
-import { fromKeyLike } from 'jose/jwk/from_key_like';
-import { EncryptJWT } from 'jose/jwt/encrypt';
-import { jwtDecrypt } from 'jose/jwt/decrypt';
+import { parseJwk } from 'jose-browser-runtime/jwk/parse';
+import { jwtVerify } from 'jose-browser-runtime/jwt/verify';
+import { calculateThumbprint } from 'jose-browser-runtime/jwk/thumbprint';
+import { generateSecret } from 'jose-browser-runtime/util/generate_secret';
+import { fromKeyLike } from 'jose-browser-runtime/jwk/from_key_like';
+import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
+import { jwtDecrypt } from 'jose-browser-runtime/jwt/decrypt';
 
 import i18next from 'i18next';
 
@@ -75,11 +75,13 @@ class App extends Component {
         if (message.lang !== i18next.language) {
           i18next.changeLanguage(message.lang)
           .then(() => {
-            apiManager.request("words-" + i18next.language + ".json")
-            .then(words => {
-              var config = this.state.config;
-              config.wordsList = words;
-              this.setState({config: config});
+            this.setState({langChanged: true}, () => {
+              apiManager.request("words-" + i18next.language + ".json")
+              .then(words => {
+                var config = this.state.config;
+                config.wordsList = words;
+                this.setState({config: config});
+              });
             });
           });
         }

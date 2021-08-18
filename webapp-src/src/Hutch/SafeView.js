@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import i18next from 'i18next';
 
-import { EncryptJWT } from 'jose/jwt/encrypt';
+import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
 
 import apiManager from '../lib/APIManager';
 import messageDispatcher from '../lib/MessageDispatcher';

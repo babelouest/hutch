@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 import i18next from 'i18next';
 
-import { parseJwk } from 'jose/jwk/parse';
-import { EncryptJWT } from 'jose/jwt/encrypt';
+import { parseJwk } from 'jose-browser-runtime/jwk/parse';
+import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
 
 import JwkInput from './JwkInput';
 

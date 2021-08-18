@@ -1,5 +1,5 @@
 import messageDispatcher from './MessageDispatcher';
-import { jwtVerify } from 'jose/jwt/verify';
+import { jwtVerify } from 'jose-browser-runtime/jwt/verify';
 
 class APIManager {
   constructor() {
