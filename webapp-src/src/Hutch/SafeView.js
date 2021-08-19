@@ -47,7 +47,13 @@ class SafeView extends Component {
   }
   
   static getDerivedStateFromProps(props, state) {
-    return props;
+    var newState = Object.assign({}, props);
+    if (props.safe.name !== state.safe.name) {
+      newState.safeContent = props.safeContent;
+      newState.filteredCoinList = props.safeContent[props.safe.name].unlockedCoinList;
+      newState.filter = "";
+    }
+    return newState;
   }
   
   editSafe() {
@@ -104,18 +110,23 @@ class SafeView extends Component {
   }
 
   changeFilter(e) {
-    this.setState({filter: e.target.value, filtering: true}, () => {
+    if (e.target.value) {
+      this.setState({filter: e.target.value, filtering: true}, () => {
+        clearTimeout(this.state.filterTimeout);
+        var filterTimeout = setTimeout(() => {
+          var filteredCoinList = [];
+          this.state.safeContent[this.state.safe.name].unlockedCoinList.forEach((coin) => {
+            if (coin.data.displayName.toUpperCase().search(this.state.filter.toUpperCase()) > -1) {
+              filteredCoinList.push(coin);
+            }
+          });
+          this.setState({filteredCoinList: filteredCoinList, filterTimeout: false, filtering: false});
+        }, 3000);
+      });
+    } else {
       clearTimeout(this.state.filterTimeout);
-      var filterTimeout = setTimeout(() => {
-        var filteredCoinList = [];
-        this.state.safeContent[this.state.safe.name].unlockedCoinList.forEach((coin) => {
-          if (coin.data.displayName.toUpperCase().search(this.state.filter.toUpperCase()) > -1) {
-            filteredCoinList.push(coin);
-          }
-        });
-        this.setState({filteredCoinList: filteredCoinList, filterTimeout: false, filtering: false});
-      }, 3000);
-    });
+      this.setState({filter: e.target.value, filtering: false, filteredCoinList: this.state.safeContent[this.state.safe.name].unlockedCoinList, filterTimeout: false, filtering: false});
+    }
   }
   
   addCoin() {
