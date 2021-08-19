@@ -5,6 +5,8 @@ import i18next from 'i18next';
 import CoinElementSecretQuestionsRow from './CoinElementSecretQuestionsRow';
 import CoinElementSecretQuestionsRowEdit from './CoinElementSecretQuestionsRowEdit';
 
+import messageDispatcher from '../lib/MessageDispatcher';
+
 class CoinElementSecretQuestions extends Component {
   constructor(props) {
     super(props);

@@ -59,24 +59,22 @@ class Notification extends Component {
           icon = <i className="fa fa-info-circle btn-icon text-info"></i>;
         }
         toast.push(
-          <div className="position-fixed" style={{top: (25 + (index * 95)), right: 25}} key={index}>
-            <div aria-atomic="true" aria-live="assertive" className="toast" role="alert" id={"toast-"+message.id} key={index}>
-              <div className="toast-header">
-                {icon}
-                <strong className="me-auto">Hutch</strong>
-                <button aria-label="Close" className="btn-close" data-bs-dismiss="toast" type="button" onClick={(e) => this.close(message.id)}>
-                </button>
-              </div>
-              <div className="toast-body">
-                {message.message}
-              </div>
+          <div className="toast" role="alert" aria-live="assertive" aria-atomic="true" key={index} id={"toast-"+message.id}>
+            <div className="toast-header">
+              {icon}
+              <strong className="me-auto">Hutch</strong>
+              <button aria-label="Close" className="btn-close" data-bs-dismiss="toast" type="button" onClick={(e) => this.close(message.id)}>
+              </button>
+            </div>
+            <div className="toast-body">
+              {message.message}
             </div>
           </div>
         );
       });
     }
     return (
-      <div className="toast-container">
+      <div className="position-fixed" style={{top: 20, right: 20, zIndex: 9999}}>
         {toast}
       </div>
     );

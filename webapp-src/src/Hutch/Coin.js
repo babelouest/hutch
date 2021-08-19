@@ -20,6 +20,8 @@ import ModalCoinExport from './ModalCoinExport';
 
 import Confirm from './Confirm';
 
+import messageDispatcher from '../lib/MessageDispatcher';
+
 class Coin extends Component {
   constructor(props) {
     super(props);

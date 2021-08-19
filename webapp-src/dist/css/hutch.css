@@ -88,8 +88,3 @@
   max-height: 300px;
   overflow-y:scroll;
 }
-.toast-container {
-  position: absolute;
-  background: transparent;
-  z-index: 9999;
-}
