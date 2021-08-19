@@ -27,7 +27,8 @@ class SafeView extends Component {
       coinEditName: false,
       coinEditContent: false,
       removeCoinMessage: false,
-      filterTimeout: false
+      filterTimeout: false,
+      filtering: false
     };
     
     this.editSafe = this.editSafe.bind(this);
@@ -46,10 +47,7 @@ class SafeView extends Component {
   }
   
   static getDerivedStateFromProps(props, state) {
-    var newState = Object.assign({}, props);
-    newState.filteredCoinList = props.safeContent[props.safe.name].unlockedCoinList;
-    newState.filter = "";
-    return newState;
+    return props;
   }
   
   editSafe() {
@@ -106,7 +104,7 @@ class SafeView extends Component {
   }
 
   changeFilter(e) {
-    this.setState({filter: e.target.value}, () => {
+    this.setState({filter: e.target.value, filtering: true}, () => {
       clearTimeout(this.state.filterTimeout);
       var filterTimeout = setTimeout(() => {
         var filteredCoinList = [];
@@ -115,7 +113,7 @@ class SafeView extends Component {
             filteredCoinList.push(coin);
           }
         });
-        this.setState({filteredCoinList: filteredCoinList});
+        this.setState({filteredCoinList: filteredCoinList, filterTimeout: false, filtering: false});
       }, 3000);
     });
   }
@@ -195,7 +193,7 @@ class SafeView extends Component {
           }
           return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin", "POST", body)
           .then(() => {
-            toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSavev")});
+            toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
             messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: body.name, data: content}, cb: this.scrollToCoin});
           })
           .fail(() => {
@@ -225,16 +223,34 @@ class SafeView extends Component {
   }
 
 	render() {
-    var lockButtonJsx, secretHeaderJsx, secretListJsx = [], isUnlocked = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key);
+    var lockButtonJsx, secretHeaderJsx, secretListJsx = [], spinnerJsx, isUnlocked = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key);
     if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key) {
       lockButtonJsx =
         <button type="button" className="btn btn-secondary btn-sm" onClick={this.lockSafe} title={i18next.t("safeLock")}>
           <i className="fa fa-lock" aria-hidden="true"></i>
         </button>
+      if (this.state.filtering) {
+        spinnerJsx =
+          <div className="input-group-append">
+            <button className="btn btn-outline-secondary" type="button" disabled={true}>
+              <i className="fa fa-spinner fa-spin fa-fw"></i>
+            </button>
+          </div>
+      }
       secretHeaderJsx =
         <div className="mb-3">
-          <form>
-            <input type="text" className="form-control" autoComplete="off" placeholder={i18next.t("secretFilter")} id="coinFilter" name="coinFilter" value={this.state.filter} onChange={this.changeFilter}/>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="input-group mb-3">
+              <input type="text"
+                     className="form-control"
+                     autoComplete="off"
+                     placeholder={i18next.t("secretFilter")}
+                     id="coinFilter"
+                     name="coinFilter"
+                     value={this.state.filter}
+                     onChange={this.changeFilter}/>
+              {spinnerJsx}
+            </div>
           </form>
         </div>
     } else {
