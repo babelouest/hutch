@@ -36,14 +36,6 @@
   position: absolute;
   left: -9999px;
 }
-.toast-container {
-  position: absolute;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 5px;
-  background: white;
-  z-index: 9999;
-}
 .perfect-centering {
   position: absolute;
   top: 50%;
@@ -76,12 +68,6 @@
   width:100%;
   max-width:200px;
 }
-.toast-container{
-  position:fixed;
-  z-index:1055;
-  border:none;
-  background-color: transparent;
-}
 .top-right{
   top:0;
   right:0
@@ -98,34 +84,12 @@
   left:0;
   bottom:0
 }
-.toast-container>.toast{
-  min-width:150px;
-  background:0 0;
-  border:none;
-  opacity: 0.9; important!
-}
-.toast-container>.toast>.toast-header{
-  border:none
-}
-.toast-container>.toast>.toast-header strong{
-  padding-right:20px
-}
-.toast-container>.toast>.toast-body{
-  background:#fff
-}
 .icon-list {
   max-height: 300px;
   overflow-y:scroll;
 }
-.ellipsis {
-  display: block;
-  display: -webkit-box;
-  max-width: 400px;
-  height: 50px;
-  margin: 0 auto;
-  line-height: 1.2;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.toast-container {
+  position: absolute;
+  background: transparent;
+  z-index: 9999;
 }

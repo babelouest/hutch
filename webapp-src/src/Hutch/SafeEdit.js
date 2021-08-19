@@ -74,20 +74,20 @@ class SafeEdit extends Component {
       apiManager.request(this.state.config.safe_endpoint, "POST", safe)
       .then(() => {
         messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
-        $.snack("info", i18next.t("messageSaveSafe"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSaveSafe")});
       })
       .fail(() => {
-        $.snack("warning", i18next.t("messageErrorSaveSafe"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
       });
       this.setState({nameMandatory: false, namePresent: false});
     } else {
       apiManager.request(this.state.config.safe_endpoint + "/" + safe.name, "PUT", safe)
       .then(() => {
         messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
-        $.snack("info", i18next.t("messageSaveSafe"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSaveSafe")});
       })
       .fail(() => {
-        $.snack("warning", i18next.t("messageErrorSaveSafe"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
       });
     }
   }
@@ -176,7 +176,7 @@ class SafeEdit extends Component {
         .then(() => {
           messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, newSafeKey: data.safeKey, removeStorage: false});
           this.setState({curSafeKeyContainer: false});
-          $.snack("info", i18next.t("safeLockUpdated"));
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("safeLockUpdated")});
         });
       }
     }
@@ -214,11 +214,11 @@ class SafeEdit extends Component {
         apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/key", "POST", newSafeKey)
         .then(() => {
           messageDispatcher.sendMessage('App', {action: "updateSafeKey", safe: this.state.safe});
-          $.snack("info", i18next.t("safeLockAdded"));
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("safeLockAdded")});
         });
       });
     } else {
-      $.snack("warning", i18next.t("lockedSafe"));
+      messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("lockedSafe")});
     }
   }
   
@@ -255,11 +255,11 @@ class SafeEdit extends Component {
         .then(() => {
           messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, newSafeKey: newSafeKey, removeStorage: false});
           this.setState({curSafeKeyContainer: false});
-          $.snack("info", i18next.t("safeLockUpdated"));
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("safeLockUpdated")});
         });
       });
     } else {
-      $.snack("warning", i18next.t("lockedSafe"));
+      messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("lockedSafe")});
     }
   }
   
@@ -292,12 +292,12 @@ class SafeEdit extends Component {
       apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/key/" + this.state.curSafeKeyContainer.name, "DELETE")
       .then(() => {
         this.setState({curSafeKeyContainer: false}, () => {
-          $.snack("info", i18next.t("messageRemoveSafeKey"));
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveSafeKey")});
           messageDispatcher.sendMessage('App', {action: "updateSafeKey", safe: this.state.safe});
         });
       })
       .fail(() => {
-        $.snack("warning", i18next.t("messageErrorSaveSafeKey"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafeKey")});
       });
     }
     var removeKeyModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#removeSafeKey'));

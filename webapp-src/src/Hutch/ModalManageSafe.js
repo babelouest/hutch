@@ -164,7 +164,7 @@ class ModalManageSafe extends Component {
             importedCoins++;
           })
           .catch(() => {
-            $.snack("warning", i18next.t("messageErrorCoinSave"));
+            messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
           })
           .finally(() => {
             nbElements++;

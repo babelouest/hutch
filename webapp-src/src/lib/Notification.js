@@ -16,31 +16,18 @@ class Notification extends Component {
         var myMessage = this.state.message;
         myMessage.push({type: message.type, message: message.message, id: this.state.counter});
         this.setState({message: myMessage, counter: this.state.counter+1}, () => {
-          this.timeoutClose(this.state.counter-1);
+          $("#toast-"+(this.state.counter-1)).toast({animation: true}).toast('show');
         });
       }
     });
     
     this.close = this.close.bind(this);
-    this.timeoutClose = this.timeoutClose.bind(this);
   }
   
   static getDerivedStateFromProps(props, state) {
-    if (props.loggedIn !== state.loggedIn) {
-      return {
-        loggedIn: props.loggedIn
-      };
-    } else {
-      return null;
-    }
+    return props;
   }
 
-  timeoutClose(id) {
-    setTimeout(() => {
-      this.close(id);
-    }, 5000);
-  }
-  
   close(id) {
     var myMessages = this.state.message;
     myMessages.forEach((message, index) => {
@@ -61,47 +48,23 @@ class Notification extends Component {
     });
     if (showMessage) {
       this.state.message.forEach((message, index) => {
-        var badge;
+        var icon;
         if (message.type === "success") {
-          badge = 
-            <strong className="mr-auto">
-              <span className="badge badge-success btn-icon">
-                <i className="fas fa-check-circle"></i>
-              </span>
-              Glewlwyd
-            </strong>
+          icon = <i className="fa fa-check-square-o btn-icon text-success"></i>;
         } else if (message.type === "danger") {
-          badge = 
-            <strong className="mr-auto">
-              <span className="badge badge-danger btn-icon">
-                <i className="fas fa-exclamation-circle"></i>
-              </span>
-              Glewlwyd
-            </strong>
+          icon = <i className="fa fa-exclamation-circle text-danger btn-icon"></i>;
         } else if (message.type === "warning") {
-          badge = 
-            <strong className="mr-auto">
-              <span className="badge badge-warning btn-icon">
-                <i className="fas fa-exclamation-circle"></i>
-              </span>
-              Glewlwyd
-            </strong>
+          icon = <i className="fa fa-exclamation-triangle text-warning btn-icon"></i>;
         } else { // info
-          badge = 
-            <strong className="mr-auto">
-              <span className="badge badge-info btn-icon">
-                <i className="fas fa-info-circle"></i>
-              </span>
-              Glewlwyd
-            </strong>
+          icon = <i className="fa fa-info-circle btn-icon text-info"></i>;
         }
         toast.push(
-          <div className="toast-container" style={{top: (95 + (index * 90)), right: 5}} key={index}>
-            <div className="toast glwd-toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div className="position-fixed" style={{top: (25 + (index * 95)), right: 25}} key={index}>
+            <div aria-atomic="true" aria-live="assertive" className="toast" role="alert" id={"toast-"+message.id} key={index}>
               <div className="toast-header">
-                {badge}
-                <button type="button" className="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick={() => this.close(message.id)}>
-                  <span aria-hidden="true">&times;</span>
+                {icon}
+                <strong className="me-auto">Hutch</strong>
+                <button aria-label="Close" className="btn-close" data-bs-dismiss="toast" type="button" onClick={(e) => this.close(message.id)}>
                 </button>
               </div>
               <div className="toast-body">
@@ -113,7 +76,7 @@ class Notification extends Component {
       });
     }
     return (
-      <div>
+      <div className="toast-container">
         {toast}
       </div>
     );

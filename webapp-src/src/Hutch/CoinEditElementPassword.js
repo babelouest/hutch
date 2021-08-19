@@ -87,7 +87,7 @@ class CoinEditElementPassword extends Component {
       var pwdScore = -1;
       pwdScore = zxcvbn(element.value).score;
       navigator.clipboard.writeText(element.value).then(() => {
-        $.snack("info", i18next.t("messageCopyToClipboard"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageCopyToClipboard")});
         this.state.cbSave(false, element, this.state.index);
       });
     }

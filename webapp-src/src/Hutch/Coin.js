@@ -164,16 +164,16 @@ class Coin extends Component {
 
   copyToClipboard(value) {
     navigator.clipboard.writeText(value).then(() => {
-      $.snack("info", i18next.t("messageCopyToClipboard"));
+      messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageCopyToClipboard")});
     });
   }
 
   sortRows() {
     this.setState({sortRowsEnabled: !this.state.sortRowsEnabled}, () => {
       if (this.state.sortRowsEnabled) {
-        $.snack("info", i18next.t("messageSortEnabled"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSortEnabled")});
       } else {
-        $.snack("info", i18next.t("messageSortDisabled"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSortDisabled")});
       }
     });
   }

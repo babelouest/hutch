@@ -24,7 +24,7 @@ class CoinElementSecretQuestionsRow extends Component {
   
   copyToClipboard() {
     navigator.clipboard.writeText(this.state.value.answer).then(() => {
-      $.snack("info", i18next.t("messageCopyToClipboard"));
+      messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageCopyToClipboard")});
     });
   }
   

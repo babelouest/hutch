@@ -96,12 +96,12 @@ class ProfileEdit extends Component {
           oReq.send(null);
         })
         .fail(() => {
-          $.snack("warning", i18next.t("messageErrorWikiImage"));
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorWikiImage")});
           this.setState({imageError: true, imageLoading: false});
         });
       })
       .fail(() => {
-        $.snack("warning", i18next.t("messageErrorWikiImage"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorWikiImage")});
         this.setState({imageError: true, imageLoading: false});
       });
     });
@@ -139,10 +139,10 @@ class ProfileEdit extends Component {
       apiManager.request(this.state.config.profile_endpoint, "PUT", hutchProfile)
       .then(() => {
         messageDispatcher.sendMessage('App', {action: "getProfile"});
-        $.snack("info", i18next.t("messageProfileSaved"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageProfileSaved")});
       })
       .fail(() => {
-        $.snack("warning", i18next.t("messageErrorSaveProfile"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveProfile")});
       });
     }
   }
@@ -159,10 +159,10 @@ class ProfileEdit extends Component {
       apiManager.request(this.state.config.profile_endpoint, "DELETE")
       .then(() => {
         messageDispatcher.sendMessage('App', {action: "resetProfile"});
-        $.snack("info", i18next.t("messageRemoveProfile"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveProfile")});
       })
       .fail(() => {
-        $.snack("warning", i18next.t("messageErrorSaveProfile"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveProfile")});
       });
     }
     var removeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#removeProfile'));

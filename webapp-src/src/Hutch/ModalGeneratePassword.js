@@ -173,13 +173,13 @@ class ModalGeneratePassword extends Component {
 
   copyOriginalPassword() {
     navigator.clipboard.writeText(this.state.originalPassword).then(() => {
-      $.snack("info", i18next.t("messageCopyOriginalPasswordToClipboard"));
+      messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageCopyOriginalPasswordToClipboard")});
     });
   }
   
   copyNewPassword() {
     navigator.clipboard.writeText(this.state.element.value).then(() => {
-      $.snack("info", i18next.t("messageCopyNewPasswordToClipboard"));
+      messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageCopyNewPasswordToClipboard")});
     });
   }
   

@@ -50,10 +50,6 @@ function getServerConfig(rootUrl) {
 }
 
 var initApp = () => {
-  $.toastDefaults.position = 'top-right';
-  $.toastDefaults.dismissible = true;
-  $.toastDefaults.stackable = true;
-  $.toastDefaults.pauseDelayOnHover = true;
   const urlParams = new URLSearchParams(window.location.search);
   apiManager.request("config.json")
   .then((frontEndConfig) => {

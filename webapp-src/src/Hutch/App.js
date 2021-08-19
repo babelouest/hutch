@@ -14,6 +14,7 @@ import apiManager from '../lib/APIManager';
 import messageDispatcher from '../lib/MessageDispatcher';
 import routage from '../lib/Routage';
 import storage from '../lib/Storage';
+import Notification from '../lib/Notification';
 
 import TopMenu from './TopMenu';
 import Profile from './Profile';
@@ -48,12 +49,12 @@ class App extends Component {
     messageDispatcher.subscribe('OIDC', (message) => {
       if (message.status === "disconnected") {
         this.setState({oidcStatus: message.status, safeList: [], safeContent: {}, curSafe: false});
-        $.snack("warning", i18next.t("messageDisconnected"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageDisconnected")});
       } else if (message.status === "connected" || message.status === "refresh") {
         apiManager.setToken(message.token);
         this.setState({oidcStatus: message.status});
         if (message.status === "connected") {
-          $.snack("info", i18next.t("messageConnected"));
+          messageDispatcher.sendMessage('Notification', {type: "success", message: i18next.t("messageConnected")});
         }
       } else if (message.status === "profile") {
         this.setState({profile: message.token}, () => {
@@ -175,7 +176,7 @@ class App extends Component {
                 this.setState({safeContent: curSafeContent});
               })
               .fail((error) => {
-                $.snack("danger", i18next.t("messageErrorSaveSafeKey"));
+                messageDispatcher.sendMessage('Notification', {type: "danger", message: i18next.t("messageErrorSaveSafeKey")});
               });
             }
             storage.removeValue(localStorageKey);
@@ -349,7 +350,7 @@ class App extends Component {
     })
     .fail((error) => {
       if (error.status === 404) {
-        $.snack("info", i18next.t("messageNoProfile"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageNoProfile")});
         this.setState({hutchProfile: false, hasProfile: false});
       }
     });
@@ -409,13 +410,13 @@ class App extends Component {
             })
             .fail((error) => {
               console.log(error);
-              $.snack("warning", i18next.t("messageErrorCoinList"));
+              messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinList")});
               this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
             });
           })
           .fail((error) => {
             console.log(error);
-            $.snack("warning", i18next.t("messageErrorKeyList"));
+            messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorKeyList")});
             this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
           });
         });
@@ -423,7 +424,7 @@ class App extends Component {
     })
     .fail((error) => {
       console.log(error);
-      $.snack("warning", i18next.t("messageErrorSafeList"));
+      messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSafeList")});
       this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
     });
   }
@@ -466,7 +467,7 @@ class App extends Component {
       this.setState({safeContent: safeContent});
     })
     .fail((error) => {
-      $.snack("warning", i18next.t("messageErrorKeyList"));
+      messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorKeyList")});
     });
   }
 
@@ -519,6 +520,7 @@ class App extends Component {
                  safeContent={this.state.safeContent}/>
         {trustworthyJsx}
         {bodyJsx}
+        <Notification loggedIn={this.state.oidcStatus}/>
       </div>
     );
 	}

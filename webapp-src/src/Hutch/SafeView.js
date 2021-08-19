@@ -72,7 +72,7 @@ class SafeView extends Component {
                                             unlockKeyName: unlockKeyName,
                                             removeStorage: false,
                                             masterkeyData: masterkeyData});
-      $.snack("info", i18next.t("unlockedSafe"));
+      messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("unlockedSafe")});
     }
     var unlockSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalUnlockSafe'));
     unlockSafeModal.hide();
@@ -80,7 +80,7 @@ class SafeView extends Component {
   
   lockSafe() {
     messageDispatcher.sendMessage('App', {action: "setSafeKey", target: this.state.safe, key: false, removeStorage: true});
-    $.snack("info", i18next.t("lockedSafe"));
+    messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("lockedSafe")});
   }
   
   removeSafe() {
@@ -95,10 +95,10 @@ class SafeView extends Component {
       apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name, "DELETE")
       .then(() => {
         messageDispatcher.sendMessage('App', {action: "removeSafe", safe: this.state.safe});
-        $.snack("info", i18next.t("messageRemoveSafe"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveSafe")});
       })
       .fail(() => {
-        $.snack("warning", i18next.t("messageErrorSaveSafe"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
       });
     }
     var removeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#removeSafe'));
@@ -151,11 +151,11 @@ class SafeView extends Component {
     if (result) {
       apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin/" + this.state.coinEditName, "DELETE")
       .then(() => {
-        $.snack("info", i18next.t("messageSuccessCoinRemove"));
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinRemove")});
         messageDispatcher.sendMessage('App', {action: "removeCoin", target: this.state.safe, coin: this.state.coinEditName});
       })
       .fail(() => {
-        $.snack("warning", i18next.t("messageErrorCoinRemove"));
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinRemove")});
       })
     }
     var modalCoinEditModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#removeCoin'));
@@ -177,11 +177,11 @@ class SafeView extends Component {
           }
           return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin/" + name, "PUT", body)
           .then(() => {
-            toast && $.snack("info", i18next.t("messageSuccessCoinSave"));
+            toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
             messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: name, data: content}});
           })
           .fail(() => {
-            toast && $.snack("warning", i18next.t("messageErrorCoinSave"));
+            toast && messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
           })
         });
       } else {
@@ -195,11 +195,11 @@ class SafeView extends Component {
           }
           return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin", "POST", body)
           .then(() => {
-            toast && $.snack("info", i18next.t("messageSuccessCoinSave"));
+            toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSavev")});
             messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: body.name, data: content}, cb: this.scrollToCoin});
           })
           .fail(() => {
-            toast && $.snack("warning", i18next.t("messageErrorCoinSave"));
+            messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
           })
         });
       }
