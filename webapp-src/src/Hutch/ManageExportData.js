@@ -73,6 +73,10 @@ class ManageExportData extends Component {
         if (!this.state.password || this.state.password !== this.state.confirmPassword) {
           return true;
         }
+      } else if (this.state.exportSecurityType === "master-password") {
+        if (!this.state.password) {
+          return true;
+        }
       } else if (this.state.exportSecurityType === "jwk") {
         try {
           if (!this.state.exportJwk || !(JSON.parse(this.state.exportJwk).alg)) {
@@ -92,7 +96,7 @@ class ManageExportData extends Component {
       exported.push(coin.data);
     });
     if (this.state.exportSafeWithSecurity) {
-      if (this.state.exportSecurityType === "password") {
+      if (this.state.exportSecurityType === "password" || this.state.exportSecurityType === "master-password") {
         var enc = new TextEncoder();
         var containerKey = enc.encode(this.state.password);
         var lockAlg = "PBES2-HS256+A128KW";
@@ -144,6 +148,7 @@ class ManageExportData extends Component {
       exportSecurityTypeJsx =
         <select className="form-select" value={this.state.exportSecurityType} onChange={this.changeExportSecurityType}>
           <option value="password">{i18next.t("securityTypePassword")}</option>
+          <option value="master-password">{i18next.t("securityTypeMasterPassword")}</option>
           <option value="jwk">{i18next.t("securityTypeJwk")}</option>
         </select>
       if (this.state.exportSecurityType === "password") {
@@ -171,6 +176,12 @@ class ManageExportData extends Component {
             <input type="password" autoComplete="off" className="form-control" id="confirmNewPassword" value={this.state.confirmPassword} onChange={this.changeConfirmPassword}/>
           </div>
         </div>
+      } else if (this.state.exportSecurityType === "master-password") {
+        exportSecurityJsx =
+        <div className="mb-3">
+          <label htmlFor="newPassword" className="form-label">{i18next.t("newPassword")}</label>
+          <input type="password" autoComplete="off" className="form-control" id="newPassword" value={this.state.password} onChange={this.changePassword}/>
+        </div>
       } else if (this.state.exportSecurityType === "jwk") {
         var messageClass = "form-control", messageErrorJsx;
         if (this.state.exportInvalid) {
@@ -192,8 +203,13 @@ class ManageExportData extends Component {
       <div>
         <div className="mb-3">
           <div className="form-check">
-            <input className="form-check-input" type="checkbox" value="" id="exportSafeWithSecurity" checked={this.state.exportSafeWithSecurity} onChange={this.toggleExportSafeWithSecurity}/>
-            <label className="form-check-label" htmlFor="exportSafeWithSecurity">
+            <input className="form-check-input"
+                   type="checkbox"
+                   value=""
+                   id={this.state.id+"-exportSafeWithSecurity"}
+                   checked={this.state.exportSafeWithSecurity}
+                   onChange={this.toggleExportSafeWithSecurity}/>
+            <label className="form-check-label" htmlFor={this.state.id+"-exportSafeWithSecurity"}>
               {i18next.t("exportSafeWithSecurity")}
             </label>
           </div>
