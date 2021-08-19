@@ -32,7 +32,10 @@ class ModalManageSafe extends Component {
       importTotalCount: 0,
       importTotalSuccess: 0,
       importSecurityType: false,
-      importRunning: false
+      importRunning: false,
+      showProgress: false,
+      coinMax: 0,
+      coinNow: 0
     };
     
     this.changePassword = this.changePassword.bind(this);
@@ -156,7 +159,7 @@ class ModalManageSafe extends Component {
   
   importContent(content) {
     var importedCoins = 0, nbElements = 0;
-    this.setState({importRunning: true}, () => {
+    this.setState({importRunning: true, showProgress: true, coinMax: content.length, coinNow: 0}, () => {
       content.forEach((coin) => {
         try {
           this.state.cbSaveCoin(true, false, coin)
@@ -168,23 +171,27 @@ class ModalManageSafe extends Component {
           })
           .finally(() => {
             nbElements++;
-            if (nbElements === content.length) {
-              if (nbElements === importedCoins) {
-                this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false})
-              } else {
-                this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false})
+            this.setState({coinNow: this.state.coinNow+1}, () => {
+              if (nbElements === content.length) {
+                if (nbElements === importedCoins) {
+                  this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false, showProgress: false})
+                } else {
+                  this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false, showProgress: false})
+                }
               }
-            }
+            });
           });
         } catch (e) {
           nbElements++;
-          if (nbElements === content.length) {
-            if (nbElements === importedCoins) {
-              this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false})
-            } else {
-              this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false})
+          this.setState({coinNow: this.state.coinNow+1}, () => {
+            if (nbElements === content.length) {
+              if (nbElements === importedCoins) {
+                this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false, showProgress: false})
+              } else {
+                this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false, showProgress: false})
+              }
             }
-          }
+          });
         }
       });
     });
@@ -197,7 +204,7 @@ class ModalManageSafe extends Component {
   }
   
 	render() {
-    var importDataResultJsx, importSecurityJsx, completeButtonJsx;
+    var importDataResultJsx, importSecurityJsx, completeButtonJsx, showProgressJsx;
     if (this.state.importDataResult === "invalidData") {
       importDataResultJsx = 
         <div className="alert alert-danger" role="alert">
@@ -248,6 +255,12 @@ class ModalManageSafe extends Component {
           <JwkInput isError={false} ph={i18next.t("safeKeyJwkPh")} cb={this.editImportJwk}/>
         </div>
     }
+    if (this.state.showProgress) {
+      showProgressJsx =
+        <code className="btn-icon-right">
+          {this.state.coinNow}/{this.state.coinMax}
+        </code>
+    }
     return (
       <div className="modal" tabIndex="-1" id="manageSafe">
         <div className="modal-dialog">
@@ -283,10 +296,11 @@ class ModalManageSafe extends Component {
                 </label>
                 {importSecurityJsx}
                 {completeButtonJsx}
+                {showProgressJsx}
                 {importDataResultJsx}
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)}>{i18next.t("modalClose")}</button>
+                <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)} disabled={this.state.importRunning}>{i18next.t("modalClose")}</button>
               </div>
             </div>
           </div>
