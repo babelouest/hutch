@@ -79,10 +79,11 @@ var initApp = () => {
         tokenUrl: frontEndConfig.oidc.tokenUrl,
         clientId: frontEndConfig.oidc.clientId,
         redirectUri: frontEndConfig.oidc.redirectUri,
+        usePkce: frontEndConfig.oidc.usePkce,
         scope: config.scope,
         userinfoUrl: frontEndConfig.oidc.userinfoUrl,
-        changeStatusCb: function (newStatus, token, expiration) {
-          messageDispatcher.sendMessage('OIDC', {status: newStatus, token: token, expiration:expiration});
+        changeStatusCb: function (newStatus, token, expires_in, profile) {
+          messageDispatcher.sendMessage('OIDC', {status: newStatus, token: token, expires_in: expires_in, profile: profile});
         }
       });
       apiManager.setConfig(frontEndConfig.APIUrl);

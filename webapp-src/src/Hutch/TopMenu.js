@@ -39,7 +39,7 @@ class TopMenu extends Component {
   }
 
 	render() {
-    var safeListJsx = [], addSafeJsx;
+    var safeListJsx = [];
     this.state.safeList.forEach((safe, index) => {
       var safeIconJsx;
       if (this.state.safeContent && this.state.safeContent[safe.name] && this.state.safeContent[safe.name].key) {
@@ -60,16 +60,6 @@ class TopMenu extends Component {
         </li>
       );
     });
-    if (this.state.oidcStatus === "connected") {
-      addSafeJsx =
-        <li className="nav-item">
-          <a className="nav-link active"
-             data-bs-toggle="collapse"
-             data-bs-target=".navbar-collapse.show"
-             aria-current="page" href="#"
-             onClick={this.addSafe}>{i18next.t("addSafe")}</a>
-        </li>
-    }
     return (
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
@@ -90,7 +80,14 @@ class TopMenu extends Component {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               {safeListJsx}
-              {addSafeJsx}
+              <li className="nav-item">
+                <a className="nav-link active"
+                   data-bs-toggle="collapse"
+                   data-bs-target=".navbar-collapse.show"
+                   aria-current="page" href="#"
+                   disabled={this.state.oidcStatus!=="connected"}
+                   onClick={this.addSafe}>{i18next.t("addSafe")}</a>
+              </li>
             </ul>
             <ul className="navbar-nav ms-auto flex-nowrap text-right">
               <LangDropdown config={this.state.config}/>

@@ -34,6 +34,7 @@ class App extends Component {
       curSafe: false,
       addSafe: false,
       oidcStatus: "connecting",
+      tokenTimeout: false,
       nav: "profile",
       langChanged: false,
       editProfile: false,
@@ -52,12 +53,16 @@ class App extends Component {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageDisconnected")});
       } else if (message.status === "connected" || message.status === "refresh") {
         apiManager.setToken(message.token);
-        this.setState({oidcStatus: message.status});
+        clearTimeout(this.state.tokenTimeout);
+        var tokenTimeout = setTimeout(() => {
+          this.setState({oidcStatus: "disconnected"});
+        }, message.expires_in*1000);
+        this.setState({oidcStatus: message.status, tokenTimeout: tokenTimeout});
         if (message.status === "connected") {
           messageDispatcher.sendMessage('Notification', {type: "success", message: i18next.t("messageConnected")});
         }
       } else if (message.status === "profile") {
-        this.setState({profile: message.token}, () => {
+        this.setState({profile: message.profile}, () => {
           this.getHutchProfile()
           .then(() => {
             this.getSafeList()
