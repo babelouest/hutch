@@ -74,7 +74,7 @@ class Notification extends Component {
       });
     }
     return (
-      <div className="position-fixed" style={{top: 20, right: 20, zIndex: 9999}}>
+      <div className="position-fixed" style={{top: 45, right: 20, zIndex: 9999}}>
         {toast}
       </div>
     );
