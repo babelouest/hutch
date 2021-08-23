@@ -472,7 +472,7 @@ class OIDCConnector {
           cb(true, "error");
         }
       });
-    } else if (this.parameters.userinfoUrl) {
+    } else if (this.parameters.userinfoUrl && this.accessToken) {
       $.ajax({
         type: "GET",
         url: this.parameters.userinfoUrl,
