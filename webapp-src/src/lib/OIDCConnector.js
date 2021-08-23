@@ -86,6 +86,8 @@ class OIDCConnector {
               this.getConnectedProfile((res, profile) => {
                 if (res) {
                   this.broadcastMessage("profile", null, null, profile);
+                } else {
+                  this.broadcastMessage("profile", null, null, false);
                 }
               });
               this.refreshTokenLoop(refreshToken.refresh_token, this.accessToken.expires_in);
@@ -105,6 +107,8 @@ class OIDCConnector {
           this.getConnectedProfile((res, profile) => {
             if (res) {
               this.broadcastMessage("profile", null, null, profile);
+            } else {
+              this.broadcastMessage("profile", null, null, false);
             }
           });
           if (storedData.refreshToken) {
@@ -125,6 +129,8 @@ class OIDCConnector {
               this.getConnectedProfile((res, profile) => {
                 if (res) {
                   this.broadcastMessage("profile", null, null, profile);
+                } else {
+                  this.broadcastMessage("profile", null, null, false);
                 }
               });
             } else {
@@ -142,6 +148,7 @@ class OIDCConnector {
         if (token) {
           this.accessToken = token;
           this.storeAccessToken(token);
+          this.broadcastMessage("connected", this.accessToken.access_token, this.accessToken.expires_in);
         } else {
           storedData = this.getStoredData();
           if (storedData && storedData.accessToken && this.isTokenValid(storedData.accessToken)) {
@@ -172,9 +179,11 @@ class OIDCConnector {
       this.getConnectedProfile((res, profile) => {
         if (res) {
           this.broadcastMessage("profile", null, null, profile);
+        } else {
+          this.broadcastMessage("profile", null, null, false);
         }
       });
-      document.location = "#";
+      //document.location = "#";
     }
   }
 
@@ -458,9 +467,9 @@ class OIDCConnector {
           cb(true, result.payload);
         }
       })
-      .catch(() => {
+      .catch((err) => {
         if (cb) {
-          cb(false);
+          cb(true, "error");
         }
       });
     } else if (this.parameters.userinfoUrl) {
@@ -475,7 +484,7 @@ class OIDCConnector {
         },
         error: (error) => {
           if (cb) {
-            cb(false);
+            cb(true, "error");
           }
         }
       });
@@ -486,14 +495,57 @@ class OIDCConnector {
     }
   }
 
+  connect() {
+    var token = this.getStoredData();
+    if (token && this.isTokenValid(token.accessToken)) {
+      this.broadcastMessage("connected", token.accessToken.access_token, token.accessToken.expires_in);
+      this.getConnectedProfile((res, profile) => {
+        if (res) {
+          this.broadcastMessage("profile", null, null, profile);
+        } else {
+          this.broadcastMessage("profile", null, null, false);
+        }
+      });
+    } else {
+      token.accessToken = false;
+      var nonce = this.makeRandomString(16);
+      this.storeAccessToken(false);
+      this.storeNonce(nonce);
+      if (this.parameters.usePkce && this.parameters.responseType === "code") {
+        var pkce = this.makeRandomString(64);
+        this.storePkce(pkce);
+        const encoder = new TextEncoder();
+        crypto.subtle.digest("SHA-256", encoder.encode(pkce))
+        .then(pkceHashed => {
+          var pkceHashedB64 = this.base64UrlArrayBuffer(pkceHashed);
+          document.location = this.parameters.authUrl + "?response_type=" + this.parameters.responseType + "&client_id=" + this.parameters.clientId + "&redirect_uri=" + this.parameters.redirectUri + "&scope=" + this.parameters.scope + "&nonce=" + nonce + "&code_challenge_method=S256&code_challenge=" + pkceHashedB64;
+        });
+      } else {
+        document.location = this.parameters.authUrl + "?response_type=" + this.parameters.responseType + "&client_id=" + this.parameters.clientId + "&redirect_uri=" + this.parameters.redirectUri + "&scope=" + this.parameters.scope + "&nonce=" + nonce;
+      }
+    }
+  }
+
+  disconnect() {
+    clearTimeout(this.refreshTimeout);
+    if (this.parameters.storageType === "local") {
+      localStorage.removeItem(this.localStorageKey);
+    } else if (this.parameters.storageType === "cookie") {
+      Cookies.remove(this.localStorageKey);
+    }
+    this.refreshToken = false;
+    this.accessToken = false;
+    this.broadcastMessage("disconnected");
+  }
+
   /**
    * base64UrlArrayBuffer
-   * 
+   *
    * MIT LICENSE
-   * 
+   *
    * Copyright 2011 Jon Leighton
    * Copyright 2021 Nicolas Mora
-   * 
+   *
    * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
    * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
    * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -551,50 +603,8 @@ class OIDCConnector {
 
       base64 += encodings[a] + encodings[b] + encodings[c]
     }
-    
+
     return base64
-  }
-
-  connect() {
-    var token = this.getStoredData();
-    if (token && this.isTokenValid(token.accessToken)) {
-      this.broadcastMessage("connected", token.accessToken.access_token, token.accessToken.expires_in);
-      this.getConnectedProfile((res, profile) => {
-        if (res) {
-          this.broadcastMessage("profile", null, null, profile);
-        }
-      });
-    } else {
-      token.accessToken = false;
-      var nonce = this.makeRandomString(16);
-      this.storeAccessToken(false);
-      this.storeNonce(nonce);
-      if (this.parameters.usePkce && this.parameters.responseType === "code") {
-        var pkce = this.makeRandomString(64);
-        this.storePkce(pkce);
-        const encoder = new TextEncoder();
-        crypto.subtle.digest("SHA-256", encoder.encode(pkce))
-        .then(pkceHashed => {
-          var pkceHashedB64 = this.base64UrlArrayBuffer(pkceHashed);
-          console.log(pkceHashedB64, pkceHashedB64.length, pkceHashed);
-          document.location = this.parameters.authUrl + "?response_type=" + this.parameters.responseType + "&client_id=" + this.parameters.clientId + "&redirect_uri=" + this.parameters.redirectUri + "&scope=" + this.parameters.scope + "&nonce=" + nonce + "&code_challenge_method=S256&code_challenge=" + pkceHashedB64;
-        });
-      } else {
-        document.location = this.parameters.authUrl + "?response_type=" + this.parameters.responseType + "&client_id=" + this.parameters.clientId + "&redirect_uri=" + this.parameters.redirectUri + "&scope=" + this.parameters.scope + "&nonce=" + nonce;
-      }
-    }
-  }
-
-  disconnect() {
-    clearTimeout(this.refreshTimeout);
-    if (this.parameters.storageType === "local") {
-      localStorage.removeItem(this.localStorageKey);
-    } else if (this.parameters.storageType === "cookie") {
-      Cookies.remove(this.localStorageKey);
-    }
-    this.refreshToken = false;
-    this.accessToken = false;
-    this.broadcastMessage("disconnected");
   }
 }
 

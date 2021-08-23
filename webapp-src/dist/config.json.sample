@@ -7,6 +7,7 @@
   "oidc": {
     "responseType": "code",
     "redirectUri": "http://localhost:3000/",
-    "clientId": "hutch"
+    "clientId": "hutch",
+    "usePkce": true
   }
 }
