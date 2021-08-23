@@ -16,7 +16,11 @@ class Notification extends Component {
         var myMessage = this.state.message;
         myMessage.push({type: message.type, message: message.message, id: this.state.counter});
         this.setState({message: myMessage, counter: this.state.counter+1}, () => {
-          $("#toast-"+(this.state.counter-1)).toast({animation: true}).toast('show');
+          var autohide = message.autohide;
+          if (autohide === undefined) {
+            autohide = true;
+          }
+          $("#toast-"+(this.state.counter-1)).toast({animation: true, autohide: autohide}).toast('show');
         });
       }
     });
