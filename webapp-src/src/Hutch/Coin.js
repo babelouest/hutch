@@ -28,6 +28,7 @@ class Coin extends Component {
 
     this.state = {
       config: props.config,
+      oidcStatus: props.oidcStatus,
       safe: props.safe,
       coin: props.coin,
       cbEditHeader: props.cbEditHeader,
@@ -317,8 +318,9 @@ class Coin extends Component {
                                                 cbTags={(e) => this.setElementTags(e, index)}
                                                 isDraggable={this.state.sortRowsEnabled}
                                                 cbOnDragStart={this.onDragStart}
-                                                cbOnDragOver={this.onDragOver}/>);
-            } else {
+                                                cbOnDragOver={this.onDragOver}
+                                                oidcStatus={this.state.oidcStatus}/>);
+          } else {
             elementListJsx.push(<CoinEditElementUrl key={index}
                                                     coin={this.state.coin}
                                                     element={row}
@@ -328,7 +330,7 @@ class Coin extends Component {
                                                     isDraggable={this.state.sortRowsEnabled}
                                                     cbOnDragStart={this.onDragStart}
                                                     cbOnDragOver={this.onDragOver}/>);
-            }
+          }
           break;
         case "login":
           headerButtonList.push({type: "login", value: row.value, tags: (row.tags||[]).join(" ")});
@@ -342,8 +344,9 @@ class Coin extends Component {
                                                      cbTags={(e) => this.setElementTags(e, index)}
                                                      isDraggable={this.state.sortRowsEnabled}
                                                      cbOnDragStart={this.onDragStart}
-                                                     cbOnDragOver={this.onDragOver}/>);
-            } else {
+                                                     cbOnDragOver={this.onDragOver}
+                                                     oidcStatus={this.state.oidcStatus}/>);
+          } else {
             elementListJsx.push(<CoinEditElementUsername key={index}
                                                          coin={this.state.coin}
                                                          element={row}
@@ -353,7 +356,7 @@ class Coin extends Component {
                                                          isDraggable={this.state.sortRowsEnabled}
                                                          cbOnDragStart={this.onDragStart}
                                                          cbOnDragOver={this.onDragOver}/>);
-            }
+          }
           break;
         case "password":
           headerButtonList.push({type: "password", value: row.value, tags: (row.tags||[]).join(" ")});
@@ -367,7 +370,8 @@ class Coin extends Component {
                                                      cbTags={(e) => this.setElementTags(e, index)}
                                                      isDraggable={this.state.sortRowsEnabled}
                                                      cbOnDragStart={this.onDragStart}
-                                                     cbOnDragOver={this.onDragOver}/>);
+                                                     cbOnDragOver={this.onDragOver}
+                                                     oidcStatus={this.state.oidcStatus}/>);
           } else {
             elementListJsx.push(<CoinEditElementPassword key={index}
                                                          config={this.state.config}
@@ -379,7 +383,7 @@ class Coin extends Component {
                                                          isDraggable={this.state.sortRowsEnabled}
                                                          cbOnDragStart={this.onDragStart}
                                                          cbOnDragOver={this.onDragOver}/>);
-            }
+          }
           break;
         case "secretQuestion":
           elementListJsx.push(<CoinElementSecretQuestions key={index}
@@ -394,7 +398,8 @@ class Coin extends Component {
                                                           cbTags={(e) => this.setElementTags(e, index)}
                                                           isDraggable={this.state.sortRowsEnabled}
                                                           cbOnDragStart={this.onDragStart}
-                                                          cbOnDragOver={this.onDragOver}/>);
+                                                          cbOnDragOver={this.onDragOver}
+                                                          oidcStatus={this.state.oidcStatus}/>);
           break;
         case "file":
           if (this.state.editElementList.indexOf(index) === -1) {
@@ -407,8 +412,9 @@ class Coin extends Component {
                                                  cbTags={(e) => this.setElementTags(e, index)}
                                                  isDraggable={this.state.sortRowsEnabled}
                                                  cbOnDragStart={this.onDragStart}
-                                                 cbOnDragOver={this.onDragOver}/>);
-            } else {
+                                                 cbOnDragOver={this.onDragOver}
+                                                 oidcStatus={this.state.oidcStatus}/>);
+          } else {
             elementListJsx.push(<CoinEditElementFile key={index}
                                                      coin={this.state.coin}
                                                      element={row}
@@ -418,7 +424,7 @@ class Coin extends Component {
                                                      isDraggable={this.state.sortRowsEnabled}
                                                      cbOnDragStart={this.onDragStart}
                                                      cbOnDragOver={this.onDragOver}/>);
-            }
+          }
           break;
         case "misc":
           if (this.state.editElementList.indexOf(index) === -1) {
@@ -431,8 +437,9 @@ class Coin extends Component {
                                                  cbTags={(e) => this.setElementTags(e, index)}
                                                  isDraggable={this.state.sortRowsEnabled}
                                                  cbOnDragStart={this.onDragStart}
-                                                 cbOnDragOver={this.onDragOver}/>);
-            } else {
+                                                 cbOnDragOver={this.onDragOver}
+                                                 oidcStatus={this.state.oidcStatus}/>);
+          } else {
             elementListJsx.push(<CoinEditElementMisc key={index}
                                                      coin={this.state.coin}
                                                      element={row}
@@ -442,7 +449,7 @@ class Coin extends Component {
                                                      isDraggable={this.state.sortRowsEnabled}
                                                      cbOnDragStart={this.onDragStart}
                                                      cbOnDragOver={this.onDragOver}/>);
-            }
+          }
           break;
         default:
       }
@@ -503,12 +510,14 @@ class Coin extends Component {
                     <button type="button"
                             className="btn btn-secondary btn-sm"
                             onClick={(e) => this.state.cbEditHeader(this.state.coin.name, this.state.coin.data)}
+                            disabled={this.state.oidcStatus !== "connected"}
                             title={i18next.t("editCoinHeader")}>
                       <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                     </button>
                     <button type="button"
                             className={sortBtnClass}
                             onClick={(e) => this.sortRows()}
+                            disabled={this.state.oidcStatus !== "connected"}
                             title={i18next.t("sortCoin")}>
                       <i className="fa fa-sort" aria-hidden="true"></i>
                     </button>
@@ -521,12 +530,14 @@ class Coin extends Component {
                     <button type="button"
                             className="btn btn-secondary btn-sm"
                             onClick={this.addSecretElement}
+                            disabled={this.state.oidcStatus !== "connected"}
                             title={i18next.t("addSecretElement")}>
                       <i className="fa fa-plus" aria-hidden="true"></i>
                     </button>
                     <button type="button"
                             className="btn btn-secondary btn-sm"
                             onClick={(e) => this.state.cbRemoveCoin(this.state.coin.name, this.state.coin.data.displayName)}
+                            disabled={this.state.oidcStatus !== "connected"}
                             title={i18next.t("removeCoin")}>
                       <i className="fa fa-trash-o" aria-hidden="true"></i>
                     </button>

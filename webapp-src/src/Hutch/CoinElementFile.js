@@ -10,6 +10,7 @@ class CoinElementFile extends Component {
 
     this.state = {
       coin: props.coin,
+      oidcStatus: props.oidcStatus,
       element: props.element,
       index: props.index,
       cbEdit: props.cbEdit,
@@ -60,13 +61,13 @@ class CoinElementFile extends Component {
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementDownload")} onClick={this.downloadFile}>
                   <i className="fa fa-cloud-download" aria-hidden="true"></i>
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementEdit")} onClick={(e) => this.state.cbEdit(e, this.state.index)}>
+                <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementEdit")} onClick={(e) => this.state.cbEdit(e, this.state.index)} disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementRemove")} onClick={(e) => this.state.cbRemove(e, this.state.index)}>
+                <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementRemove")} onClick={(e) => this.state.cbRemove(e, this.state.index)} disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-trash-o" aria-hidden="true"></i>
                 </button>
-                <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementTags")} onClick={(e) => this.state.cbTags(e, this.state.index)}>
+                <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementTags")} onClick={(e) => this.state.cbTags(e, this.state.index)} disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-tags" aria-hidden="true"></i>
                 </button>
               </div>

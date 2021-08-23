@@ -13,6 +13,7 @@ class CoinElementSecretQuestions extends Component {
 
     this.state = {
       coin: props.coin,
+      oidcStatus: props.oidcStatus,
       element: props.element,
       index: props.index,
       closeButon: props.closeButon,
@@ -111,7 +112,7 @@ class CoinElementSecretQuestions extends Component {
           );
         } else {
           questionList.push(
-            <CoinElementSecretQuestionsRow value={Object.assign({}, value)} index={index} cbEdit={(e) => this.editRow(e, index)} cbRemove={(e) => this.removeRow(e, index)} key={index} disableEdit={!!this.state.editList.length}/>
+            <CoinElementSecretQuestionsRow value={Object.assign({}, value)} index={index} cbEdit={(e) => this.editRow(e, index)} cbRemove={(e) => this.removeRow(e, index)} key={index} disableEdit={!!this.state.editList.length} oidcStatus={this.state.oidcStatus}/>
           );
         }
       });
@@ -140,13 +141,13 @@ class CoinElementSecretQuestions extends Component {
           </div>
           <div className="col">
             <div className="btn-group float-end btn-icon" role="group">
-              <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementAddQuestion")} onClick={this.cbAddQuestion} disabled={this.state.editList.length}>
+              <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementAddQuestion")} onClick={this.cbAddQuestion} disabled={this.state.editList.length} disabled={this.state.oidcStatus !== "connected"}>
                 <i className="fa fa-plus" aria-hidden="true"></i>
               </button>
-              <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementRemove")} onClick={(e) => this.state.cbRemove(e, this.state.index)}>
+              <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementRemove")} onClick={(e) => this.state.cbRemove(e, this.state.index)} disabled={this.state.oidcStatus !== "connected"}>
                 <i className="fa fa-trash-o" aria-hidden="true"></i>
               </button>
-              <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementTags")} onClick={(e) => this.state.cbTags(e, this.state.index)}>
+              <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementTags")} onClick={(e) => this.state.cbTags(e, this.state.index)} disabled={this.state.oidcStatus !== "connected"}>
                 <i className="fa fa-tags" aria-hidden="true"></i>
               </button>
             </div>

@@ -60,8 +60,8 @@ class ModalSafeUnlock extends Component {
 
   static getDerivedStateFromProps(props, state) {
     var newState = Object.assign({}, props);
-    if (!state.safeKey) {
-      newState.safeKey = getPreferredKey(props.safeContent, props.safe)
+    if (state.safe.name !== props.safe.name) {
+      newState.safeKey = getPreferredKey(props.safeContent, props.safe);
     }
     return newState;
   }

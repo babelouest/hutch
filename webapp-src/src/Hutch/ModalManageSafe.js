@@ -15,6 +15,7 @@ class ModalManageSafe extends Component {
 
     this.state = {
       config: props.config,
+      oidcStatus: props.oidcStatus,
       safe: props.safe,
       safeContent: props.safeContent,
       cbSaveCoin: props.cbSaveCoin,
@@ -290,8 +291,9 @@ class ModalManageSafe extends Component {
                 <input type="file"
                        className="upload"
                        id="importSafeFileInput"
+                       disabled={this.state.oidcStatus !== "connected"}
                        onChange={this.getImportFile} />
-                <label htmlFor="importSafeFileInput" className="btn btn-secondary">
+                <label htmlFor="importSafeFileInput" className="btn btn-secondary" disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-cloud-upload" aria-hidden="true"></i>
                 </label>
                 {importSecurityJsx}

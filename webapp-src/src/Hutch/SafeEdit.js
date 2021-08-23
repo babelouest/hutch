@@ -329,7 +329,7 @@ class SafeEdit extends Component {
         if (safeKey.type === "password") {
           faIcon += "fa-key";
         } else if (safeKey.type === "master-password") {
-          faIcon += "fa-unlock";
+          faIcon += "fa-usb";
         } else if (safeKey.type === "jwk") {
           faIcon += "fa-file-code-o";
         } else if (safeKey.type === "browser") {

@@ -19,6 +19,7 @@ class SafeView extends Component {
 
     this.state = {
       config: props.config,
+      oidcStatus: props.oidcStatus,
       safe: props.safe,
       safeContent: props.safeContent,
       filteredCoinList: props.safeContent[props.safe.name].unlockedCoinList,
@@ -278,6 +279,7 @@ class SafeView extends Component {
                                  cbEditHeader={this.editCoinHeader}
                                  cbRemoveCoin={this.removeCoin}
                                  cbSaveCoin={this.coinSaveCallback}
+                                 oidcStatus={this.state.oidcStatus}
                                  key={index}/>);
       });
     }
@@ -290,7 +292,7 @@ class SafeView extends Component {
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={this.editSafe}
-                    disabled={!isUnlocked}
+                    disabled={!isUnlocked || this.state.oidcStatus !== "connected"}
                     title={i18next.t("editSafe")}>
               <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
             </button>
@@ -304,14 +306,14 @@ class SafeView extends Component {
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={this.addCoin}
-                    disabled={!isUnlocked}
+                    disabled={!isUnlocked || this.state.oidcStatus !== "connected"}
                     title={i18next.t("addCoin")}>
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={(e) => this.removeSafe()}
-                    disabled={!isUnlocked}
+                    disabled={!isUnlocked || this.state.oidcStatus !== "connected"}
                     title={i18next.t("removeSafe")}>
               <i className="fa fa-trash-o" aria-hidden="true"></i>
             </button>
@@ -334,6 +336,7 @@ class SafeView extends Component {
                          safe={this.state.safe}
                          safeContent={this.state.safeContent}
                          cbSaveCoin={this.coinSaveCallback}
+                         oidcStatus={this.state.oidcStatus}
                          cbClose={this.manageSafeClose} />
         <Confirm name={"removeSafe"} title={i18next.t("removeSafeTitle")} message={i18next.t("removeSafeMessage", {name: this.state.safe.display_name||this.state.safe.name})} cb={this.removeSafeConfirm} />
         <Confirm name={"removeCoin"} title={i18next.t("removeCoinTitle")} message={this.state.removeCoinMessage} cb={this.removeCoinConfirm} />

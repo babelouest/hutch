@@ -16,6 +16,7 @@ class Safe extends Component {
     }
     this.state = {
       config: props.config,
+      oidcStatus: props.oidcStatus,
       hutchProfile: props.hutchProfile,
       safe: props.safe,
       safeContent: props.safeContent,
@@ -33,11 +34,12 @@ class Safe extends Component {
   
 	render() {
     var hasKeys = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].keyList.length);
-    if (!this.state.editMode && hasKeys) {
+    if ((!this.state.editMode && hasKeys) || this.state.oidcStatus !== "connected") {
       return (
         <SafeView config={this.state.config}
                   safe={this.state.safe}
-                  safeContent={this.state.safeContent}/>
+                  safeContent={this.state.safeContent}
+                  oidcStatus={this.state.oidcStatus}/>
       );
     } else {
       return (
