@@ -55,22 +55,29 @@ class App extends Component {
         apiManager.setToken(message.token);
         clearTimeout(this.state.tokenTimeout);
         var tokenTimeout = setTimeout(() => {
-          this.setState({oidcStatus: "disconnected"});
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
+          this.setState({oidcStatus: "timeout"});
+          console.log("got timeout");
         }, message.expires_in*1000);
         this.setState({oidcStatus: message.status, tokenTimeout: tokenTimeout});
         if (message.status === "connected") {
           messageDispatcher.sendMessage('Notification', {type: "success", message: i18next.t("messageConnected")});
         }
       } else if (message.status === "profile") {
-        this.setState({profile: message.profile}, () => {
-          this.getHutchProfile()
-          .then(() => {
-            this.getSafeList()
+        if (message.profile == "error") {
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageProfileError")});
+          this.setState({oidcStatus: "disconnected"});
+        } else if (message.profile) {
+          this.setState({profile: message.profile}, () => {
+            this.getHutchProfile()
             .then(() => {
-              this.gotoRoute(routage.getCurrentRoute());
+              this.getSafeList()
+              .then(() => {
+                this.gotoRoute(routage.getCurrentRoute());
+              });
             });
           });
-        });
+        }
       }
 
       this.setForceTrust = this.setForceTrust.bind(this);
@@ -357,6 +364,9 @@ class App extends Component {
       if (error.status === 404) {
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageNoProfile")});
         this.setState({hutchProfile: false, hasProfile: false});
+      } else if (error.status === 401) {
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageProfileError")});
+      } else {
       }
     });
   }
@@ -496,7 +506,8 @@ class App extends Component {
                         hutchProfile={this.state.hutchProfile}
                         safe={this.state.curSafe}
                         safeContent={this.state.safeContent}
-                        editMode={this.state.editSafeMode}/>
+                        editMode={this.state.editSafeMode}
+                        oidcStatus={this.state.oidcStatus}/>
       }
     }
     if (!this.state.trustworthy) {
