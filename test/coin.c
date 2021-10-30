@@ -231,12 +231,11 @@ int main(int argc, char *argv[])
     o_free(str_jwks);
     
     time(&now);
-    j_claims = json_pack("{ss ss ss ss ss si si si ss}",
+    j_claims = json_pack("{ss ss ss ss si si si ss}",
                          "iss", "https://glewlwyd.tld/",
                          "sub", USER_LOGIN,
                          "client_id", "client",
                          "jti", "abcdxyz1234",
-                         "type", "access_token",
                          "iat", now,
                          "exp", now+3600,
                          "nbf", now,
