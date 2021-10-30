@@ -45,6 +45,7 @@ class ModalSafeUnlock extends Component {
       allowKeepUnlocked: props.allowKeepUnlocked,
       safeKey: getPreferredKey(props.safeContent, props.safe),
       safePassword: "",
+      safePrefixPassword: "",
       safeKeyJwk: "",
       safeSecretError: false,
       keepUnlocked: false,
@@ -68,6 +69,10 @@ class ModalSafeUnlock extends Component {
   
   changePassword(e) {
     this.setState({safePassword: e.target.value});
+  }
+  
+  changePrefixPassword(e) {
+    this.setState({safePrefixPassword: e.target.value});
   }
   
   editSafeKeyJwk(safeKeyJwk) {
@@ -117,7 +122,7 @@ class ModalSafeUnlock extends Component {
     if (this.state.safeKey) {
       if (this.state.safeKey.type === "password" || this.state.safeKey.type === "master-password") {
         var enc = new TextEncoder();
-        jwtDecrypt(this.state.safeKey.data, enc.encode(this.state.safePassword))
+        jwtDecrypt(this.state.safeKey.data, enc.encode(this.state.safePrefixPassword+this.state.safePassword))
         .then((result) => {
           this.setState({safeSecretError: false}, () => {
             parseJwk(result.payload, this.state.safe.alg_type)
@@ -168,7 +173,7 @@ class ModalSafeUnlock extends Component {
 	render() {
     var keyListJsx = [], safeSecretErrorJsx, safePasswordClass = "form-control", keepUnlockedJsx, inputSecretJsx;
     if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].keyList) {
-      if (this.state.safeKey.type === "password" || this.state.safeKey.type === "master-password") {
+      if (this.state.safeKey.type === "password") {
         if (this.state.safeSecretError) {
           safePasswordClass += " is-invalid"
           safeSecretErrorJsx =
@@ -179,10 +184,36 @@ class ModalSafeUnlock extends Component {
         inputSecretJsx =
           <input type="password"
                  className={safePasswordClass}
-                 autoComplete="off"
+                 autoComplete="new-password"
                  placeholder={i18next.t("safePassword")}
                  onChange={(e) => this.changePassword(e)}
+                 autoFocus={true}
                  value={this.state.safePassword} />
+      } else if (this.state.safeKey.type === "master-password") {
+        if (this.state.safeSecretError) {
+          safePasswordClass += " is-invalid"
+          safeSecretErrorJsx =
+            <div className="invalid-feedback">
+              {i18next.t("safeKeyError")}
+            </div>
+        }
+        inputSecretJsx =
+          <div>
+            <input type="password"
+                   className={safePasswordClass}
+                   autoComplete="new-password"
+                   placeholder={i18next.t("safePrefixPassword")}
+                   onChange={(e) => this.changePrefixPassword(e)}
+                   autoFocus={true}
+                   value={this.state.safePrefixPassword} />
+            <input type="password"
+                   className={safePasswordClass}
+                   autoComplete="new-password"
+                   placeholder={i18next.t("safePassword")}
+                   onChange={(e) => this.changePassword(e)}
+                   autoFocus={true}
+                   value={this.state.safePassword} />
+          </div>
       } else if (this.state.safeKey.type === "jwk") {
         inputSecretJsx = <JwkInput isError={this.state.safeSecretError} errorMessage={i18next.t("safeKeyError")} ph={i18next.t("safeKeyJwkPh")} cb={this.editSafeKeyJwk}/>
       }

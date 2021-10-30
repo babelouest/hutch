@@ -79,7 +79,23 @@ class Coin extends Component {
   }
 
   addSecretElement() {
-    this.setState({showAddElement: true, newElementType: "url"});
+    var type = "url";
+    var hasUrl = false, hasLogin = false;
+    this.state.coin.data.rows.forEach((row, index) => {
+      if (row.type === "url") {
+        hasUrl = true;
+      } else if (row.type === "login") {
+        hasLogin = true;
+      }
+    });
+    if (hasUrl && hasLogin) {
+      type = "password";
+    } else if (hasUrl) {
+      type = "login";
+    } else {
+      type = "url";
+    }
+    this.setState({showAddElement: true, newElementType: type});
   }
 
   setNewElementType(e) {

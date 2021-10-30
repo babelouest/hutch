@@ -12,6 +12,8 @@ class ModalSafeKey extends Component {
       cb: props.callback,
       newPassword: "",
       confirmNewPassword: "",
+      prefixPassword: "",
+      confirmPrefixPassword: "",
       safeKeyJwk: "",
       keyName: "",
       pwdScore: -1,
@@ -20,6 +22,8 @@ class ModalSafeKey extends Component {
 
     this.changeNewPassword = this.changeNewPassword.bind(this);
     this.changeConfirmNewPassword = this.changeConfirmNewPassword.bind(this);
+    this.changePrefixPassword = this.changePrefixPassword.bind(this);
+    this.changeConfirmPrefixPassword = this.changeConfirmPrefixPassword.bind(this);
     this.editSafeKeyJwk = this.editSafeKeyJwk.bind(this);
   }
 
@@ -45,6 +49,14 @@ class ModalSafeKey extends Component {
     this.setState({confirmNewPassword: e.target.value}, () => {this.isSafeKeyValid()});
   }
   
+  changePrefixPassword(e) {
+    this.setState({prefixPassword: e.target.value});
+  }
+  
+  changeConfirmPrefixPassword(e) {
+    this.setState({confirmPrefixPassword: e.target.value}, () => {this.isSafeKeyValid()});
+  }
+  
   editSafeKeyJwk(safeKeyJwk) {
     this.setState({safeKeyJwk: safeKeyJwk}, () => {this.isSafeKeyValid()});
   }
@@ -63,6 +75,9 @@ class ModalSafeKey extends Component {
       }
     } else if (this.state.safeKey.type === "master-password") {
       if (!this.state.newPassword) {
+        isValid = false;
+      }
+      if (this.state.prefixPassword && this.state.prefixPassword !== this.state.confirmPrefixPassword) {
         isValid = false;
       }
     } else if (this.state.safeKey.type === "jwk") {
@@ -94,7 +109,7 @@ class ModalSafeKey extends Component {
     if (this.state.cb) {
       this.state.cb(result, {
         safeKey: this.state.safeKey,
-        password: this.state.newPassword,
+        password: this.state.prefixPassword+this.state.newPassword,
         jwk: jwk
       });
       this.setState({newPassword: "",
@@ -145,15 +160,38 @@ class ModalSafeKey extends Component {
         </div>
     } else if (this.state.safeKey.type === "master-password") {
       inputJsx =
-        <div className="mb-3">
-          <label htmlFor="newPassword" className="form-label">{i18next.t("masterPassword")}</label>
-          <input type="password"
-          autoComplete="off"
-          className="form-control"
-          id="newPassword"
-          placeholder={i18next.t("masterPasswordPh")}
-          value={this.state.newPassword}
-          onChange={(e) => this.changeNewPassword(e)}/>
+        <div>
+          <div className="mb-3">
+            <label htmlFor="prefixPassword" className="form-label">{i18next.t("prefixPassword")}</label>
+            <input type="password"
+                   autoComplete="off"
+                   className="form-control"
+                   id="prefixPassword"
+                   placeholder={i18next.t("prefixPasswordPh")}
+                   value={this.state.prefixPassword}
+                   onChange={(e) => this.changePrefixPassword(e)}/>
+            {pwdScoreJsx}
+          </div>
+          <div className="mb-3">
+            <label htmlFor="confirmPrefixPassword" className="form-label">{i18next.t("confirmPrefixPassword")}</label>
+            <input type="password"
+                   autoComplete="off"
+                   className="form-control"
+                   id="confirmPrefixPassword"
+                   placeholder={i18next.t("confirmPrefixPasswordPh")}
+                   value={this.state.confirmPrefixPassword}
+                   onChange={(e) => this.changeConfirmPrefixPassword(e)}/>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="newPassword" className="form-label">{i18next.t("masterPassword")}</label>
+            <input type="password"
+            autoComplete="off"
+            className="form-control"
+            id="newPassword"
+            placeholder={i18next.t("masterPasswordPh")}
+            value={this.state.newPassword}
+            onChange={(e) => this.changeNewPassword(e)}/>
+          </div>
         </div>
     } else if (this.state.safeKey.type === "jwk") {
       var messageClass = "form-control", messageErrorJsx;

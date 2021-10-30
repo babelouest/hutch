@@ -120,9 +120,9 @@ class SafeEdit extends Component {
     if (result) {
       if (data.safeKey.type === "password" || data.safeKey.type === "master-password") {
         var lockAlg = "PBES2-HS256+A128KW";
-        if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW" || this.state.safe.alg_type === "PBES2-HS384+A192KW") {
+        if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW") {
           lockAlg = "PBES2-HS384+A192KW";
-        } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW" || this.state.safe.alg_type === "PBES2-HS512+A256KW") {
+        } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW") {
           lockAlg = "PBES2-HS512+A256KW";
         }
         var enc = new TextEncoder();
@@ -384,9 +384,6 @@ class SafeEdit extends Component {
               <option value="A128GCMKW">A128GCMKW</option>
               <option value="A192GCMKW">A192GCMKW</option>
               <option value="A256GCMKW">A256GCMKW</option>
-              <option value="PBES2-HS256+A128KW">PBES2-HS256+A128KW</option>
-              <option value="PBES2-HS384+A192KW">PBES2-HS384+A192KW</option>
-              <option value="PBES2-HS512+A256KW">PBES2-HS512+A256KW</option>
             </select>
           </div>
           <div className="alert alert-primary" role="alert">

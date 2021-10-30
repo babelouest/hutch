@@ -247,7 +247,7 @@ class ModalManageSafe extends Component {
       importSecurityJsx =
         <div className="mb-3">
           <label htmlFor="newPassword" className="form-label">{i18next.t("importPassword")}</label>
-          <input type="password" className="form-control" id="password" value={this.state.password} onChange={this.changePassword}/>
+          <input type="password" className="form-control" id="password" autoComplete="new-password" value={this.state.password} onChange={this.changePassword}/>
         </div>
     } else if (this.state.importSecurityType === "jwk") {
       importSecurityJsx =

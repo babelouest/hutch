@@ -175,7 +175,7 @@ class ProfileEdit extends Component {
       keysJsx.push(<option value={key.kid} key={index}>{key.alg}</option>);
     });
     if (this.state.imageLoading) {
-      imageJsx = c
+      imageJsx = <i className="fa fa-spinner fa-spin fa-3x fa-fw"></i>
     } else if (this.state.hutchProfile.picture) {
       imageJsx = <img src={this.state.hutchProfile.picture} alt="profile image" className="profile-image"/>
     }

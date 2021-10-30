@@ -4,6 +4,8 @@ import i18next from 'i18next';
 
 import ModalGeneratePassword from './ModalGeneratePassword';
 
+import messageDispatcher from '../lib/MessageDispatcher';
+
 class CoinEditElementPassword extends Component {
   constructor(props) {
     super(props);

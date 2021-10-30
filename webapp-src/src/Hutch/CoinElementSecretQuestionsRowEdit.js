@@ -15,6 +15,7 @@ class CoinElementSecretQuestionsRowEdit extends Component {
       cbSave: props.cbSave,
       cbCancel: props.cbCancel
     };
+    
     this.changeQuestion = this.changeQuestion.bind(this);
     this.changeAnswer = this.changeAnswer.bind(this);
     this.generateAnswer = this.generateAnswer.bind(this);

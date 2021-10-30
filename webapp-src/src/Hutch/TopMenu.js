@@ -16,11 +16,11 @@ class TopMenu extends Component {
       config: props.config,
       oidcStatus: props.oidcStatus,
       safeList: props.safeList,
-      safeContent: props.safeContent
+      safeContent: props.safeContent,
+      hasProfile: props.hasProfile
     };
     
     this.navigateTo = this.navigateTo.bind(this);
-    this.addSafe = this.addSafe.bind(this);
   }
   
   static getDerivedStateFromProps(props, state) {
@@ -33,11 +33,6 @@ class TopMenu extends Component {
     messageDispatcher.sendMessage("App", {action: 'nav', target: safe});
   }
   
-  addSafe(e) {
-    e.preventDefault();
-    messageDispatcher.sendMessage("App", {action: 'addSafe'});
-  }
-
 	render() {
     var safeListJsx = [];
     this.state.safeList.forEach((safe, index) => {
@@ -60,6 +55,10 @@ class TopMenu extends Component {
         </li>
       );
     });
+    var classAddSafe = "nav-link active";
+    if (this.state.oidcStatus !== "connected" || !this.state.hasProfile) {
+      classAddSafe += " disabled-cursor";
+    }
     return (
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
@@ -80,14 +79,6 @@ class TopMenu extends Component {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               {safeListJsx}
-              <li className="nav-item">
-                <a className="nav-link active"
-                   data-bs-toggle="collapse"
-                   data-bs-target=".navbar-collapse.show"
-                   aria-current="page" href="#"
-                   disabled={this.state.oidcStatus!=="connected"}
-                   onClick={this.addSafe}>{i18next.t("addSafe")}</a>
-              </li>
             </ul>
             <ul className="navbar-nav ms-auto flex-nowrap text-right">
               <LangDropdown config={this.state.config}/>

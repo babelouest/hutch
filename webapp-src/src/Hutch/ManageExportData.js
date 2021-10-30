@@ -168,19 +168,19 @@ class ManageExportData extends Component {
         <div>
           <div className="mb-3">
             <label htmlFor="newPassword" className="form-label">{i18next.t("newPassword")}</label>
-            <input type="password" autoComplete="off" className="form-control" id="newPassword" value={this.state.password} onChange={this.changePassword}/>
+            <input type="password" autoComplete="new-password" className="form-control" id="newPassword" value={this.state.password} onChange={this.changePassword}/>
             {pwdScoreJsx}
           </div>
           <div className="mb-3">
             <label htmlFor="confirmNewPassword" className="form-label">{i18next.t("confirmNewPassword")}</label>
-            <input type="password" autoComplete="off" className="form-control" id="confirmNewPassword" value={this.state.confirmPassword} onChange={this.changeConfirmPassword}/>
+            <input type="password" autoComplete="new-password" className="form-control" id="confirmNewPassword" value={this.state.confirmPassword} onChange={this.changeConfirmPassword}/>
           </div>
         </div>
       } else if (this.state.exportSecurityType === "master-password") {
         exportSecurityJsx =
         <div className="mb-3">
           <label htmlFor="newPassword" className="form-label">{i18next.t("newPassword")}</label>
-          <input type="password" autoComplete="off" className="form-control" id="newPassword" value={this.state.password} onChange={this.changePassword}/>
+          <input type="password" autoComplete="new-password" className="form-control" id="newPassword" value={this.state.password} onChange={this.changePassword}/>
         </div>
       } else if (this.state.exportSecurityType === "jwk") {
         var messageClass = "form-control", messageErrorJsx;

@@ -255,7 +255,7 @@ class SafeView extends Component {
             <div className="input-group mb-3">
               <input type="text"
                      className="form-control"
-                     autoComplete="off"
+                     autoComplete="new-password"
                      placeholder={i18next.t("secretFilter")}
                      id="coinFilter"
                      name="coinFilter"

@@ -14,6 +14,7 @@ class ProfileView extends Component {
       profile: props.profile,
       hutchProfile: props.hutchProfile
     };
+    this.addSafe = this.addSafe.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -27,6 +28,10 @@ class ProfileView extends Component {
   lockAllSafe() {
     messageDispatcher.sendMessage('App', {action: "lockAllSafe"});
     messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("lockedAllSafe")});
+  }
+
+  addSafe() {
+    messageDispatcher.sendMessage("App", {action: 'addSafe'});
   }
 
 	render() {
@@ -55,6 +60,9 @@ class ProfileView extends Component {
           <div className="btn-group float-end" role="group">
             <button type="button" className="btn btn-secondary btn-sm" onClick={this.lockAllSafe} title={i18next.t("lockAllSafe")}>
               <i className="fa fa-lock" aria-hidden="true"></i>
+            </button>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={this.addSafe} title={i18next.t("addSafe")}>
+              <i className="fa fa-plus" aria-hidden="true"></i>
             </button>
           </div>
         </div>

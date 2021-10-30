@@ -17,13 +17,14 @@ class CoinElementSecretQuestions extends Component {
       element: props.element,
       index: props.index,
       closeButon: props.closeButon,
-      editList: [],
       cbRemove: props.cbRemove,
       cbSave: props.cbSave,
       cbTags: props.cbTags,
       isDraggable: props.isDraggable,
       cbOnDragStart: props.cbOnDragStart,
-      cbOnDragOver: props.cbOnDragOver
+      cbOnDragOver: props.cbOnDragOver,
+      config: props.config,
+      editList: []
     };
     
     this.copyToClipboard = this.copyToClipboard.bind(this);
@@ -102,17 +103,31 @@ class CoinElementSecretQuestions extends Component {
     });
     if (!this.state.element.value.length) {
       questionList.push(
-        <CoinElementSecretQuestionsRowEdit value={{question: "", answer: ""}} index={0} wordsList={this.state.config.wordsList} cbSave={this.saveRow} cbCancel={this.cancelRow} key={-1}/>
+        <CoinElementSecretQuestionsRowEdit value={{question: "", answer: ""}}
+                                           index={0} wordsList={this.state.config.wordsList}
+                                           cbSave={this.saveRow}
+                                           cbCancel={this.cancelRow}
+                                           key={-1}/>
       );
     } else {
       this.state.element.value.forEach((value, index) => {
         if (this.state.editList.indexOf(index) !== -1) {
           questionList.push(
-            <CoinElementSecretQuestionsRowEdit value={Object.assign({}, value)} index={index} wordsList={this.state.config.wordsList} cbSave={this.saveRow} cbCancel={this.cancelRow} key={index}/>
+            <CoinElementSecretQuestionsRowEdit value={Object.assign({}, value)}
+                                               index={index}
+                                               wordsList={this.state.config.wordsList}
+                                               cbSave={this.saveRow}
+                                               cbCancel={this.cancelRow}
+                                               key={index}/>
           );
         } else {
           questionList.push(
-            <CoinElementSecretQuestionsRow value={Object.assign({}, value)} index={index} cbEdit={(e) => this.editRow(e, index)} cbRemove={(e) => this.removeRow(e, index)} key={index} disableEdit={!!this.state.editList.length} oidcStatus={this.state.oidcStatus}/>
+            <CoinElementSecretQuestionsRow value={Object.assign({}, value)}
+                                           index={index} cbEdit={(e) => this.editRow(e, index)}
+                                           cbRemove={(e) => this.removeRow(e, index)}
+                                           key={index}
+                                           disableEdit={!!this.state.editList.length}
+                                           oidcStatus={this.state.oidcStatus}/>
           );
         }
       });

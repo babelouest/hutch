@@ -57,7 +57,6 @@ class App extends Component {
         var tokenTimeout = setTimeout(() => {
           messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
           this.setState({oidcStatus: "timeout"});
-          console.log("got timeout");
         }, message.expires_in*1000);
         this.setState({oidcStatus: message.status, tokenTimeout: tokenTimeout});
         if (message.status === "connected") {
@@ -308,7 +307,7 @@ class App extends Component {
     });
 
     apiManager.request("words-" + i18next.language + ".json")
-    .then(words => {
+    .then((words) => {
       var config = this.state.config;
       config.wordsList = words;
       this.setState({config: config});
@@ -457,7 +456,7 @@ class App extends Component {
   unlockCoinList(safeName) {
     var safeContent = this.state.safeContent;
     var key = safeContent[safeName].key;
-    if (key) {
+    if (key && (this.state.trustworthy || this.state.forceTrust)) {
       safeContent[safeName].coinList.forEach((encCoin, index) => {
         jwtDecrypt(encCoin.data, key)
         .then((decCoin) => {
@@ -487,7 +486,13 @@ class App extends Component {
   }
 
   setForceTrust() {
-    this.setState({forceTrust: true});
+    this.setState({forceTrust: true}, () => {
+      this.state.safeList.forEach((safe) => {
+        if (this.state.safeContent[safe.name].key) {
+          this.unlockCoinList(safe.name);
+        }
+      });
+    });
   }
 
 	render() {
@@ -533,7 +538,8 @@ class App extends Component {
         <TopMenu config={this.state.config}
                  oidcStatus={this.state.oidcStatus}
                  safeList={safeList}
-                 safeContent={this.state.safeContent}/>
+                 safeContent={this.state.safeContent}
+                 hasProfile={this.state.hasProfile}/>
         {trustworthyJsx}
         {bodyJsx}
         <Notification loggedIn={this.state.oidcStatus}/>

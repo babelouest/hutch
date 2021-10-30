@@ -88,3 +88,6 @@
   max-height: 300px;
   overflow-y:scroll;
 }
+.disabled-cursor { 
+  cursor: not-allowed;
+}
