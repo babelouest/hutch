@@ -478,7 +478,7 @@ int build_config_from_file(struct config_elements * config) {
              * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL, * db_pg_conninfo = NULL,
              * db_mariadb_password = NULL, * db_mariadb_dbname = NULL, * cur_static_files_path = NULL, * extension = NULL, * mime_type_value = NULL, * cur_sign_key = NULL;
   char * str_jwks = NULL;
-  int db_mariadb_port = 0, i = 0, port = 0, sign_exp = 0, ret;
+  int db_mariadb_port = 0, i = 0, port = 0, sign_exp = 0, compress = 0, ret;
   const char * cur_oidc_server_remote_config = NULL, * cur_oidc_server_public_jwks = NULL, * cur_oidc_iss = NULL, * cur_oidc_realm = NULL,
              * cur_oidc_aud = NULL, * cur_oidc_scope = NULL;
   int cur_oidc_dpop_max_iat = 0, cur_oidc_server_remote_config_verify_cert = 0;
@@ -641,8 +641,15 @@ int build_config_from_file(struct config_elements * config) {
           mime_type = config_setting_get_elem(mime_type_list, i);
           if (mime_type != NULL) {
             if (config_setting_lookup_string(mime_type, "extension", &extension) == CONFIG_TRUE &&
-                config_setting_lookup_string(mime_type, "type", &mime_type_value) == CONFIG_TRUE) {
+                config_setting_lookup_string(mime_type, "mime_type", &mime_type_value) == CONFIG_TRUE) {
               u_map_put(&config->static_file_config->mime_types, extension, mime_type_value);
+              if (config_setting_lookup_int(mime_type, "compress", &compress) == CONFIG_TRUE) {
+                if (compress && u_add_mime_types_compressed(config->static_file_config, mime_type_value) != U_OK) {
+                  fprintf(stderr, "Error setting mime_type %s to compressed list, exiting\n", mime_type_value);
+                  ret = 0;
+                  break;
+                }
+              }
             }
           }
         }
