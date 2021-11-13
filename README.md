@@ -4,7 +4,7 @@ Online password and secret locker.
 
 Store password and other secret data in an encrypted safe on the server.
 
-![safe example](screenshots/safe_example_detailed.png)
+![safe example](docs/screenshots/safe_example_detailed.png)
 
 Can generate random password and answers to _secret questions_.
 
