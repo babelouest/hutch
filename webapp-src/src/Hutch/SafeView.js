@@ -227,7 +227,10 @@ class SafeView extends Component {
   }
   
   scrollToCoin(name) {
-    document.getElementById("coin-" + name).scrollIntoView();
+    var elt = document.getElementById("coin-" + name);
+    if (elt) {
+      elt.scrollIntoView();
+    }
   }
   
   manageSafe() {
