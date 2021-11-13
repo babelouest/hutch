@@ -13,6 +13,14 @@ import ModalManageSafe from './ModalManageSafe';
 import Coin from './Coin';
 import Confirm from './Confirm';
 
+function getUnlockedCoinList(props) {
+  if (props.safeContent && props.safe.name && props.safeContent[props.safe.name]) {
+    return props.safeContent[props.safe.name].unlockedCoinList;
+  } else {
+    return [];
+  }
+}
+
 class SafeView extends Component {
   constructor(props) {
     super(props);
@@ -22,7 +30,7 @@ class SafeView extends Component {
       oidcStatus: props.oidcStatus,
       safe: props.safe,
       safeContent: props.safeContent,
-      filteredCoinList: props.safeContent[props.safe.name].unlockedCoinList,
+      filteredCoinList: getUnlockedCoinList(props),
       filter: "",
       coinEditMode: 0,
       coinEditName: false,
@@ -51,7 +59,7 @@ class SafeView extends Component {
     var newState = Object.assign({}, props);
     if (props.safe.name !== state.safe.name) {
       newState.safeContent = props.safeContent;
-      newState.filteredCoinList = props.safeContent[props.safe.name].unlockedCoinList;
+      newState.filteredCoinList = getUnlockedCoinList(props);
       newState.filter = "";
     }
     return newState;

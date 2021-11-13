@@ -49,14 +49,18 @@ class CoinElementPassword extends Component {
     var password;
     if (this.state.showPassword) {
       password = 
-        <code>
-          {this.state.element.value}
-        </code>
+        <div className="col">
+          <code>
+            {this.state.element.value}
+          </code>
+        </div>
     } else {
       password =
-        <span className="btn-icon-right">
-          ********
-        </span>
+        <div className="col text-truncate">
+          <span className="btn-icon-right">
+            ********
+          </span>
+        </div>
     }
     return (
         <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>
@@ -68,9 +72,7 @@ class CoinElementPassword extends Component {
                 </span>
               </span>
             </div>
-            <div className="col text-truncate">
-              {password}
-            </div>
+            {password}
             <div className="col">
               <div className="btn-group float-end btn-icon" role="group">
                 <button type="button" className="btn btn-outline-secondary btn-sm" title={i18next.t("coinElementShowPassword")} onClick={this.toggleShowPassword}>

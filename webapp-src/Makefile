@@ -40,4 +40,4 @@ build-webapp:
 
 install-webapp:
 	find $(WEBAPP_DEST) ! -name config.json ! -name webapp ! -name .gitignore -delete
-	cp -R dist/config.json.sample dist/css/ dist/favicon.ico dist/fonts/ dist/hutch.js dist/hutch.js.LICENSE.txt dist/img/ dist/index.html dist/js/ dist/locales/ words-*.json $(WEBAPP_DEST)
+	cp -R dist/config.json.sample dist/css/ dist/favicon.ico dist/fonts/ dist/hutch.js dist/hutch.js.LICENSE.txt dist/img/ dist/index.html dist/js/ dist/locales/ dist/words-*.json $(WEBAPP_DEST)

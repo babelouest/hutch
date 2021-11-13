@@ -3,6 +3,7 @@ import i18next from 'i18next';
 
 import { jwtDecrypt } from 'jose-browser-runtime/jwt/decrypt';
 import { parseJwk } from 'jose-browser-runtime/jwk/parse'
+import { decodeProtectedHeader } from 'jose-browser-runtime/util/decode_protected_header';
 
 import JwkInput from './JwkInput';
 
@@ -127,7 +128,9 @@ class ModalSafeUnlock extends Component {
           this.setState({safeSecretError: false}, () => {
             parseJwk(result.payload, this.state.safe.alg_type)
             .then((masterKey) => {
-              this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);
+              this.setState({safePassword : "", safePrefixPassword: "", safeKeyJwk: "", safeSecretError: false}, () => {
+                this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);
+              });
             });
           });
         })
@@ -144,7 +147,9 @@ class ModalSafeUnlock extends Component {
               this.setState({safeSecretError: false}, () => {
                 parseJwk(result.payload, this.state.safe.alg_type)
                 .then((masterKey) => {
-                  this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);
+                  this.setState({safePassword : "", safePrefixPassword: "", safeKeyJwk: "", safeSecretError: false}, () => {
+                    this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);
+                  });
                 });
               });
             })
@@ -165,13 +170,15 @@ class ModalSafeUnlock extends Component {
   }
 
   closeModal(e, result) {
-    if (this.state.cb) {
-      this.state.cb(result);
-    }
+    this.setState({safePassword : "", safePrefixPassword: "", safeKeyJwk: "", safeSecretError: false, keepUnlocked: false}, () => {
+      if (this.state.cb) {
+        this.state.cb(result);
+      }
+    });
   }
 
 	render() {
-    var keyListJsx = [], safeSecretErrorJsx, safePasswordClass = "form-control", keepUnlockedJsx, inputSecretJsx;
+    var keyListJsx = [], keyHeader = {prefixPassword: false}, safeSecretErrorJsx, safePasswordClass = "form-control", keepUnlockedJsx, inputSecretJsx, prefixPasswordJsx;
     if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].keyList) {
       if (this.state.safeKey.type === "password") {
         if (this.state.safeSecretError) {
@@ -197,8 +204,11 @@ class ModalSafeUnlock extends Component {
               {i18next.t("safeKeyError")}
             </div>
         }
-        inputSecretJsx =
-          <div>
+        if (this.state.safeKey && this.state.safeKey.data) {
+          keyHeader = decodeProtectedHeader(this.state.safeKey.data);
+        }
+        if (keyHeader.prefixPassword) {
+          prefixPasswordJsx =
             <input type="password"
                    className={safePasswordClass}
                    autoComplete="new-password"
@@ -206,6 +216,10 @@ class ModalSafeUnlock extends Component {
                    onChange={(e) => this.changePrefixPassword(e)}
                    autoFocus={true}
                    value={this.state.safePrefixPassword} />
+        }
+        inputSecretJsx =
+          <div>
+            {prefixPasswordJsx}
             <input type="password"
                    className={safePasswordClass}
                    autoComplete="new-password"

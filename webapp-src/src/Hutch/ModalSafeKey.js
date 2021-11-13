@@ -110,6 +110,7 @@ class ModalSafeKey extends Component {
       this.state.cb(result, {
         safeKey: this.state.safeKey,
         password: this.state.prefixPassword+this.state.newPassword,
+        prefixPassword: !!this.state.prefixPassword,
         jwk: jwk
       });
       this.setState({newPassword: "",

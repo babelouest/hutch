@@ -72,6 +72,7 @@ var initApp = () => {
         scope: frontEndConfig.oidc.scope || backendConfig.config.scope
       }
       oidcConnector.init({
+        storagePrefix: "hutchOidc",
         storageType: storage.storageType,
         responseType: frontEndConfig.oidc.responseType,
         openidConfigUrl: config.oidc_server_remote_config,

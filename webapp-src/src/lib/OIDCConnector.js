@@ -19,9 +19,9 @@ class OIDCConnector {
     this.jwks = false;
     this.pkce = false;
     if (window.location.pathname !== "/") {
-      this.localStorageKey = "hutchOidc-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
+      this.localStorageKey = parameters.storagePrefix + "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
     } else {
-      this.localStorageKey = "hutchOidc";
+      this.localStorageKey = parameters.storagePrefix;
     }
     this.refreshTimeout = false;
 
@@ -225,7 +225,7 @@ class OIDCConnector {
           this.accessToken = accessToken;
           this.storeAccessToken(accessToken);
           this.refreshTokenLoop(this.refreshToken, this.accessToken.expires_in);
-          this.broadcastMessage("refresh", accessToken.access_token, (accessToken.iat + accessToken.expires_in));
+          this.broadcastMessage("refresh", accessToken.access_token, accessToken.expires_in);
           cb(accessToken.access_token);
         }
       });
@@ -428,16 +428,18 @@ class OIDCConnector {
       success: (result, status, request) => {
         this.accessToken = result.access_token;
         this.storeAccessToken(result);
-        this.broadcastMessage("refresh", result.access_token, (result.iat + result.expires_in));
+        this.broadcastMessage("refresh", result.access_token, result.expires_in);
         if (cb) {
           cb(true, result);
         }
       },
       error: (error) => {
-        if (error.status === 403) {
+        if (error.status === 403 || error.status === 400) {
           this.refreshToken = false;
         }
         this.accessToken = false;
+        this.storeAccessToken(false);
+        this.storeRefreshToken(false);
         if (error.readyState === 0) {
           this.broadcastMessage("network error");
         } else {
@@ -468,8 +470,33 @@ class OIDCConnector {
         }
       })
       .catch((err) => {
-        if (cb) {
-          cb(true, "error");
+        this.storeIDToken(false);
+        if (err.code === "ERR_JWT_EXPIRED") {
+          $.ajax({
+            type: "GET",
+            url: this.parameters.userinfoUrl,
+            headers: {"Authorization": "Bearer " + this.accessToken.access_token},
+            success: (result) => {
+              if (cb) {
+                cb(true, result);
+              }
+            },
+            error: (error) => {
+              this.accessToken = false;
+              this.storeAccessToken(false);
+              this.storeRefreshToken(false);
+              if (cb) {
+                cb(true, "error");
+              }
+            }
+          });
+        } else {
+          this.accessToken = false;
+          this.storeAccessToken(false);
+          this.storeRefreshToken(false);
+          if (cb) {
+            cb(true, "error");
+          }
         }
       });
     } else if (this.parameters.userinfoUrl && this.accessToken) {
@@ -483,6 +510,10 @@ class OIDCConnector {
           }
         },
         error: (error) => {
+          this.accessToken = false;
+          this.storeAccessToken(false);
+          this.storeRefreshToken(false);
+          this.storeIDToken(false);
           if (cb) {
             cb(true, "error");
           }

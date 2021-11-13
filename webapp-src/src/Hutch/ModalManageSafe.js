@@ -9,6 +9,14 @@ import { parseJwk } from 'jose-browser-runtime/jwk/parse';
 import ManageExportData from './ManageExportData';
 import JwkInput from './JwkInput';
 
+function getUnlockedCoinList(props) {
+  if (props.safeContent && props.safe.name && props.safeContent[props.safe.name]) {
+    return props.safeContent[props.safe.name].unlockedCoinList;
+  } else {
+    return [];
+  }
+}
+
 class ModalManageSafe extends Component {
   constructor(props) {
     super(props);
@@ -20,6 +28,7 @@ class ModalManageSafe extends Component {
       safeContent: props.safeContent,
       cbSaveCoin: props.cbSaveCoin,
       cbClose: props.cbClose,
+      unlockedCoinList: getUnlockedCoinList(props),
       exportSafeWithSecurity: false,
       exportSecurityType: "password",
       password: "",
@@ -278,7 +287,7 @@ class ModalManageSafe extends Component {
               </div>
               <ManageExportData config={this.state.config}
                                 safe={this.state.safe}
-                                content={this.state.safeContent[this.state.safe.name].unlockedCoinList}
+                                content={this.unlockedCoinList}
                                 id={this.state.safe.name}
                                 name={this.state.safe.display_name} />
               <hr/>

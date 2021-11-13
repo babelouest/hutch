@@ -58,14 +58,14 @@ class App extends Component {
           messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
           this.setState({oidcStatus: "timeout"});
         }, message.expires_in*1000);
-        this.setState({oidcStatus: message.status, tokenTimeout: tokenTimeout});
+        this.setState({oidcStatus: "connected", tokenTimeout: tokenTimeout});
         if (message.status === "connected") {
           messageDispatcher.sendMessage('Notification', {type: "success", message: i18next.t("messageConnected")});
         }
       } else if (message.status === "profile") {
         if (message.profile == "error") {
           messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageProfileError")});
-          this.setState({oidcStatus: "disconnected"});
+          this.setState({oidcStatus: "disconnected", safeList: [], safeContent: {}, curSafe: false});
         } else if (message.profile) {
           this.setState({profile: message.profile}, () => {
             this.getHutchProfile()
@@ -423,13 +423,13 @@ class App extends Component {
               });
             })
             .fail((error) => {
-              console.log(error);
+              console.err(error);
               messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinList")});
               this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
             });
           })
           .fail((error) => {
-            console.log(error);
+            console.err(error);
             messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorKeyList")});
             this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
           });
@@ -437,7 +437,7 @@ class App extends Component {
       });
     })
     .fail((error) => {
-      console.log(error);
+      console.err(error);
       messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSafeList")});
       this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
     });

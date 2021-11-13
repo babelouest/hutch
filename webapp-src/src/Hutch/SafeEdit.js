@@ -28,6 +28,7 @@ class SafeEdit extends Component {
       addKey: false,
       curSafeKeyContainer: false,
       nextStep: false,
+      nextStepType: false,
       removeSafeKeyMessage: false
     };
     
@@ -42,6 +43,8 @@ class SafeEdit extends Component {
     this.completeSetSafeKey = this.completeSetSafeKey.bind(this);
     this.unlockSafeCallback = this.unlockSafeCallback.bind(this);
     this.createKeyForSafe = this.createKeyForSafe.bind(this);
+    this.removeSafe = this.removeSafe.bind(this);
+    this.removeSafeConfirm = this.removeSafeConfirm.bind(this);
     
   }
   
@@ -135,14 +138,14 @@ class SafeEdit extends Component {
               curSafeContent[this.state.safe.name].extractableKey = keyData.extractableKey;
               curSafeContent[this.state.safe.name].key = keyData.key;
               this.setState({safeContent: curSafeContent}, () => {
-                this.completeAddSafeKey(containerKey, data.safeKey, lockAlg);
+                this.completeAddSafeKey(containerKey, data.safeKey, lockAlg, data.prefixPassword);
               });
             });
           } else {
-            this.completeAddSafeKey(containerKey, data.safeKey, lockAlg);
+            this.completeAddSafeKey(containerKey, data.safeKey, lockAlg, data.prefixPassword);
           }
         } else {
-          this.completeSetSafeKey(containerKey, data.safeKey, lockAlg);
+          this.completeSetSafeKey(containerKey, data.safeKey, lockAlg, data.prefixPassword);
         }
       } else if (data.safeKey.type === "jwk") {
         if (this.state.addKey) {
@@ -155,20 +158,20 @@ class SafeEdit extends Component {
               this.setState({safeContent: curSafeContent}, () => {
                 parseJwk(data.jwk, data.jwk.alg)
                 .then(containerKey => {
-                  this.completeAddSafeKey(containerKey, data.safeKey, data.jwk.alg);
+                  this.completeAddSafeKey(containerKey, data.safeKey, data.jwk.alg, data.prefixPassword);
                 });
               });
             });
           } else {
             parseJwk(data.jwk, data.jwk.alg)
             .then(containerKey => {
-              this.completeAddSafeKey(containerKey, data.safeKey, data.jwk.alg);
+              this.completeAddSafeKey(containerKey, data.safeKey, data.jwk.alg, data.prefixPassword);
             });
           }
         } else {
           parseJwk(data.jwk, data.jwk.alg)
           .then(containerKey => {
-            this.completeSetSafeKey(containerKey, data.safeKey, data.jwk.alg);
+            this.completeSetSafeKey(containerKey, data.safeKey, data.jwk.alg, data.prefixPassword);
           });
         }
       } else if (data.safeKey.type === "browser") {
@@ -183,9 +186,11 @@ class SafeEdit extends Component {
   }
   
   addSafeKey(e, type) {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     if (!this.state.safeContent[this.state.safe.name].extractableKey && this.state.safeContent[this.state.safe.name].keyList.length) {
-      this.setState({nextStep: this.addSafeKey}, () => {
+      this.setState({nextStep: this.addSafeKey, nextStepType: type}, () => {
         var unlockSafeModal = new bootstrap.Modal(document.getElementById('modalUnlockSafe'), {
           keyboard: false
         });
@@ -204,10 +209,10 @@ class SafeEdit extends Component {
     }
   }
   
-  completeAddSafeKey(containerKey, newSafeKey, alg) {
+  completeAddSafeKey(containerKey, newSafeKey, alg, prefixPassword = false) {
     if (this.state.safeContent[this.state.safe.name].extractableKey) {
       new EncryptJWT(this.state.safeContent[this.state.safe.name].extractableKey)
-      .setProtectedHeader({alg: alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
+      .setProtectedHeader({alg: alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb, prefixPassword: prefixPassword})
       .encrypt(containerKey)
       .then((jwt) => {
         newSafeKey.data = jwt;
@@ -244,10 +249,10 @@ class SafeEdit extends Component {
     });
   }
   
-  completeSetSafeKey(containerKey, newSafeKey, alg) {
+  completeSetSafeKey(containerKey, newSafeKey, alg, prefixPassword = false) {
     if (this.state.safeContent[this.state.safe.name].extractableKey) {
       new EncryptJWT(this.state.safeContent[this.state.safe.name].extractableKey)
-      .setProtectedHeader({alg: alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
+      .setProtectedHeader({alg: alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb, prefixPassword: prefixPassword})
       .encrypt(containerKey)
       .then((jwt) => {
         newSafeKey.data = jwt;
@@ -310,9 +315,31 @@ class SafeEdit extends Component {
     if (result) {
       messageDispatcher.sendMessage('App', {action: "unlockSafe", safe: this.state.safe, extractableKey: masterkeyData});
       if (this.state.nextStep) {
-        this.state.nextStep();
+        this.state.nextStep(false, this.state.nextStepType);
       }
     }
+  }
+
+  removeSafe() {
+    var removeModal = new bootstrap.Modal(document.getElementById('removeSafe'), {
+      keyboard: false
+    });
+    removeModal.show();
+  }
+  
+  removeSafeConfirm(result) {
+    if (result) {
+      apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name, "DELETE")
+      .then(() => {
+        messageDispatcher.sendMessage('App', {action: "removeSafe", safe: this.state.safe});
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveSafe")});
+      })
+      .fail(() => {
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
+      });
+    }
+    var removeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#removeSafe'));
+    removeModal.hide();
   }
 
 	render() {
@@ -391,7 +418,7 @@ class SafeEdit extends Component {
               {i18next.t("safeKeyList")}
               <div className="input-group">
                 <div className="input-group mb-3">
-                  <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled={this.state.editMode===1}>
                     <i className="fa fa-plus" aria-hidden="true"></i>
                   </button>
                   <ul className="dropdown-menu">
@@ -411,8 +438,12 @@ class SafeEdit extends Component {
               <button type="submit" className="btn btn-primary" onClick={this.saveSafe}>{i18next.t("profileSubmit")}</button>
               <button type="button" className="btn btn-secondary" onClick={this.cancelEditSafe}>{i18next.t("profileCancel")}</button>
             </div>
+            <div className="btn-group" role="group" aria-label="First group">
+              <button type="button" className="btn btn-secondary" onClick={this.removeSafe}>{i18next.t("removeSafe")}</button>
+            </div>
           </div>
         </form>
+        <Confirm name={"removeSafe"} title={i18next.t("removeSafeTitle")} message={i18next.t("removeSafeMessage", {name: this.state.safe.display_name||this.state.safe.name})} cb={this.removeSafeConfirm} />
         <Confirm name={"removeSafeKey"} title={i18next.t("removeSafeKeyTitle")} message={this.state.removeSafeKeyMessage} cb={this.removeSafeKeyConfirm} />
         {modalSafeKeyJsx}
         <ModalSafeUnlock config={this.state.config}
