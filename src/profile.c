@@ -78,7 +78,7 @@ json_t * profile_is_valid(struct config_elements * config, json_t * j_profile) {
       }
       if (json_object_get(j_profile, "sign_kid") != NULL && (jwk = r_jwks_get_by_kid(config->sign_key, json_string_value(json_object_get(j_profile, "sign_kid")))) == NULL) {
         ret = HU_ERROR_PARAM;
-        json_array_append_new(j_error, json_string("invlaid kid"));
+        json_array_append_new(j_error, json_string("invalid kid"));
       }
       r_jwk_free(jwk);
     } else {
