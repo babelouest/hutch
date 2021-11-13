@@ -81,7 +81,7 @@
   "removeSafe": "Supprimer le coffre",
   "safeUnlockTitle": "Déverrouiller le coffre",
   "safePassword": "Mot de passe",
-  "safePrefixPassword": "Préfixe de mot de passe",
+  "safePrefixPassword": "Préfixe du mot de passe",
   "safeSecretError": "Mot de passe incorrect",
   "safeKeyError": "Clé incorrecte",
   "safeKeySelect": "Clé de déverrouillage",
