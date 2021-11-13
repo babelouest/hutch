@@ -216,7 +216,7 @@ class ModalSafeKey extends Component {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
-                {i18next.t("modalSafeKey")}
+                {i18next.t("modalSafeKey-" + this.state.safeKey.type)}
               </h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={(e) => this.closeModal(e, false)}></button>
             </div>
