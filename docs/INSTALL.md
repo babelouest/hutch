@@ -1,64 +1,47 @@
 # Hutch Installation
 
-## Upgrade from Hutch 1.0.x to 1.1
+## Upgrade from Hutch 1.x to 2.0
 
-A major change was applied to the safe password digest method, Hutch switched from SHA256 to PBKDF2, which means that **ALL** the safes created in Hutch 1.0 **WON'T** be available after migrating to Hutch 1.1.
+The entire application was re-written in Hutch 2.0. To avoid nasty bugs and potential security issues, the old and the new version are not compatible, but the secret data format is. You must make your users backup their secret first in JSON format without a password.
 
 So proceed with caution, make a backup of the database and the front-end application in case you need to restore them.
 
-To migrate your safes, you can proceed with one of the following procedure.
-
 ### Export, migrate, then reimport all safes
 
-Use the `Export safe` functionality for each safe of each user to export all safes into files. The export **must be without password**.
+During the migration, you must have both version available in different addresses, e.g. https://hutch.tld/ and https://hutch2.tld/
 
-Reconnect to Hutch, recreate new safes, then import all the safe backups in their new safe.
+In Hutch 1.x, use the `Export safe` functionality for each safe of each user to export all safes into files.
 
-Finally, if everything is working in the new safes, you can delete the old safes.
-
-### Export safe key
-
-Export the safe key for all safes in the `Manage safe` modal.
-
-Upgrade to 1.1 as explained in the upgrade paragraph.
-
-Reconnect to Hutch, lock all safe if they were unlocked, the use the `Reset password` procedure: click on the `Forgot password?`, then use your stored safe key to reset the password.
-
-### Upgrade procedure
-
-You must reinstall the API backend server with the packages available or by recompiling it, then install the updated front-end application files in the path specified by `app_files_path` in the hutch.conf file. There is no change in the database.
+In Hutch 2.0, recreate new safes, then import all the safe backups in their new safe.
 
 ## Pre-compiled packages
 
-You can install Hutch with a pre-compiled package available in the [release pages](https://github.com/babelouest/hutch/releases/latest/). The package files `hutch-full_*` contain the package libraries of `orcania`, `yder`, `ulfius` and `hoel` precompiled for `hutch`, plus `hutch` package. To install a pre-compiled package, you need to have installed the following libraries:
+You can install Hutch with a pre-compiled package available in the [release pages](https://github.com/babelouest/hutch/releases/latest/). The packages files `hutch-full_*` contain the package libraries of `orcania`, `yder`, `ulfius`, `hoel`, `rhonabwy` and `iddawc` precompiled for `hutch`, plus `hutch` package. To install a pre-compiled package, you need to have installed the following libraries:
 
 ```
 libmicrohttpd
 libjansson
 libgnutls
 libsqlite3
-libssl
 libmariadbclient
+libpq
 libconfig
+zlib
 ```
 
-For example, to install Hutch with the `hutch-full_1.1.0_Debian_stretch_x86_64.tar.gz` package downloaded on the `releases` page, you must execute the following commands:
+For example, to install Hutch with the `hutch-full_2.0.0_debian_bullseye_x86_64.tar.gz` package downloaded on the `releases` page, you must execute the following commands:
 
 ```shell
-$ sudo apt install -y autoconf libjansson-dev libssl-dev libsqlite3 libmariadbclient libconfig
-$ wget https://github.com/benmcollins/libjwt/archive/v1.9.0.tar.gz
-$ tar -zxvf v1.9.0.tar.gz
-$ cd libjwt-1.9.0
-$ autoreconf -i
-$ ./configure
-$ make && sudo make install
-$ wget https://github.com/babelouest/hutch/releases/download/v1.0.12/hutch-full_1.1.0_Debian_stretch_x86_64.tar.gz
+$ sudo apt install -y libconfig9 libjansson4 libcurl3-gnutls libmicrohttpd12 libsqlite3-0 libpq5 default-mysql-client zlib1g
+$ wget https://github.com/babelouest/hutch/releases/download/v2.0.0/hutch-full_2.0.0_debian_bullseye_x86_64.tar.gz
 $ tar xf hoel-dev-full_1.4.0_Debian_stretch_x86_64.tar.gz
-$ sudo dpkg -i liborcania_1.2.0_Debian_stretch_x86_64.deb
-$ sudo dpkg -i libyder_1.2.0_Debian_stretch_x86_64.deb
-$ sudo dpkg -i libhoel_1.4.0_Debian_stretch_x86_64.deb
-$ sudo dpkg -i libulfius_2.3.0_Debian_stretch_x86_64.deb
-$ sudo dpkg -i hutch_1.1.0_Debian_stretch_x86_64.deb
+$ sudo dpkg -i liborcania_2.2.1_debian_bullseye_x86_64.deb
+$ sudo dpkg -i libyder_1.4.14_debian_bullseye_x86_64.deb
+$ sudo dpkg -i libulfius_2.7.6_debian_bullseye_x86_64.deb
+$ sudo dpkg -i libhoel_1.4.18_debian_bullseye_x86_64.deb
+$ sudo dpkg -i librhonabwy_1.1.1_debian_bullseye_x86_64.deb
+$ sudo dpkg -i libiddawc_1.1.0_debian_bullseye_x86_64.deb
+$ sudo dpkg -i hutch_2.0.0_debian_bullseye_x86_64.deb
 ```
 
 If there's no package available for your distribution, you can recompile it manually using `CMake` or `Makefile`.
@@ -70,16 +53,18 @@ You must install the following libraries including their header files:
 ```
 libmicrohttpd
 libjansson
-libmysqlclient 
-libsqlite3 
-libconfig 
-libssl
+libgnutls
+libsqlite3
+libmariadbclient
+libpq
+libconfig
+zlib
 ```
 
 On a Debian based distribution (Debian, Ubuntu, Raspbian, etc.), you can install those dependencies using the following command:
 
 ```shell
-$ sudo apt-get install libmicrohttpd-dev libjansson-dev libmysqlclient-dev libsqlite3-dev libconfig-dev libssl-dev
+$ sudo apt-get install libconfig-dev libsystemd-dev libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libsqlite3-dev libpq-dev zlib1g-dev make default-libmysqlclient-dev
 ```
 
 ### CMake
@@ -92,76 +77,100 @@ $ git clone https://github.com/babelouest/hutch.git
 $ mkdir hutch/build
 $ cd hutch/build
 $ cmake ..
-$ make 
+$ make
 $ sudo make install
 ```
 
 The available options for cmake are:
 - `-DWITH_JOURNALD=[on|off]` (default `on`): Build with journald (SystemD) support for logging
 - `-DCMAKE_BUILD_TYPE=[Debug|Release]` (default `Release`): Compile with debugging symbols or not
+- `-DDOWNLOAD_DEPENDENCIES=[on|off]` (default `on`): Download some dependencies if missing or using an old version: `Orcania`, `Yder`, `Ulfius`, `Rhonabwy`, `Iddawc` and `Hoel`
+- `-DBUILD_TESTING=[on|off]` (default `off`): Build testing tree
 
 ### Good ol' Makefile
 
 Download Hutch and its dependendencies hosted in github, compile and install.
 
 ```shell
-# Install libjwt
-$ git clone https://github.com/benmcollins/libjwt.git
-$ cd libjwt/
-$ autoreconf -i
-$ ./configure
-$ make
-$ sudo make install
-
 # Install Orcania
 $ git clone https://github.com/babelouest/orcania.git
-$ cd orcania/
+$ cd orcania/src/
 $ make
 $ sudo make install
 
 # Install Yder
 $ git clone https://github.com/babelouest/yder.git
 $ cd yder/src/
-$ make
+$ make # Or make Y_DISABLE_JOURNALD=1 to disable journald logging
 $ sudo make install
 
 # Install Ulfius
 $ git clone https://github.com/babelouest/ulfius.git
 $ cd ulfius/src/
-$ make -DWITH_CURL=off -DWITH_WEBSOCKET=off
+$ make
 $ sudo make install
 
 # Install Hoel
 $ git clone https://github.com/babelouest/hoel.git
 $ cd hoel/src/
-$ make -DWITH_PGSQL=off
+$ make
+$ sudo make install
+
+# Install Rhonabwy
+$ git clone https://github.com/babelouest/rhonabwy.git
+$ cd rhonabwy/src/
+$ make
+$ sudo make install
+
+# Install Iddawc
+$ git clone https://github.com/babelouest/iddawc.git
+$ cd iddawc/src/
+$ make
 $ sudo make install
 
 # Install Hutch
 $ git clone https://github.com/babelouest/hutch.git
 $ cd hutch/src/
-$ make 
+$ make
 $ sudo make install
 ```
 
 ## Configuration
 
-Copy `hutch.conf.sample` to `hutch.conf`, edit the file `hutch.conf` with your own settings.
+Copy `docs/hutch.conf.sample` to `hutch.conf`, edit the file `hutch.conf` with your own settings.
+
+### External url settings
+
+The property `external_url` must be set with the url where your Hutch server will be available.
+
+### Server signature keys
+
+Every API return data in JWT format. To sign those JWTs, Hutch requires a JWKS with at least one private key. The JWKS file path is specified by the config property `sign_key`.
+
+Every private key must have an `alg` property that will be used  to specify the signature algorithm.
 
 ### Data storage backend initialisation
 
-You can use a MySql/MariaDB database or a SQLite3 database file.
-Use the dedicated script, `hutch.mariadb.sql` or `hutch.sqlite3.sql` to initialize your database.
+You can use a MySql/MariaDB database, a SQLite3  or a PostgreSQL database file.
+Use the dedicated script, `hutch.mariadb.sql`, `hutch.sqlite3.sql` or `hutch.postgre.sql` to initialize your database.
 
-### Glewlwyd token validation
+### OpenID Connect token validation
 
-You must set the configuration values to correspond with your OAuth2 glewlwyd server. The glewlwyd configuration block is labelled `jwt`
+You must set the configuration values to correspond with your OpenID Connect server. Hutch requires access tokens that follow the [JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens](https://www.rfc-editor.org/rfc/rfc9068.html) standard.
 
-In this block, you must set the value `use_rsa` to `true` if you use RSA signatures for the tokens, then specify the path to the RSA public key file in the value `rsa_pub_file`. If you use an ECDSA signature, set the parameter `use_ecdsa` to true and set the path to your ECDSA public key file. If you use `sha` digest as signature, set `use_sha` to `true`, then specify the secret used to encode the tokens in the value `sha_secret`.
+#### OpenID Connect configuration using remote config
+
+The simpliest way to configure OIDC in Hutch is to set the value `server_remote_config` with the url of the `.well-known/openid-configuration` url of the OIDC server. There, on startup, Hutch will retrieve the parameters required to authenticate the signed tokens. If the OIDC server rotates its signing keys, you must restart hutch to update the OIDC server configuration.
+
+#### OpenID Connect configuration using server_public_jwks
+
+You can also use `server_public_jwks` and manually set the public keys to verify the tokens signatures. In that case, you must also set the properties `iss`.
+
+The properties `realm`, `aud` and `dpop_max_iat` are optional and will depend on your configuration.
 
 ### Install service
 
-The files `hutch-init` (SysV init) and `hutch.service` (Systemd) can be used to have hutch as a daemon. They are fitted for a Raspbian distrbution, but can easily be changed for other systems.
+The files `hutch-init` (SysV init) and `hutch.service` (SystemD) can be used to have hutch as a daemon. They are fitted for a Raspbian distrbution, but can easily be changed for other systems.
 
 #### Install as a SysV init daemon and run
 
@@ -171,7 +180,7 @@ $ sudo update-rc.d hutch defaults
 $ sudo service hutch start
 ```
 
-#### Install as a Systemd daemon and run
+#### Install as a SystemD daemon and run
 
 ```shell
 $ sudo cp hutch.service /etc/systemd/system
@@ -179,57 +188,29 @@ $ sudo systemctl enable hutch
 $ sudo sudo systemctl start hutch
 ```
 
-### Setup Hutch in your Glewlwyd Oauth2 server
-
-If you use a [Glewlwyd](https://github.com/babelouest/glewlwyd) instance as Oauth2 server, you must setup a new client, don't forget to setup properly the new scope, here set to `hutch`, the `client_id` and at least one correct `redirect_uri` value.
-
-Hutch front-end is a Angular2 application, it will need a non confidential client_id, and the authorization types `code` and/or `token`.
-
-![glewlwyd client configuration](images/glewlwyd.png)
-
 ## Setup the web application
 
-The web application is located in `webapp/dist`, its source is located in `webapp/src`, go to `webapp/README.md` if you want more details on the front-end implementation.
+The web application is located in `webapp`, its source is located in `webapp-src`, go to `webapp-src/README.md` if you want more details on the front-end implementation.
 
 You can either use the built-in static file server or host the web application in another place, e.g. an Apache or nginx instance.
 
-By design, the web application must be accessible on a root path, e.g. `https://hutch.mydomain.tld/`.
-
-To configure the front-end, rename the file `webapp/dist/config.json.sample` to `webapp/dist/config.json` and modify its content for your configuration.
+To configure the front-end, rename the file `webapp/config.json.sample` to `webapp/config.json` and modify its content for your configuration.
 
 ```javascript
 {
-  "lang": { // Languages available and default lang
-    "available": [
-      { "code": "en", "display": "English" },
-      { "code": "fr", "display": "Français" }
-    ],
-    "default": "en"
-  },
-// Algorithms available are "AES-CBC", "AES-CTR" and "AES-GCM"
-// Although, AES-CBC is for now the only one available for browser Safari (Apple devices)
-  "webCryptography": {
-    "algorithm": "AES-CBC",
-    "keyLength": 256  // Values avbailable are 128, 192 or 256 bits
-  },
-  "api": {
-    "baseUrl": "https://resource.server.url/", // Url to your Hutch API base URL
-    "maxLength": 16777215                      // Maximum length used for data upload in bytes
-  },
-  "oauth2Connect": {
-      "serverUri": "https://oauth.server.url/",    // URI to the Oauth2 service
-      "clientId": "clientxyz",                     // client_id used
-      "responseType": "code",                      // can be 'code' or 'token'
-      "redirectUri": "https://client.server.url/", // Redirect URI set in your OAuth2 service
-      "scope": "hutch",                            // scope required for hutch API
-      "authorizePath": "auth/",
-      "tokenPath": "token/",
-      "storage": "localStorage"                    // Can be 'localStorage' or 'cookie'
+  "hutchRootUrl": "http://localhost:4884/",
+  "lang": ["en","fr"],
+  "profile_endpoint": "http://localhost:4884/api/profile", // Optional
+  "safe_endpoint": "http://localhost:4884/api/safe", // Optional
+  "storageType": "local",
+  "oidc": {
+    "responseType": "code", // values available are 'code' and 'token id_token'
+    "redirectUri": "http://localhost:4884/",
+    "clientId": "hutch", // Must be a public client
+    "usePkce": true // Recommended
   }
 }
 ```
-
-For more strength, 256 bits is recommended as key length. The algorithm choice depends on the clients and your security choices. Although Safari Webkit (MacOS and iOS users) implements only `AES-CBC`. So the default key algorithm is `AES-CBC 256 bits`. You can change it in this file if you like, but if safes are already created before you change the algorithm, their secrets will no longer be available.
 
 ### Protect behind Apache mod_proxy
 
