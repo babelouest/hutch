@@ -35,6 +35,7 @@
   "messageDisconnected": "Veuillez vous connecter",
   "messageNoProfile": "Vous devez créer un profil",
   "messageProfileError": "Une erreur est survenue lors de la récupération du profil",
+  "messageAuthorizationInvalid": "Vous n'avez pas les droits pour accéder à l'application",
   "messageSessionTimeout": "La session a expiré, vous ne pouvez plus faire de modification",
   "messageAPIError": "Une erreur est survenue lors de la connexion aux API Hutch",
   "messageErrorCoinList": "Erreur lors de la récupération des secrets",

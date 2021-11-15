@@ -35,6 +35,7 @@
   "messageDisconnected": "Please connect to the application",
   "messageNoProfile": "You must set a profile first",
   "messageProfileError": "An error occured while getting user profile",
+  "messageAuthorizationInvalid": "You don't have valid credentials to access the application",
   "messageSessionTimeout": "Session has expired, you can no longer make changes",
   "messageAPIError": "An error occured while getting Hutch API",
   "messageErrorCoinList": "Error while fetching secrets",
