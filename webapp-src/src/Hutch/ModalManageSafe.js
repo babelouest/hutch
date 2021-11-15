@@ -287,7 +287,7 @@ class ModalManageSafe extends Component {
               </div>
               <ManageExportData config={this.state.config}
                                 safe={this.state.safe}
-                                content={this.unlockedCoinList}
+                                content={this.state.unlockedCoinList}
                                 id={this.state.safe.name}
                                 name={this.state.safe.display_name} />
               <hr/>
