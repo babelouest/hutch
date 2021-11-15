@@ -83,6 +83,7 @@ var initApp = () => {
         usePkce: frontEndConfig.oidc.usePkce,
         scope: config.scope,
         userinfoUrl: frontEndConfig.oidc.userinfoUrl,
+        refreshTokenLoop: frontEndConfig.oidc.refreshTokenLoop,
         changeStatusCb: function (newStatus, token, expires_in, profile) {
           messageDispatcher.sendMessage('OIDC', {status: newStatus, token: token, expires_in: expires_in, profile: profile});
         }

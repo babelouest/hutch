@@ -291,7 +291,7 @@ class ModalGeneratePassword extends Component {
                   </div>
                 </div>
               </div>
-              <hr/>
+                <hr/>
               <div className="mb-3">
                 {passwordOutput}
               </div>

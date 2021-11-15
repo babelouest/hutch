@@ -37,7 +37,8 @@ class SafeView extends Component {
       coinEditContent: false,
       removeCoinMessage: false,
       filterTimeout: false,
-      filtering: false
+      filtering: false,
+      showModalCoinEdit: false
     };
     
     this.editSafe = this.editSafe.bind(this);
@@ -110,7 +111,7 @@ class SafeView extends Component {
         messageDispatcher.sendMessage('App', {action: "removeSafe", safe: this.state.safe});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveSafe")});
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
       });
     }
@@ -139,7 +140,7 @@ class SafeView extends Component {
   }
   
   addCoin() {
-    this.setState({name: false, coinEditContent: {displayName: "", rows: []}}, () => {
+    this.setState({name: false, coinEditContent: {displayName: "", rows: []}, showModalCoinEdit: true}, () => {
       var addCoinModal = new bootstrap.Modal(document.getElementById('modalCoinEdit'), {
         keyboard: false
       });
@@ -148,7 +149,7 @@ class SafeView extends Component {
   }
   
   editCoinHeader(name, content) {
-    this.setState({coinEditName: name, coinEditContent: content}, () => {
+    this.setState({coinEditName: name, coinEditContent: content, showModalCoinEdit: true}, () => {
       var addCoinModal = new bootstrap.Modal(document.getElementById('modalCoinEdit'), {
         keyboard: false
       });
@@ -172,7 +173,7 @@ class SafeView extends Component {
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinRemove")});
         messageDispatcher.sendMessage('App', {action: "removeCoin", target: this.state.safe, coin: this.state.coinEditName});
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinRemove")});
       })
     }
@@ -183,6 +184,7 @@ class SafeView extends Component {
   coinSaveCallback(result, name, content, toast = false) {
     var modalCoinEditModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalCoinEdit'));
     modalCoinEditModal && modalCoinEditModal.hide();
+    this.setState({showModalCoinEdit: false});
     if (result) {
       if (name) {
         return new EncryptJWT(content)
@@ -198,7 +200,7 @@ class SafeView extends Component {
             toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
             messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: name, data: content}});
           })
-          .fail(() => {
+          .catch(() => {
             toast && messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
           })
         });
@@ -216,7 +218,7 @@ class SafeView extends Component {
             toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
             messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: body.name, data: content}, cb: this.scrollToCoin});
           })
-          .fail(() => {
+          .catch(() => {
             messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
           })
         });
@@ -342,7 +344,8 @@ class SafeView extends Component {
         <ModalCoinEdit editMode={this.state.coinEditMode}
                        name={this.state.coinEditName}
                        content={this.state.coinEditContent}
-                       cb={this.coinSaveCallback} />
+                       cb={this.coinSaveCallback}
+                       show={this.state.showModalCoinEdit} />
         <ModalManageSafe config={this.state.config}
                          safe={this.state.safe}
                          safeContent={this.state.safeContent}

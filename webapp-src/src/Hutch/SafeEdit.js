@@ -79,7 +79,7 @@ class SafeEdit extends Component {
         messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSaveSafe")});
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
       });
       this.setState({nameMandatory: false, namePresent: false});
@@ -89,7 +89,7 @@ class SafeEdit extends Component {
         messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSaveSafe")});
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
       });
     }
@@ -301,7 +301,7 @@ class SafeEdit extends Component {
           messageDispatcher.sendMessage('App', {action: "updateSafeKey", safe: this.state.safe});
         });
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafeKey")});
       });
     }
@@ -334,7 +334,7 @@ class SafeEdit extends Component {
         messageDispatcher.sendMessage('App', {action: "removeSafe", safe: this.state.safe});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveSafe")});
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
       });
     }

@@ -95,12 +95,12 @@ class ProfileEdit extends Component {
 
           oReq.send(null);
         })
-        .fail(() => {
+        .catch(() => {
           messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorWikiImage")});
           this.setState({imageError: true, imageLoading: false});
         });
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorWikiImage")});
         this.setState({imageError: true, imageLoading: false});
       });
@@ -141,7 +141,7 @@ class ProfileEdit extends Component {
         messageDispatcher.sendMessage('App', {action: "getProfile"});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageProfileSaved")});
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveProfile")});
       });
     }
@@ -161,7 +161,7 @@ class ProfileEdit extends Component {
         messageDispatcher.sendMessage('App', {action: "resetProfile"});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveProfile")});
       })
-      .fail(() => {
+      .catch(() => {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveProfile")});
       });
     }

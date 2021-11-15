@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import i18next from 'i18next';
 
-import apiManager from '../lib/APIManager';
 import messageDispatcher from '../lib/MessageDispatcher';
 
 class ProfileView extends Component {
@@ -56,7 +55,7 @@ class ProfileView extends Component {
     return (
       <div>
         <div className="alert alert-primary" role="alert">
-          {i18next.t("profileValue", {name: (this.state.hutchProfile.name||this.state.profile.name)})}
+          {i18next.t("profileValue", {name: (this.state.hutchProfile.name||this.state.profile.name||"")})}
           <div className="btn-group float-end" role="group">
             <button type="button" className="btn btn-secondary btn-sm" onClick={this.lockAllSafe} title={i18next.t("lockAllSafe")}>
               <i className="fa fa-lock" aria-hidden="true"></i>

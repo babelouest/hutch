@@ -36,7 +36,8 @@ class OIDCConnector {
       this.parameters.clientPassword = parameters.clientPassword || "";
       this.parameters.redirectUri = parameters.redirectUri || "";
       this.parameters.userinfoUrl = parameters.userinfoUrl || "";
-      this.parameters.usePkce = parameters.usePkce || false;
+      this.parameters.usePkce = !!parameters.usePkce;
+      this.parameters.refreshTokenLoop = !!parameters.refreshTokenLoop;
       if (parameters.changeStatusCb) {
         this.changeStatusCb.push(parameters.changeStatusCb);
       }
@@ -62,7 +63,6 @@ class OIDCConnector {
     } else {
       this.parseInitialUrl();
     }
-
   }
 
   parseInitialUrl() {
@@ -103,7 +103,9 @@ class OIDCConnector {
         storedData = this.getStoredData();
         if (storedData && storedData.accessToken && this.isTokenValid(storedData.accessToken)) {
           this.accessToken = storedData.accessToken;
-          this.broadcastMessage("connected", this.accessToken.access_token, this.accessToken.expires_in);
+          var curDate = new Date();
+          let expires_in = Math.floor((((this.accessToken.iat + this.accessToken.expires_in)*1000) - curDate.getTime())/1000);
+          this.broadcastMessage("connected", this.accessToken.access_token, expires_in);
           this.getConnectedProfile((res, profile) => {
             if (res) {
               this.broadcastMessage("profile", null, null, profile);
@@ -122,10 +124,12 @@ class OIDCConnector {
           this.storeAccessToken(false);
           this.executeRefreshToken(storedData.refreshToken, (result, accessToken) => {
             if (result) {
+              var curDate = new Date();
               this.accessToken = accessToken;
               this.storeAccessToken(accessToken);
-              this.refreshTokenLoop(storedData.refreshToken, this.accessToken.expires_in);
-              this.broadcastMessage("connected", accessToken.access_token, accessToken.expires_in);
+              let expires_in = Math.floor((((accessToken.iat + accessToken.expires_in)*1000) - curDate.getTime())/1000);
+              this.refreshTokenLoop(storedData.refreshToken, expires_in);
+              this.broadcastMessage("connected", accessToken.access_token, expires_in);
               this.getConnectedProfile((res, profile) => {
                 if (res) {
                   this.broadcastMessage("profile", null, null, profile);
@@ -152,8 +156,10 @@ class OIDCConnector {
         } else {
           storedData = this.getStoredData();
           if (storedData && storedData.accessToken && this.isTokenValid(storedData.accessToken)) {
+            var curDate = new Date();
             this.accessToken = storedData.accessToken;
-            this.broadcastMessage("connected", this.accessToken.access_token, this.accessToken.expires_in);
+            let expires_in = Math.floor((((token.iat + token.expires_in)*1000) - curDate.getTime())/1000);
+            this.broadcastMessage("connected", this.accessToken.access_token, expires_in);
           } else {
             this.broadcastMessage("disconnected");
             this.accessToken = false;
@@ -183,7 +189,6 @@ class OIDCConnector {
           this.broadcastMessage("profile", null, null, false);
         }
       });
-      //document.location = "#";
     }
   }
 
@@ -398,16 +403,18 @@ class OIDCConnector {
   }
 
   refreshTokenLoop(refreshToken, timeout) {
-    clearTimeout(this.refreshTimeout);
-    this.refreshTimeout = setTimeout(() => {
-      this.executeRefreshToken(refreshToken, (res, token) => {
-        if (res) {
-          var curDate = new Date();
-          var timeout = Math.floor(((token.iat + token.expires_in)*1000 - curDate.getTime())/1000);
-          this.refreshTokenLoop(refreshToken, timeout);
-        }
-      });
-    }, (timeout - 60)*1000);
+    if (this.parameters.refreshTokenLoop) {
+      clearTimeout(this.refreshTimeout);
+      this.refreshTimeout = setTimeout(() => {
+        this.executeRefreshToken(refreshToken, (res, token) => {
+          if (res) {
+            var curDate = new Date();
+            var timeout = Math.floor(((token.iat + token.expires_in)*1000 - curDate.getTime())/1000);
+            this.refreshTokenLoop(refreshToken, timeout);
+          }
+        });
+      }, (timeout - 60)*1000);
+    }
   }
 
   runRefreshToken(cb) {
@@ -451,7 +458,7 @@ class OIDCConnector {
       }
     })
     .then((result) => {
-      return {token: result.access_token, expiration: result.expires_in};
+      return {token: result.access_token, expires_in: result.expires_in};
     });
   }
 
@@ -527,9 +534,14 @@ class OIDCConnector {
   }
 
   connect() {
-    var token = this.getStoredData();
+    this.storeAccessToken(false);
+    this.storeRefreshToken(false);
+    this.storeIDToken(false);
+    let token = this.getStoredData();
     if (token && this.isTokenValid(token.accessToken)) {
-      this.broadcastMessage("connected", token.accessToken.access_token, token.accessToken.expires_in);
+      var curDate = new Date();
+      let expires_in = Math.floor((((token.iat + token.expires_in)*1000) - curDate.getTime())/1000);
+      this.broadcastMessage("connected", token.accessToken.access_token, expires_in);
       this.getConnectedProfile((res, profile) => {
         if (res) {
           this.broadcastMessage("profile", null, null, profile);
@@ -539,20 +551,28 @@ class OIDCConnector {
       });
     } else {
       token.accessToken = false;
-      var nonce = this.makeRandomString(16);
+      let nonce = this.makeRandomString(16);
       this.storeAccessToken(false);
       this.storeNonce(nonce);
       if (this.parameters.usePkce && this.parameters.responseType === "code") {
-        var pkce = this.makeRandomString(64);
+        let pkce = this.makeRandomString(64);
         this.storePkce(pkce);
         const encoder = new TextEncoder();
+        let scope = this.parameters.scope;
+        if (scope.search("openid") === -1) {
+          scope += " openid";
+        }
         crypto.subtle.digest("SHA-256", encoder.encode(pkce))
         .then(pkceHashed => {
-          var pkceHashedB64 = this.base64UrlArrayBuffer(pkceHashed);
-          document.location = this.parameters.authUrl + "?response_type=" + this.parameters.responseType + "&client_id=" + this.parameters.clientId + "&redirect_uri=" + this.parameters.redirectUri + "&scope=" + this.parameters.scope + "&nonce=" + nonce + "&code_challenge_method=S256&code_challenge=" + pkceHashedB64;
+          let pkceHashedB64 = this.base64UrlArrayBuffer(pkceHashed);
+          document.location = this.parameters.authUrl + "?response_type=" + this.parameters.responseType + "&client_id=" + this.parameters.clientId + "&redirect_uri=" + this.parameters.redirectUri + "&scope=" + scope + "&nonce=" + nonce + "&code_challenge_method=S256&code_challenge=" + pkceHashedB64;
         });
       } else {
-        document.location = this.parameters.authUrl + "?response_type=" + this.parameters.responseType + "&client_id=" + this.parameters.clientId + "&redirect_uri=" + this.parameters.redirectUri + "&scope=" + this.parameters.scope + "&nonce=" + nonce;
+        let scope = this.parameters.scope;
+        if (this.parameters.responseType.search("id_token") > -1 && scope.search("openid") === -1) {
+          scope += " openid";
+        }
+        document.location = this.parameters.authUrl + "?response_type=" + this.parameters.responseType + "&client_id=" + this.parameters.clientId + "&redirect_uri=" + this.parameters.redirectUri + "&scope=" + scope + "&nonce=" + nonce;
       }
     }
   }
@@ -566,6 +586,9 @@ class OIDCConnector {
     }
     this.refreshToken = false;
     this.accessToken = false;
+    this.storeAccessToken(false);
+    this.storeRefreshToken(false);
+    this.storeIDToken(false);
     this.broadcastMessage("disconnected");
   }
 

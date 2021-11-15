@@ -8,6 +8,7 @@
     "responseType": "code",
     "redirectUri": "http://localhost:4884/",
     "clientId": "hutch",
-    "usePkce": true
+    "usePkce": true,
+    "refreshTokenLoop": true
   }
 }

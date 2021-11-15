@@ -52,16 +52,20 @@ class App extends Component {
         this.setState({oidcStatus: message.status, safeList: [], safeContent: {}, curSafe: false});
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageDisconnected")});
       } else if (message.status === "connected" || message.status === "refresh") {
-        apiManager.setToken(message.token);
-        clearTimeout(this.state.tokenTimeout);
-        var tokenTimeout = setTimeout(() => {
-          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
-          this.setState({oidcStatus: "timeout"});
-        }, message.expires_in*1000);
-        this.setState({oidcStatus: "connected", tokenTimeout: tokenTimeout});
+        var curDate = new Date();
+        apiManager.setToken(message.token, (curDate.getTime()/1000)+message.expires_in);
         if (message.status === "connected") {
           messageDispatcher.sendMessage('Notification', {type: "success", message: i18next.t("messageConnected")});
         }
+        var tokenTimeout = false;
+        if (this.state.config.frontend.oidc.responseType.search("code") === -1) {
+          clearTimeout(this.state.tokenTimeout);
+          tokenTimeout = setTimeout(() => {
+            messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
+            this.setState({oidcStatus: "timeout"});
+          }, message.expires_in*1000);
+        }
+        this.setState({oidcStatus: "connected", tokenTimeout: tokenTimeout});
       } else if (message.status === "profile") {
         if (message.profile == "error") {
           messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageProfileError")});
@@ -186,7 +190,7 @@ class App extends Component {
                 });
                 this.setState({safeContent: curSafeContent});
               })
-              .fail((error) => {
+              .catch((error) => {
                 messageDispatcher.sendMessage('Notification', {type: "danger", message: i18next.t("messageErrorSaveSafeKey")});
               });
             }
@@ -303,6 +307,9 @@ class App extends Component {
           }
         });
         this.setState({safeContent: safeContent});
+      } else if (message.action === "sessionTimeout") {
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
+        this.setState({oidcStatus: "timeout"});
       }
     });
 
@@ -359,14 +366,24 @@ class App extends Component {
         return Promise.reject("invalid sign key");
       }
     })
-    .fail((error) => {
+    .catch((error) => {
+      var newState = {hutchProfile: false, hasProfile: false};
       if (error.status === 404) {
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageNoProfile")});
-        this.setState({hutchProfile: false, hasProfile: false});
       } else if (error.status === 401) {
-        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageProfileError")});
+        newState.oidcStatus = "disconnected";
+        newState.safeList = [];
+        newState.safeContent = {};
+        newState.curSafe = false;
+        messageDispatcher.sendMessage('Notification', {type: "danger", message: i18next.t("messageAuthorizationInvalid")});
       } else {
+        newState.oidcStatus = "disconnected";
+        newState.safeList = [];
+        newState.safeContent = {};
+        newState.curSafe = false;
+        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageProfileError")});
       }
+      this.setState(newState);
     });
   }
 
@@ -422,22 +439,22 @@ class App extends Component {
                 }
               });
             })
-            .fail((error) => {
-              console.err(error);
+            .catch((error) => {
+              console.log("getSafeCoins", error);
               messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinList")});
               this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
             });
           })
-          .fail((error) => {
-            console.err(error);
+          .catch((error) => {
+            console.log("getSafeKeys", error);
             messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorKeyList")});
             this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
           });
         });
       });
     })
-    .fail((error) => {
-      console.err(error);
+    .catch((error) => {
+      console.log("getSafeList", error);
       messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSafeList")});
       this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
     });
@@ -480,7 +497,7 @@ class App extends Component {
       safeContent[safe].keyList = keyList.payload.list;
       this.setState({safeContent: safeContent});
     })
-    .fail((error) => {
+    .catch((error) => {
       messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorKeyList")});
     });
   }

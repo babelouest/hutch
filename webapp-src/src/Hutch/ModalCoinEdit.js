@@ -12,6 +12,7 @@ class ModalCoinEdit extends Component {
       cb: props.cb,
       name: props.name,
       content: props.content,
+      show: props.show,
       iconListOrig: {},
       iconList: {},
       iconFilter: "",
@@ -21,10 +22,15 @@ class ModalCoinEdit extends Component {
     this.changeDisplayName = this.changeDisplayName.bind(this);
     this.useIcon = this.useIcon.bind(this);
 
-    apiManager.request("fonts/forkawesome-ful-list.json")
-    .then((iconList) => {
-      this.setState({iconListOrig: iconList, iconList: iconList});
-    });
+    if (this.state.show) {
+      apiManager.request("fonts/forkawesome-ful-list.json")
+      .then((iconList) => {
+        this.setState({iconListOrig: iconList, iconList: iconList});
+      })
+      .catch(() => {
+        this.setState({iconListOrig: [], iconList: []});
+      });
+    }
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -43,7 +49,7 @@ class ModalCoinEdit extends Component {
         var iconList = {};
         Object.keys(this.state.iconListOrig).forEach(category => {
           iconList[category] = [];
-          var categoryList = this.state.iconListOrig[category];
+          var categoryList = this.state.iconListOrig[category]||[];
           categoryList.forEach(icon => {
             if (icon.label.toUpperCase().search(this.state.iconFilter.toUpperCase()) > -1) {
               iconList[category].push(icon);
@@ -85,7 +91,7 @@ class ModalCoinEdit extends Component {
 	render() {
     var iconListJsx = [], iconUsedJsx, displayNameClass = "form-control", displayNameErrorJsx;
     Object.keys(this.state.iconList).forEach(category => {
-      var categoryList = this.state.iconList[category];
+      var categoryList = this.state.iconList[category]||[];
       iconListJsx.push(<li className="list-group-item" key={category}><span className="badge bg-secondary">{category}</span></li>);
       var faBtnList = [];
       categoryList.forEach((icon, index) => {
