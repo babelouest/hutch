@@ -698,7 +698,7 @@ int build_config_from_file(struct config_elements * config) {
         config->oidc_dpop_max_iat = (time_t)cur_oidc_dpop_max_iat;
       }
       
-      if (config_lookup_string(&cfg, "oauth_scope", &cur_oidc_scope) == CONFIG_TRUE) {
+      if (config_lookup_string(&cfg, "hutch_scope", &cur_oidc_scope) == CONFIG_TRUE) {
         config->oidc_scope = o_strdup(cur_oidc_scope);
         if (config->oidc_scope == NULL) {
           fprintf(stderr, "Error allocating config->oidc_scope, exiting\n");
