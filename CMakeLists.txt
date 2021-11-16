@@ -296,8 +296,7 @@ if (BUILD_TESTING)
             target_include_directories(${t} PUBLIC ${TST_DIR})
             target_link_libraries(${t} PUBLIC ${LIBS})
             add_test(NAME ${t}
-                    WORKING_DIRECTORY ${TST_DIR}
-                    COMMAND ${t})
+                    COMMAND ${t} "private-test.jwks")
         endforeach ()
     endif ()
 endif ()
