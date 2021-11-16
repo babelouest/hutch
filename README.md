@@ -8,9 +8,9 @@ Store password and other secret data in an encrypted safe on the server.
 
 Can generate random password and answers to _secret questions_.
 
-The API backend is fully written in language C, it's based on [Ulfius](https://github.com/babelouest/ulfius) HTTP framework, and [Hoel](https://github.com/babelouest/hoel) database framework.
+The API backend is fully written in language C, it's based on [Ulfius](https://github.com/babelouest/ulfius) HTTP framework, [Hoel](https://github.com/babelouest/hoel) database framework, [Rhonabwy](https://github.com/babelouest/rhonabwy) JOSE library and [Iddawc](https://github.com/babelouest/iddawc) OIDC Client and RP library.
 
-Authentication relies on an OpenID Connect server like [Glewlwyd](https://github.com/babelouest/glewlwyd).
+Authentication relies on an OpenID Connect server like [Glewlwyd](https://github.com/babelouest/glewlwyd) providing access tokens using the [JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens](https://www.rfc-editor.org/rfc/rfc9068.html) standards.
 
 ## Documentation
 
@@ -32,12 +32,8 @@ All encryption/decryption and cryptographic manipulation is executed in the fron
 
 The key length is also parametrable, the length available are 128, 192 or 256 bits.
 
-Basically, the API server is just a container that stores encrypted data.
+Basically, the API server is just a container that stores and provides encrypted data.
 
-This also means that if the user has lost its password, it's impossible to reset the password if the user hasn't exported its safe key.
+This also means that if the user has lost its password or private key to open the safe, it's impossible to recover the data if the user hasn't previously exported its safe key.
 
-To prevent password loss, the user can export a safe master key in a file, export all the secrets, or export each secret individually. A secret export can be protected with a password. This way the users can exchange secrets between users with more safety.
-
-Every encryption (keys or secrets) uses a salt randomly generated. To be able to decrypt the data, the salt must be known, so the salt is stored with the encrypted data in the database. The advantage of this technique is if you have exactly the same data in 2 different secrets (which shouldn't happen but still), their encrypted value will be different enough for an attacker not being able to know that the 2 secrets are the same.
-
-The advantage of having a safe key and a password key is that the user can change the password of the safe without having to re-encrypt all the secrets.
+A safe or secret export can be protected with a password. This way the users can exchange secrets between users with more safety.
