@@ -31,7 +31,8 @@ jobs:
       run: |
         sqlite3 /tmp/hutch.db < docs/hutch.sqlite3.sql
         cd build
-        rnbyc -j -g RSA2048 -a RS256 -k RS256 -g EC256 -a ES256 -l ES256 -o private-test.jwks -p public-test.jwks
+        rnbyc -j -g RSA2048 -a RS256 -k RS256 -g EC256 -a ES256 -k ES256 -o sign.jwks -p /dev/null
+        rnbyc -j -g EC256 -a ES256 -o private-test.jwks -p public-test.jwks
         hutch --config-file=../test/hutch-ci.conf &
         export G_PID=$!
         make test || (cat Testing/Temporary/LastTest.log && cat /tmp/hutch.log && false)
