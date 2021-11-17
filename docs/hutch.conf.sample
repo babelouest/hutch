@@ -54,14 +54,14 @@ database =
   password = "hutch";
   dbname = "hutch";
   port = 0;
-};
+}
 
 # SQLite database connection
 #database =
 #{
 #   type               = "sqlite3";
 #   path               = "/var/cache/hutch/hutch.db";
-#};
+#}
 
 # PostgreSQL database connection
 #database =
