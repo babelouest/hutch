@@ -341,7 +341,7 @@ void exit_server(struct config_elements ** config, int exit_value) {
  */
 int build_config_from_args(int argc, char ** argv, struct config_elements * config) {
   int next_option;
-  const char * short_options = "c::p::u::m::l::f::h::v::";
+  const char * short_options = "c:p:u:m:l:f:h::v::";
   char * tmp = NULL, * to_free = NULL, * one_log_mode = NULL;
   static const struct option long_options[]= {
     {"config-file", optional_argument, NULL, 'c'},
