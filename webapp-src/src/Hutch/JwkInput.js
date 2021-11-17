@@ -8,7 +8,6 @@ class JwkInput extends Component {
 
     this.state = {
       isError: props.isError,
-      errorMessage: props.errorMessage,
       ph: props.ph,
       cb: props.cb,
       value: "",
@@ -46,7 +45,7 @@ class JwkInput extends Component {
       className += " is-invalid";
       errorMessageJsx =
         <div className="invalid-feedback">
-          {this.state.errorMessage}
+          {i18next.t("jwkError")}
         </div>
     }
     var filenameJsx;
@@ -59,7 +58,7 @@ class JwkInput extends Component {
           <textarea className={className}
                     autoComplete="off"
                     placeholder={this.state.ph}
-                    value={(this.state.filename?"":this.state.value)}
+                    value={(!this.state.filename?"":this.state.value)}
                     onChange={(e) => this.changeValue(e)}></textarea>
           <input type="file"
                  className="upload"

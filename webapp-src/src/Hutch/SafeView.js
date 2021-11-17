@@ -30,6 +30,7 @@ class SafeView extends Component {
       oidcStatus: props.oidcStatus,
       safe: props.safe,
       safeContent: props.safeContent,
+      iconList: props.iconList,
       filteredCoinList: getUnlockedCoinList(props),
       filter: "",
       coinEditMode: 0,
@@ -37,8 +38,7 @@ class SafeView extends Component {
       coinEditContent: false,
       removeCoinMessage: false,
       filterTimeout: false,
-      filtering: false,
-      showModalCoinEdit: false
+      filtering: false
     };
     
     this.editSafe = this.editSafe.bind(this);
@@ -140,7 +140,7 @@ class SafeView extends Component {
   }
   
   addCoin() {
-    this.setState({name: false, coinEditContent: {displayName: "", rows: []}, showModalCoinEdit: true}, () => {
+    this.setState({name: false, coinEditContent: {displayName: "", rows: []}}, () => {
       var addCoinModal = new bootstrap.Modal(document.getElementById('modalCoinEdit'), {
         keyboard: false
       });
@@ -149,7 +149,7 @@ class SafeView extends Component {
   }
   
   editCoinHeader(name, content) {
-    this.setState({coinEditName: name, coinEditContent: content, showModalCoinEdit: true}, () => {
+    this.setState({coinEditName: name, coinEditContent: content}, () => {
       var addCoinModal = new bootstrap.Modal(document.getElementById('modalCoinEdit'), {
         keyboard: false
       });
@@ -184,7 +184,6 @@ class SafeView extends Component {
   coinSaveCallback(result, name, content, toast = false) {
     var modalCoinEditModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalCoinEdit'));
     modalCoinEditModal && modalCoinEditModal.hide();
-    this.setState({showModalCoinEdit: false});
     if (result) {
       if (name) {
         return new EncryptJWT(content)
@@ -224,7 +223,7 @@ class SafeView extends Component {
         });
       }
     } else {
-      return Promise.reject("No can do");
+      return $.Deferred().reject("No can do");
     }
   }
   
@@ -345,7 +344,7 @@ class SafeView extends Component {
                        name={this.state.coinEditName}
                        content={this.state.coinEditContent}
                        cb={this.coinSaveCallback}
-                       show={this.state.showModalCoinEdit} />
+                       iconListOrig={this.state.iconList} />
         <ModalManageSafe config={this.state.config}
                          safe={this.state.safe}
                          safeContent={this.state.safeContent}

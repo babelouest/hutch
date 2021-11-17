@@ -12,25 +12,14 @@ class ModalCoinEdit extends Component {
       cb: props.cb,
       name: props.name,
       content: props.content,
-      show: props.show,
-      iconListOrig: {},
-      iconList: {},
+      iconList: props.iconListOrig,
+      iconListOrig: props.iconListOrig,
       iconFilter: "",
       displayNameError: false
     };
-
+    
     this.changeDisplayName = this.changeDisplayName.bind(this);
     this.useIcon = this.useIcon.bind(this);
-
-    if (this.state.show) {
-      apiManager.request("fonts/forkawesome-ful-list.json")
-      .then((iconList) => {
-        this.setState({iconListOrig: iconList, iconList: iconList});
-      })
-      .catch(() => {
-        this.setState({iconListOrig: [], iconList: []});
-      });
-    }
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -59,7 +48,9 @@ class ModalCoinEdit extends Component {
             delete(iconList[category]);
           }
         });
-        this.setState({iconList: iconList});
+        this.setState({iconList: iconList}, () => {
+          console.log(iconList, this.state.iconList);
+        });
       } else {
         this.setState({iconList: this.state.iconListOrig});
       }

@@ -53,7 +53,7 @@ class CoinElementFile extends Component {
             </div>
             <div className="col text-truncate">
               <span className="btn-icon-right">
-                <code>{this.state.element.value.filename}</code>
+                <code>{this.state.element.value.name}</code>
               </span>
             </div>
             <div className="col">
@@ -78,7 +78,7 @@ class CoinElementFile extends Component {
               {tagListJsx}
             </div>
           </div>
-          <a className="upload" id={this.state.coin.name+"-"+this.state.index+"-download"} download={this.state.element.value.filename} />
+          <a className="upload" id={this.state.coin.name+"-"+this.state.index+"-download"} download={this.state.element.value.name} />
         </div>
     );
 	}

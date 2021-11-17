@@ -140,7 +140,13 @@ class ModalSafeUnlock extends Component {
       } else if (this.state.safeKey.type === "jwk") {
         try {
           var parsedKey = JSON.parse(this.state.safeKeyJwk);
-          parseJwk(parsedKey, parsedKey.alg)
+          let jwk = false;
+          if (parsedKey.keys && parsedKey.keys.length) {
+            jwk = parsedKey.keys[0];
+          } else {
+            jwk = parsedKey;
+          }
+          parseJwk(jwk, jwk.alg)
           .then(decKey => {
             jwtDecrypt(this.state.safeKey.data, decKey)
             .then((result) => {

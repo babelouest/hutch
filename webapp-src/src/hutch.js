@@ -74,7 +74,7 @@ var initApp = () => {
       oidcConnector.init({
         storagePrefix: "hutchOidc",
         storageType: storage.storageType,
-        responseType: frontEndConfig.oidc.responseType,
+        responseType: storage.getValue("longSession")?"code":"token id_token",
         openidConfigUrl: config.oidc_server_remote_config,
         authUrl: frontEndConfig.oidc.authUrl,
         tokenUrl: frontEndConfig.oidc.tokenUrl,

@@ -20,6 +20,7 @@ class Safe extends Component {
       hutchProfile: props.hutchProfile,
       safe: props.safe,
       safeContent: props.safeContent,
+      iconList: props.iconList,
       editMode: editMode
     };
   }
@@ -39,7 +40,8 @@ class Safe extends Component {
         <SafeView config={this.state.config}
                   safe={this.state.safe}
                   safeContent={this.state.safeContent}
-                  oidcStatus={this.state.oidcStatus}/>
+                  oidcStatus={this.state.oidcStatus}
+                  iconList={this.state.iconList} />
       );
     } else {
       return (

@@ -82,10 +82,16 @@ class ModalSafeKey extends Component {
       }
     } else if (this.state.safeKey.type === "jwk") {
       try {
-        if (!this.state.safeKeyJwk || !(JSON.parse(this.state.safeKeyJwk).alg)) {
+        let jwk = JSON.parse(this.state.safeKeyJwk);
+        if (jwk.keys) {
+          jwk = jwk.keys[0];
+        }
+        if (!jwk || !jwk.alg) {
+          console.log("grut", isValid);
           isValid = false;
         }
       } catch (e) {
+        console.log("plop", misValid);
         isValid = false;
       }
     }

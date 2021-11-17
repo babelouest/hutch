@@ -28,18 +28,18 @@ class LangDropdown extends Component {
         classValue += " active"
       }
       langList.push(
-        <li key={index}><a className={classValue} href="#" onClick={(e) => this.changeLang(e, lang)}>{lang}</a></li>
+        <li key={index}><a className={classValue} href="#" onClick={(e) => this.changeLang(e, lang)}>{i18next.t("lang-"+lang)}</a></li>
       );
     });
     return (
-      <li className="nav-item dropdown">
-        <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          {i18next.t("lang")}
-        </a>
-        <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+      <div className="dropdown">
+        <button className="btn btn-secondary dropdown-toggle" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          {i18next.t("lang-"+i18next.language)}
+        </button>
+        <ul className="dropdown-menu" aria-labelledby="langDropdown">
           {langList}
         </ul>
-      </li>
+      </div>
     );
 	}
 }

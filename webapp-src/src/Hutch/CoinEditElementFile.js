@@ -29,7 +29,7 @@ class CoinEditElementFile extends Component {
     var file = e.target.files[0];
     var fr = new FileReader();
     fr.onload = (ev2) => {
-      element.value = {filename: file.name, data: btoa(ev2.target.result)};
+      element.value = {name: file.name, data: btoa(ev2.target.result)};
       this.setState({element: element});
     };
     fr.readAsBinaryString(file);
@@ -37,8 +37,8 @@ class CoinEditElementFile extends Component {
 
 	render() {
     var filenameJsx;
-    if (this.state.element.value.filename) {
-      filenameJsx = <code className="btn-icon-right">{this.state.element.value.filename}</code>
+    if (this.state.element.value.name) {
+      filenameJsx = <code className="btn-icon-right">{this.state.element.value.name}</code>
     }
     return (
       <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>

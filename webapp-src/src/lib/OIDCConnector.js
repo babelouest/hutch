@@ -65,6 +65,10 @@ class OIDCConnector {
     }
   }
 
+  setParameter(param, value) {
+    this.parameters[param] = value;
+  }
+  
   parseInitialUrl() {
     var storedData;
     var token;
@@ -421,9 +425,7 @@ class OIDCConnector {
     if (this.getStoredData().refreshToken) {
       return this.executeRefreshToken(this.getStoredData().refreshToken, cb);
     } else {
-      return new Promise((resolve, reject) => {
-        reject("disconnected");
-      });
+      return $.Deferred().reject("disconnected");
     }
   }
 

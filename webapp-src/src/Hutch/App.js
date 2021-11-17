@@ -19,6 +19,7 @@ import Notification from '../lib/Notification';
 import TopMenu from './TopMenu';
 import Profile from './Profile';
 import Safe from './Safe';
+import Config from './Config';
 
 class App extends Component {
   constructor(props) {
@@ -31,6 +32,7 @@ class App extends Component {
       hasProfile: false,
       safeList: [],
       safeContent: {},
+      iconList: [],
       curSafe: false,
       addSafe: false,
       oidcStatus: "connecting",
@@ -78,6 +80,8 @@ class App extends Component {
               .then(() => {
                 this.gotoRoute(routage.getCurrentRoute());
               });
+            })
+            .catch(() => {
             });
           });
         }
@@ -120,6 +124,8 @@ class App extends Component {
             }
           });
         }
+      } else if (message.action === "config") {
+        this.setState({nav: "config"});
       } else if (message.action === "addSafe") {
         this.setState({nav: "safe", curSafe: {name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), display_name: "", enc_type: "A256GCM", alg_type: "A256GCMKW"}, editSafeMode: 1});
       } else if (message.action === "editSafe") {
@@ -320,6 +326,11 @@ class App extends Component {
       this.setState({config: config});
     });
 
+    apiManager.request("fonts/forkawesome-ful-list.json")
+    .then((iconList) => {
+      this.setState({iconList: iconList});
+    });
+
     this.getHutchProfile = this.getHutchProfile.bind(this);
     this.getSafeList = this.getSafeList.bind(this);
     this.getSafeKeyList = this.getSafeKeyList.bind(this);
@@ -363,10 +374,10 @@ class App extends Component {
         }
       });
       if (!signJwk) {
-        return Promise.reject("invalid sign key");
+        return $.Deferred().reject("invalid sign key");
       }
     })
-    .catch((error) => {
+    .fail((error) => {
       var newState = {hutchProfile: false, hasProfile: false};
       if (error.status === 404) {
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageNoProfile")});
@@ -439,13 +450,13 @@ class App extends Component {
                 }
               });
             })
-            .catch((error) => {
+            .fail((error) => {
               console.log("getSafeCoins", error);
               messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinList")});
               this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
             });
           })
-          .catch((error) => {
+          .fail((error) => {
             console.log("getSafeKeys", error);
             messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorKeyList")});
             this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
@@ -453,7 +464,7 @@ class App extends Component {
         });
       });
     })
-    .catch((error) => {
+    .fail((error) => {
       console.log("getSafeList", error);
       messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSafeList")});
       this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
@@ -522,14 +533,17 @@ class App extends Component {
                            hutchProfile={this.state.hutchProfile}
                            hasProfile={this.state.hasProfile}
                            editProfile={this.state.editProfile}
-                           oidcStatus={this.state.oidcStatus}/>
+                           oidcStatus={this.state.oidcStatus} />
       } else if (this.state.nav === "safe") {
         bodyJsx = <Safe config={this.state.config}
                         hutchProfile={this.state.hutchProfile}
                         safe={this.state.curSafe}
                         safeContent={this.state.safeContent}
                         editMode={this.state.editSafeMode}
-                        oidcStatus={this.state.oidcStatus}/>
+                        oidcStatus={this.state.oidcStatus}
+                        iconList={this.state.iconList} />
+      } else if (this.state.nav === "config") {
+        bodyJsx = <Config config={this.state.config} />
       }
     }
     if (!this.state.trustworthy) {

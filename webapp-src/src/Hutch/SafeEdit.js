@@ -148,6 +148,12 @@ class SafeEdit extends Component {
           this.completeSetSafeKey(containerKey, data.safeKey, lockAlg, data.prefixPassword);
         }
       } else if (data.safeKey.type === "jwk") {
+        let jwk = false;
+        if (data.jwk.keys && data.jwk.keys.length) {
+          jwk = data.jwk.keys[0];
+        } else {
+          jwk = data.jwk;
+        }
         if (this.state.addKey) {
           if (!this.state.safeContent[this.state.safe.name].key) {
             this.createKeyForSafe()
@@ -156,22 +162,22 @@ class SafeEdit extends Component {
               curSafeContent[this.state.safe.name].extractableKey = keyData.extractableKey;
               curSafeContent[this.state.safe.name].key = keyData.key;
               this.setState({safeContent: curSafeContent}, () => {
-                parseJwk(data.jwk, data.jwk.alg)
+                parseJwk(jwk, jwk.alg)
                 .then(containerKey => {
-                  this.completeAddSafeKey(containerKey, data.safeKey, data.jwk.alg, data.prefixPassword);
+                  this.completeAddSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
                 });
               });
             });
           } else {
-            parseJwk(data.jwk, data.jwk.alg)
+            parseJwk(jwk, jwk.alg)
             .then(containerKey => {
-              this.completeAddSafeKey(containerKey, data.safeKey, data.jwk.alg, data.prefixPassword);
+              this.completeAddSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
             });
           }
         } else {
-          parseJwk(data.jwk, data.jwk.alg)
+          parseJwk(jwk, jwk.alg)
           .then(containerKey => {
-            this.completeSetSafeKey(containerKey, data.safeKey, data.jwk.alg, data.prefixPassword);
+            this.completeSetSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
           });
         }
       } else if (data.safeKey.type === "browser") {

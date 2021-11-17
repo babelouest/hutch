@@ -45,12 +45,12 @@ class APIManager {
           this.token_expires_at = (curDate.getTime()/1000)+res.expires_in;
           return this.APIRequestExecute(url, method, data, accept);
         })
-        .catch(() => {
+        .fail(() => {
           messageDispatcher.sendMessage('App', {action: "sessionTimeout"});
         });
 			}
 		} else {
-			return Promise.reject("error too busy");
+			return $.Deferred().reject("error too busy");
 		}
 	}
 	
@@ -71,7 +71,7 @@ class APIManager {
 			contentType: contentType,
 			headers: headers
 		})
-    .catch((err) => {
+    .fail((err) => {
       if (err.status === 401) {
         messageDispatcher.sendMessage('App', {action: "sessionTimeout"});
       }
@@ -85,10 +85,10 @@ class APIManager {
         if (this.signJwk) {
           return jwtVerify(body, this.signJwk);
         } else {
-          return Promise.reject("No public key to verify signature");
+          return $.Deferred().reject("No public key to verify signature");
         }
       } else {
-        return Promise.reject("invalid content-type");
+        return $.Deferred().reject("invalid content-type");
       }
     });
   }

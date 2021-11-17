@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import i18next from 'i18next';
 
-import LangDropdown from './LangDropdown';
 import ConnectButton from './ConnectButton';
 
 import messageDispatcher from '../lib/MessageDispatcher';
@@ -31,6 +30,11 @@ class TopMenu extends Component {
     e.preventDefault();
     routage.addRoute(safe||"");
     messageDispatcher.sendMessage("App", {action: 'nav', target: safe});
+  }
+  
+  navigateoConfig(e) {
+    e.preventDefault();
+    messageDispatcher.sendMessage("App", {action: 'config'});
   }
   
 	render() {
@@ -81,7 +85,11 @@ class TopMenu extends Component {
               {safeListJsx}
             </ul>
             <ul className="navbar-nav ms-auto flex-nowrap text-right">
-              <LangDropdown config={this.state.config}/>
+              <li className="nav-item">
+                <a className="nav-link" onClick={(e) => this.navigateoConfig(e)} href="#">
+                  <i className="fa fa-cog btn-icon-right" aria-hidden="true"></i>
+                </a>
+              </li>
               <li className="nav-item">
                 <ConnectButton status={this.state.oidcStatus}/>
               </li>
