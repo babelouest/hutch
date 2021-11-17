@@ -369,7 +369,19 @@ set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
 set(CPACK_SOURCE_IGNORE_FILES ${PACKAGE_IGNORED_FILES})
 
+option(BUILD_RPM "Build a RPM for your system" OFF)
+if (BUILD_RPM)
+  set(CPACK_GENERATOR "TGZ;DEB;RPM")
+  set(CPACK_RPM_PACKAGE_LICENSE "GPL")
+  set(CPACK_RPM_PACKAGE_URL "http://babelouest.github.io/hutch/")
+  set(CPACK_RPM_PACKAGE_REQUIRES "openldap, libconfig, gnutls >= 3.5.0, jansson >= ${JANSSON_VERSION_REQUIRED}, liborcania >= ${ORCANIA_VERSION_REQUIRED}, libyder >= ${YDER_VERSION_REQUIRED}, libulfius >= ${ULFIUS_VERSION_REQUIRED}, libhoel >= ${HOEL_VERSION_REQUIRED}, librhonabwy >= ${RHONABWY_VERSION_REQUIRED}, libiddawc >= ${IDDAWC_VERSION_REQUIRED}")
+endif ()
+
 include(CPack)
 
 add_custom_target(dist
         COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+
+message(STATUS "Download required dependencies:       ${DOWNLOAD_DEPENDENCIES}")
+message(STATUS "Build the testing tree:               ${BUILD_TESTING}")
+message(STATUS "Build RPM package:                    ${BUILD_RPM}")
