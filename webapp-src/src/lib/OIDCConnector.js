@@ -359,10 +359,14 @@ class OIDCConnector {
         return {};
       }
     } else if (this.parameters.storageType === "cookie") {
-      storage = JSON.parse(Cookies.get(this.localStorageKey));
-      if (storage) {
-        return storage;
-      } else {
+      try {
+        storage = JSON.parse(Cookies.get(this.localStorageKey));
+        if (storage) {
+          return storage;
+        } else {
+          return {};
+        }
+      } catch (err) {
         return {};
       }
     } else {
