@@ -249,6 +249,7 @@ class App extends Component {
             });
           }
         }
+        safeContent[message.target.name].unlockedCoinList = [];
         this.setState({safeContent: safeContent}, () => {
           this.unlockCoinList(message.target.name, this.state.safeContent[message.target.name].key);
           if (this.state.safeContent[message.target.name].extractableKey) {
