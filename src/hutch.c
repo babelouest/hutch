@@ -32,6 +32,9 @@
 
 #include "hutch.h"
 
+pthread_mutex_t global_handler_close_lock;
+pthread_cond_t  global_handler_close_cond;
+
 /**
  *
  * Main function
@@ -79,6 +82,7 @@ int main (int argc, char ** argv) {
   config->oidc_aud = NULL;
   config->oidc_dpop_max_iat = 0;
   config->config_content = NULL;
+  config->sign_exp = HUTCH_EXP_DEFAULT;
   config->jwks_content = NULL;
   if (config->instance == NULL || config->iddawc_resource_config == NULL || config->static_file_config == NULL) {
     fprintf(stderr, "Memory error - config->instance || config->iddawc_resource_config || config->static_file_config\n");
@@ -192,10 +196,11 @@ int main (int argc, char ** argv) {
     exit_server(&config, HUTCH_ERROR);
   }
 
-  j_tmp = json_pack("{ss++ ss++ ss ss+}", 
+  j_tmp = json_pack("{ss++ ss++ ss ss* ss+}", 
                     "profile_endpoint", config->external_url, config->api_prefix, "/profile",
                     "safe_endpoint", config->external_url, config->api_prefix, "/safe",
-                    "hutch_scope", config->iddawc_resource_config->oauth_scope,
+                    "scope", config->iddawc_resource_config->oauth_scope,
+                    "oidc_server_remote_config", config->oidc_server_remote_config,
                     "jwks_uri", config->external_url, "jwks");
   if ((config->config_content = json_dumps(j_tmp, JSON_COMPACT)) == NULL) {
     fprintf(stderr, "Error setting config content\n");
@@ -254,7 +259,7 @@ int main (int argc, char ** argv) {
   u_map_put(config->instance->default_headers, "Cache-Control", "no-store");
   u_map_put(config->instance->default_headers, "Pragma", "no-cache");
 
-  y_log_message(Y_LOG_LEVEL_INFO, "Start hutch on port %d, prefix: %s, secure: %s, scope %s", config->instance->port, config->api_prefix, config->use_secure_connection?"true":"false", config->iddawc_resource_config->oauth_scope);
+  y_log_message(Y_LOG_LEVEL_INFO, "Start hutch on port %d, prefix: %s, secure: %s, scope %s, external url: %s", config->instance->port, config->api_prefix, config->use_secure_connection?"true":"false", config->iddawc_resource_config->oauth_scope, config->external_url);
   
   if (config->use_secure_connection) {
     char * key_file = get_file_content(config->secure_connection_key_file);
@@ -336,7 +341,7 @@ void exit_server(struct config_elements ** config, int exit_value) {
  */
 int build_config_from_args(int argc, char ** argv, struct config_elements * config) {
   int next_option;
-  const char * short_options = "c::p::u::m::l::f::h::v::";
+  const char * short_options = "c:p:u:m:l:f:h::v::";
   char * tmp = NULL, * to_free = NULL, * one_log_mode = NULL;
   static const struct option long_options[]= {
     {"config-file", optional_argument, NULL, 'c'},
@@ -473,7 +478,7 @@ int build_config_from_file(struct config_elements * config) {
              * db_type, * db_sqlite_path, * db_mariadb_host = NULL, * db_mariadb_user = NULL, * db_pg_conninfo = NULL,
              * db_mariadb_password = NULL, * db_mariadb_dbname = NULL, * cur_static_files_path = NULL, * extension = NULL, * mime_type_value = NULL, * cur_sign_key = NULL;
   char * str_jwks = NULL;
-  int db_mariadb_port = 0, i = 0, port, ret;
+  int db_mariadb_port = 0, i = 0, port = 0, sign_exp = 0, compress = 0, ret;
   const char * cur_oidc_server_remote_config = NULL, * cur_oidc_server_public_jwks = NULL, * cur_oidc_iss = NULL, * cur_oidc_realm = NULL,
              * cur_oidc_aud = NULL, * cur_oidc_scope = NULL;
   int cur_oidc_dpop_max_iat = 0, cur_oidc_server_remote_config_verify_cert = 0;
@@ -636,8 +641,15 @@ int build_config_from_file(struct config_elements * config) {
           mime_type = config_setting_get_elem(mime_type_list, i);
           if (mime_type != NULL) {
             if (config_setting_lookup_string(mime_type, "extension", &extension) == CONFIG_TRUE &&
-                config_setting_lookup_string(mime_type, "type", &mime_type_value) == CONFIG_TRUE) {
+                config_setting_lookup_string(mime_type, "mime_type", &mime_type_value) == CONFIG_TRUE) {
               u_map_put(&config->static_file_config->mime_types, extension, mime_type_value);
+              if (config_setting_lookup_int(mime_type, "compress", &compress) == CONFIG_TRUE) {
+                if (compress && u_add_mime_types_compressed(config->static_file_config, mime_type_value) != U_OK) {
+                  fprintf(stderr, "Error setting mime_type %s to compressed list, exiting\n", mime_type_value);
+                  ret = 0;
+                  break;
+                }
+              }
             }
           }
         }
@@ -686,7 +698,7 @@ int build_config_from_file(struct config_elements * config) {
         config->oidc_dpop_max_iat = (time_t)cur_oidc_dpop_max_iat;
       }
       
-      if (config_lookup_string(&cfg, "oauth_scope", &cur_oidc_scope) == CONFIG_TRUE) {
+      if (config_lookup_string(&cfg, "hutch_scope", &cur_oidc_scope) == CONFIG_TRUE) {
         config->oidc_scope = o_strdup(cur_oidc_scope);
         if (config->oidc_scope == NULL) {
           fprintf(stderr, "Error allocating config->oidc_scope, exiting\n");
@@ -697,7 +709,7 @@ int build_config_from_file(struct config_elements * config) {
       
       if (config_lookup_string(&cfg, "sign_key", &cur_sign_key) == CONFIG_TRUE) {
         if ((str_jwks = get_file_content(cur_sign_key)) != NULL) {
-          if (r_jwks_import_from_str(config->sign_key, str_jwks) != RHN_OK) {
+          if (r_jwks_import_from_json_str(config->sign_key, str_jwks) != RHN_OK) {
             fprintf(stderr, "Invalid sign_key content, exiting\n");
             ret = 0;
             break;
@@ -708,6 +720,10 @@ int build_config_from_file(struct config_elements * config) {
           ret = 0;
           break;
         }
+      }
+      
+      if (config_lookup_int(&cfg, "sign_exp", &sign_exp) == CONFIG_TRUE) {
+        config->sign_exp = (time_t)sign_exp;
       }
     } while (0);
     config_destroy(&cfg);
@@ -936,10 +952,11 @@ int check_result_value(json_t * result, const int value) {
           json_integer_value(json_object_get(result, "result")) == value);
 }
 
-char * serialize_json_to_jwt(struct config_elements * config, const char * sign_kid, json_t * j_claims) {
+char * serialize_json_to_jwt(struct config_elements * config, const char * sign_kid, json_t * j_claims, const char * str_slaims) {
   jwt_t * jwt = NULL;
   jwk_t * jwk;
   char * token = NULL;
+  time_t now;
   
   if (o_strlen(sign_kid)) {
     jwk = r_jwks_get_by_kid(config->sign_key, sign_kid);
@@ -948,14 +965,35 @@ char * serialize_json_to_jwt(struct config_elements * config, const char * sign_
   }
   if (jwk != NULL) {
     do {
+      time(&now);
+      
       if (r_jwt_init(&jwt) != RHN_OK) {
         y_log_message(Y_LOG_LEVEL_ERROR, "serialize_json_to_jwt - Error r_jwt_init");
         break;
       }
       
-      if (r_jwt_set_full_claims_json_t(jwt, j_claims) != RHN_OK) {
-        y_log_message(Y_LOG_LEVEL_ERROR, "serialize_json_to_jwt - Error r_jwt_set_full_claims_json_t");
+      if (r_jwt_set_header_int_value(jwt, "iat", now) != RHN_OK) {
+        y_log_message(Y_LOG_LEVEL_ERROR, "serialize_json_to_jwt - Error r_jwt_set_header_int_value iat");
         break;
+      }
+      
+      if (r_jwt_set_header_int_value(jwt, "exp", now+config->sign_exp) != RHN_OK) {
+        y_log_message(Y_LOG_LEVEL_ERROR, "serialize_json_to_jwt - Error r_jwt_set_header_int_value exp");
+        break;
+      }
+      
+      if (j_claims != NULL) {
+        if (r_jwt_set_full_claims_json_t(jwt, j_claims) != RHN_OK) {
+          y_log_message(Y_LOG_LEVEL_ERROR, "serialize_json_to_jwt - Error r_jwt_set_full_claims_json_t");
+          break;
+        }
+      }
+      
+      if (str_slaims != NULL) {
+        if (r_jwt_set_full_claims_json_str(jwt, str_slaims) != RHN_OK) {
+          y_log_message(Y_LOG_LEVEL_ERROR, "serialize_json_to_jwt - Error r_jwt_set_full_claims_json_str");
+          break;
+        }
       }
       
       if ((token = r_jwt_serialize_signed(jwt, jwk, 0)) == NULL) {

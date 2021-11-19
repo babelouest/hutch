@@ -44,7 +44,7 @@ START_TEST(test_add_safe)
 	ck_assert_int_eq(run_simple_authenticated_test(&user_req, "GET", HUTCH_SERVER_API "/safe/", NULL, 403, NULL, NULL, NULL), 1);
   j_profile = json_pack("{ssssssss*}",
                         "name", PROFILE_NAME,
-                        "fortune", PROFILE_FORTUNE,
+                        "message", PROFILE_FORTUNE,
                         "picture", PROFILE_PICTURE,
                         "sign_kid", kid);
 	ck_assert_int_eq(run_simple_authenticated_test(&user_req, "PUT", HUTCH_SERVER_API "/profile/", j_profile, 200, NULL, NULL, NULL), 1);
@@ -207,13 +207,14 @@ static Suite *hutch_suite(void)
 int main(int argc, char *argv[])
 {
   int number_failed = 0;
-  Suite *s;
   SRunner *sr;
-  jwt_t * jwt;
+  jwt_t * jwt, * jwt_jwks;
   jwks_t * jwks;
   char * str_jwks, * token, * bearer_token;
-  json_t * j_claims;
+  json_t * j_claims, * j_jwks;
   time_t now;
+  struct _u_request req;
+  struct _u_response resp;
   
   y_init_logs("Hutch test", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "Starting Hutch test");
   
@@ -225,17 +226,16 @@ int main(int argc, char *argv[])
     r_jwt_init(&jwt);
     r_jwt_set_header_str_value(jwt, "typ", "at+jwt");
     r_jwks_init(&jwks);
-    r_jwks_import_from_str(jwks, str_jwks);
+    r_jwks_import_from_json_str(jwks, str_jwks);
     r_jwt_add_sign_jwks(jwt, jwks, NULL);
     o_free(str_jwks);
     
     time(&now);
-    j_claims = json_pack("{ss ss ss ss ss si si si ss}",
+    j_claims = json_pack("{ss ss ss ss si si si ss}",
                          "iss", "https://glewlwyd.tld/",
                          "sub", USER_LOGIN,
                          "client_id", "client",
                          "jti", "abcdxyz1234",
-                         "type", "access_token",
                          "iat", now,
                          "exp", now+3600,
                          "nbf", now,
@@ -252,14 +252,33 @@ int main(int argc, char *argv[])
     r_jwks_free(jwks);
     
     r_jwks_init(&jwks_config);
-    r_jwks_import_from_uri(jwks_config, HUTCH_SERVER_URI "/jwks", 0);
+    ulfius_init_request(&req);
+    ulfius_init_response(&resp);
+    ulfius_set_request_properties(&req, U_OPT_HTTP_URL, HUTCH_SERVER_URI "/jwks",
+                                        U_OPT_HEADER_PARAMETER, "accept", "application/jwt",
+                                        U_OPT_NONE);
+    ulfius_send_http_request(&req, &resp);
+    r_jwt_init(&jwt_jwks);
+    r_jwt_parsen(jwt_jwks, resp.binary_body, resp.binary_body_length, 0);
+    j_jwks = r_jwt_get_full_claims_json_t(jwt_jwks);
+    r_jwks_import_from_json_t(jwks_config, j_jwks);
+    r_jwt_add_sign_jwks(jwt_jwks, NULL, jwks_config);
+    if (r_jwt_verify_signature(jwt_jwks, NULL, 0) != RHN_OK) {
+      y_log_message(Y_LOG_LEVEL_ERROR, "Error, invalid jwks endpoint signature");
+      number_failed = 1;
+    }
+    r_jwt_free(jwt_jwks);
+    json_decref(j_jwks);
+    ulfius_clean_request(&req);
+    ulfius_clean_response(&resp);
     
-    s = hutch_suite();
-    sr = srunner_create(s);
+    if (!number_failed) {
+      sr = srunner_create(hutch_suite());
 
-    srunner_run_all(sr, CK_VERBOSE);
-    number_failed = srunner_ntests_failed(sr);
-    srunner_free(sr);
+      srunner_run_all(sr, CK_VERBOSE);
+      number_failed = srunner_ntests_failed(sr);
+      srunner_free(sr);
+    }
     
     ulfius_clean_request(&user_req);
     r_jwks_free(jwks_config);

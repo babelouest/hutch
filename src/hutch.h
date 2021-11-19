@@ -36,8 +36,8 @@
 #include "static_compressed_inmemory_website_callback.h"
 #include "http_compression_callback.h"
 
-#define HUTCH_LOG_NAME "Hutch"
-#define HUTCH_DEFAULT_PORT 4884
+#define HUTCH_LOG_NAME       "Hutch"
+#define HUTCH_DEFAULT_PORT   4884
 #define HUTCH_DEFAULT_PREFIX "api"
 
 #define HUTCH_STOP     0
@@ -74,11 +74,11 @@
 #define EPOCH_MAX_LENGTH_STR 32
 #define EPOCH_STR_FORMAT     EPOCH_MAX_LENGTH_STR+14
 
+#define HUTCH_EXP_DEFAULT 600
+#define HUTCH_CONTENT_TYPE_JWT "application/jwt"
+
 /** Macro to avoid compiler warning when some parameters are unused and that's ok **/
 #define UNUSED(x) (void)(x)
-
-pthread_mutex_t global_handler_close_lock;
-pthread_cond_t  global_handler_close_cond;
 
 typedef enum {
   access_create,
@@ -110,6 +110,7 @@ struct config_elements {
   time_t                                         oidc_dpop_max_iat;
   jwks_t                                       * sign_key;
   jwks_t                                       * public_key;
+  time_t                                         sign_exp;
   struct _h_connection                         * conn;
   struct _u_instance                           * instance;
   struct _iddawc_resource_config               * iddawc_resource_config;
@@ -133,7 +134,7 @@ const char * get_ip_source(const struct _u_request * request);
 
 int check_result_value(json_t * result, const int value);
 
-char * serialize_json_to_jwt(struct config_elements * config, const char * sign_kid, json_t * j_claims);
+char * serialize_json_to_jwt(struct config_elements * config, const char * sign_kid, json_t * j_claims, const char * str_slaims);
 
 json_t * profile_get(struct config_elements * config, const char * sub);
 json_t * profile_is_valid(struct config_elements * config, json_t * j_profile);

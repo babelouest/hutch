@@ -1,9 +1,9 @@
 #
-# Taliesin media server
+# Glewlwyd SSO Server
 #
 # Makefile used to build and install the front-end webapp
 #
-# Copyright 2017-2018 Nicolas Mora <mail@babelouest.org>
+# Copyright 2017-2021 Nicolas Mora <mail@babelouest.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU GENERAL PUBLIC LICENSE
@@ -20,15 +20,24 @@
 #
 
 WEBAPP_DEST=../webapp
+JSC=npm
+
+all: webapp
 
 install-dev:
-	npm install
+	$(JSC) install
 
 dev:
-	npm start
+	$(JSC) run dev
+
+webapp: build-webapp install-webapp
+
+polyfill: build-polyfill-webapp install-polyfill
 
 build-webapp:
-	npm run build
-	rm -f dist/config.json
-	find $(WEBAPP_DEST) ! -name config.json ! -name webapp -delete
-	cp -R dist/* $(WEBAPP_DEST)
+	rm -f dist/hutch.js*
+	$(JSC) run build
+
+install-webapp:
+	find $(WEBAPP_DEST) ! -name config.json ! -name webapp ! -name .gitignore -delete
+	cp -R dist/config.json.sample dist/css/ dist/favicon.ico dist/fonts/ dist/hutch.js dist/hutch.js.LICENSE.txt dist/img/ dist/index.html dist/js/ dist/locales/ dist/words-*.json $(WEBAPP_DEST)

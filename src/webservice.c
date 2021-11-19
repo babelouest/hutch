@@ -31,9 +31,11 @@
 int callback_hutch_options (const struct _u_request * request, struct _u_response * response, void * user_data) {
   UNUSED(request);
   UNUSED(user_data);
-  u_map_put(response->map_header, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  u_map_put(response->map_header, "Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Bearer, Authorization");
-  u_map_put(response->map_header, "Access-Control-Max-Age", "1800");
+  ulfius_set_response_properties(response, U_OPT_STATUS, 200,
+                                           U_OPT_HEADER_PARAMETER, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS",
+                                           U_OPT_HEADER_PARAMETER, "Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Bearer, Authorization",
+                                           U_OPT_HEADER_PARAMETER, "Access-Control-Max-Age", "1800",
+                                           U_OPT_NONE);
   return U_CALLBACK_COMPLETE;
 }
 
@@ -43,10 +45,26 @@ int callback_hutch_options (const struct _u_request * request, struct _u_respons
  */
 int callback_hutch_server_configuration (const struct _u_request * request, struct _u_response * response, void * user_data) {
   UNUSED(request);
-  ulfius_set_response_properties(response, U_OPT_STATUS, 200,
-                                           U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, ULFIUS_HTTP_ENCODING_JSON,
-                                           U_OPT_STRING_BODY, ((struct config_elements *)user_data)->config_content,
-                                           U_OPT_NONE);
+  struct config_elements * config = (struct config_elements *)user_data;
+  char * token;
+  
+  if (0 == o_strcasecmp(HUTCH_CONTENT_TYPE_JWT, u_map_get_case(request->map_header, "accept"))) {
+    if ((token = serialize_json_to_jwt(config, NULL, NULL, config->config_content)) != NULL) {
+      ulfius_set_response_properties(response, U_OPT_STATUS, 200,
+                                               U_OPT_STRING_BODY, token,
+                                               U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
+                                               U_OPT_NONE);
+    } else {
+      y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_server_configuration - Error serialize_json_to_jwt");
+      response->status = 500;
+    }
+    o_free(token);
+  } else {
+    ulfius_set_response_properties(response, U_OPT_STATUS, 200,
+                                             U_OPT_STRING_BODY, config->config_content,
+                                             U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, ULFIUS_HTTP_ENCODING_JSON,
+                                             U_OPT_NONE);
+  }
   return U_CALLBACK_CONTINUE;
 };
 
@@ -56,10 +74,26 @@ int callback_hutch_server_configuration (const struct _u_request * request, stru
  */
 int callback_hutch_server_jwks (const struct _u_request * request, struct _u_response * response, void * user_data) {
   UNUSED(request);
-  ulfius_set_response_properties(response, U_OPT_STATUS, 200,
-                                           U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, ULFIUS_HTTP_ENCODING_JSON,
-                                           U_OPT_STRING_BODY, ((struct config_elements *)user_data)->jwks_content,
-                                           U_OPT_NONE);
+  struct config_elements * config = (struct config_elements *)user_data;
+  char * token;
+  
+  if (0 == o_strcasecmp(HUTCH_CONTENT_TYPE_JWT, u_map_get_case(request->map_header, "accept"))) {
+    if ((token = serialize_json_to_jwt(config, NULL, NULL, config->jwks_content)) != NULL) {
+      ulfius_set_response_properties(response, U_OPT_STATUS, 200,
+                                               U_OPT_STRING_BODY, token,
+                                               U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
+                                               U_OPT_NONE);
+    } else {
+      y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_server_configuration - Error serialize_json_to_jwt");
+      response->status = 500;
+    }
+    o_free(token);
+  } else {
+    ulfius_set_response_properties(response, U_OPT_STATUS, 200,
+                                             U_OPT_STRING_BODY, config->jwks_content,
+                                             U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, ULFIUS_HTTP_ENCODING_JSON,
+                                             U_OPT_NONE);
+  }
   return U_CALLBACK_CONTINUE;
 };
 
@@ -88,10 +122,10 @@ int callback_hutch_profile_get (const struct _u_request * request, struct _u_res
   
   if (check_result_value(j_profile, HU_OK)) {
     json_object_del(json_object_get(j_profile, "profile"), "hp_id");
-    if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_profile, "profile"))) != NULL) {
+    if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_profile, "profile"), NULL)) != NULL) {
       ulfius_set_response_properties(response, U_OPT_STATUS, 200,
                                                U_OPT_STRING_BODY, token,
-                                               U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, "application/jwt",
+                                               U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
                                                U_OPT_NONE);
     } else {
       y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_profile_get - Error serialize_json_to_jwt");
@@ -161,11 +195,10 @@ int callback_hutch_safe_list (const struct _u_request * request, struct _u_respo
   if (check_result_value(j_profile, HU_OK)) {
     j_safe = safe_list(config, json_object_get(j_profile, "profile"));
     if (check_result_value(j_safe, HU_OK)) {
-      json_object_del(json_object_get(j_safe, "safe"), "hs_id");
-      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_safe, "safe"))) != NULL) {
+      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_safe, "safe"), NULL)) != NULL) {
         ulfius_set_response_properties(response, U_OPT_STATUS, 200,
                                                  U_OPT_STRING_BODY, token,
-                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, "application/jwt",
+                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
                                                  U_OPT_NONE);
       } else {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_list - Error serialize_json_to_jwt");
@@ -197,10 +230,10 @@ int callback_hutch_safe_get (const struct _u_request * request, struct _u_respon
     j_safe = safe_get(config, json_object_get(j_profile, "profile"), u_map_get(request->map_url, "safe"));
     if (check_result_value(j_safe, HU_OK)) {
       json_object_del(json_object_get(j_safe, "safe"), "hs_id");
-      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_safe, "safe"))) != NULL) {
+      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_safe, "safe"), NULL)) != NULL) {
         ulfius_set_response_properties(response, U_OPT_STATUS, 200,
                                                  U_OPT_STRING_BODY, token,
-                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, "application/jwt",
+                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
                                                  U_OPT_NONE);
       } else {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_get - Error serialize_json_to_jwt");
@@ -338,10 +371,10 @@ int callback_hutch_safe_key_list (const struct _u_request * request, struct _u_r
   if (check_result_value(j_profile, HU_OK)) {
     j_safe_key = safe_key_list(config, json_object_get(j_profile, "profile"), u_map_get(request->map_url, "safe"));
     if (check_result_value(j_safe_key, HU_OK)) {
-      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_safe_key, "key"))) != NULL) {
+      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_safe_key, "key"), NULL)) != NULL) {
         ulfius_set_response_properties(response, U_OPT_STATUS, 200,
                                                  U_OPT_STRING_BODY, token,
-                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, "application/jwt",
+                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
                                                  U_OPT_NONE);
       } else {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_key_list - Error serialize_json_to_jwt");
@@ -372,10 +405,10 @@ int callback_hutch_safe_key_get (const struct _u_request * request, struct _u_re
   if (check_result_value(j_profile, HU_OK)) {
     j_safe_key = safe_key_get(config, json_object_get(j_profile, "profile"), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "key"));
     if (check_result_value(j_safe_key, HU_OK)) {
-      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_safe_key, "key"))) != NULL) {
+      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_safe_key, "key"), NULL)) != NULL) {
         ulfius_set_response_properties(response, U_OPT_STATUS, 200,
                                                  U_OPT_STRING_BODY, token,
-                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, "application/jwt",
+                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
                                                  U_OPT_NONE);
       } else {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_safe_key_get - Error serialize_json_to_jwt");
@@ -513,10 +546,10 @@ int callback_hutch_coin_list (const struct _u_request * request, struct _u_respo
   if (check_result_value(j_profile, HU_OK)) {
     j_coin = coin_list(config, json_object_get(j_profile, "profile"), u_map_get(request->map_url, "safe"));
     if (check_result_value(j_coin, HU_OK)) {
-      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_coin, "coin"))) != NULL) {
+      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_coin, "coin"), NULL)) != NULL) {
         ulfius_set_response_properties(response, U_OPT_STATUS, 200,
                                                  U_OPT_STRING_BODY, token,
-                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, "application/jwt",
+                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
                                                  U_OPT_NONE);
       } else {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_list - Error serialize_json_to_jwt");
@@ -547,10 +580,10 @@ int callback_hutch_coin_get (const struct _u_request * request, struct _u_respon
   if (check_result_value(j_profile, HU_OK)) {
     j_coin = coin_get(config, json_object_get(j_profile, "profile"), u_map_get(request->map_url, "safe"), u_map_get(request->map_url, "coin"));
     if (check_result_value(j_coin, HU_OK)) {
-      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_coin, "coin"))) != NULL) {
+      if ((token = serialize_json_to_jwt(config, json_string_value(json_object_get(json_object_get(j_profile, "profile"), "sign_kid")), json_object_get(j_coin, "coin"), NULL)) != NULL) {
         ulfius_set_response_properties(response, U_OPT_STATUS, 200,
                                                  U_OPT_STRING_BODY, token,
-                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, "application/jwt",
+                                                 U_OPT_HEADER_PARAMETER, ULFIUS_HTTP_HEADER_CONTENT, HUTCH_CONTENT_TYPE_JWT,
                                                  U_OPT_NONE);
       } else {
         y_log_message(Y_LOG_LEVEL_ERROR, "callback_hutch_coin_get - Error serialize_json_to_jwt");

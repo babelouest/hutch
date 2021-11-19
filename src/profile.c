@@ -32,7 +32,7 @@ json_t * profile_get(struct config_elements * config, const char * sub) {
                       "columns",
                         "hp_id",
                         "hp_name AS name",
-                        "hp_fortune AS fortune",
+                        "hp_message AS message",
                         "hp_picture AS picture",
                         "hp_sign_kid AS sign_kid",
                         SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hp_last_updated) AS last_updated", "hp_last_updated AS last_updated", "EXTRACT(EPOCH FROM hp_last_updated)::integer AS last_updated"),
@@ -68,9 +68,9 @@ json_t * profile_is_valid(struct config_elements * config, json_t * j_profile) {
         ret = HU_ERROR_PARAM;
         json_array_append_new(j_error, json_string("name must be a string of maximum 256 characters"));
       }
-      if (json_object_get(j_profile, "fortune") != NULL && (!json_is_string(json_object_get(j_profile, "fortune")) || json_string_length(json_object_get(j_profile, "fortune")) > 512)) {
+      if (json_object_get(j_profile, "message") != NULL && (!json_is_string(json_object_get(j_profile, "message")) || json_string_length(json_object_get(j_profile, "message")) > 512)) {
         ret = HU_ERROR_PARAM;
-        json_array_append_new(j_error, json_string("fortune must be a string of maximum 256 characters"));
+        json_array_append_new(j_error, json_string("message must be a string of maximum 256 characters"));
       }
       if (json_object_get(j_profile, "picture") != NULL && (!json_is_string(json_object_get(j_profile, "picture")) || json_string_length(json_object_get(j_profile, "picture")) > 1024*1024*16)) {
         ret = HU_ERROR_PARAM;
@@ -78,7 +78,7 @@ json_t * profile_is_valid(struct config_elements * config, json_t * j_profile) {
       }
       if (json_object_get(j_profile, "sign_kid") != NULL && (jwk = r_jwks_get_by_kid(config->sign_key, json_string_value(json_object_get(j_profile, "sign_kid")))) == NULL) {
         ret = HU_ERROR_PARAM;
-        json_array_append_new(j_error, json_string("invlaid kid"));
+        json_array_append_new(j_error, json_string("invalid kid"));
       }
       r_jwk_free(jwk);
     } else {
@@ -114,7 +114,7 @@ int profile_set(struct config_elements * config, const char * sub, json_t * j_pr
                         "table", HUTCH_TABLE_PROFILE,
                         "set",
                           "hp_name", json_object_get(j_profile, "name"),
-                          "hp_fortune", json_object_get(j_profile, "fortune"),
+                          "hp_message", json_object_get(j_profile, "message"),
                           "hp_picture", json_object_get(j_profile, "picture"),
                           "hp_sign_kid", json_object_get(j_profile, "sign_kid"),
                           "hp_last_updated", 
@@ -137,7 +137,7 @@ int profile_set(struct config_elements * config, const char * sub, json_t * j_pr
                         "table", HUTCH_TABLE_PROFILE,
                         "values",
                           "hp_name", json_object_get(j_profile, "name"),
-                          "hp_fortune", json_object_get(j_profile, "fortune"),
+                          "hp_message", json_object_get(j_profile, "message"),
                           "hp_picture", json_object_get(j_profile, "picture"),
                           "hp_sign_kid", json_object_get(j_profile, "sign_kid"),
                           "hp_sub", sub,

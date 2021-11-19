@@ -2,7 +2,7 @@
 
 ## 2.0.0
 
-- Massive rework for the better good
+- Complete rework for the better good
 
 ## 1.1.2
 

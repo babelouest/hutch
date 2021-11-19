@@ -27,21 +27,22 @@ json_t * safe_list(struct config_elements * config, json_t * j_profile) {
   json_t * j_query, * j_result, * j_return;
   int res;
   
-  j_query = json_pack("{sss[sssss]s{sO}}",
+  j_query = json_pack("{sss[sssss]s{sOsi}}",
                       "table", HUTCH_TABLE_SAFE,
                       "columns",
-                        "hs_id",
                         "hs_name AS name",
                         "hs_display_name AS display_name",
                         "hs_enc_type AS enc_type",
+                        "hs_alg_type AS alg_type",
                         SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hs_last_updated) AS last_updated", "hs_last_updated AS last_updated", "EXTRACT(EPOCH FROM hs_last_updated)::integer AS last_updated"),
                       "where",
-                        "hp_id", json_object_get(j_profile, "hp_id"));
+                        "hp_id", json_object_get(j_profile, "hp_id"),
+                        "hs_deleted", 0);
   res = h_select(config->conn, j_query, &j_result, NULL);
   json_decref(j_query);
   
   if (res == H_OK) {
-    j_return = json_pack("{siso}", "result", HU_OK, "safe", j_result);
+    j_return = json_pack("{sis{so}}", "result", HU_OK, "safe", "list", j_result);
   } else {
     y_log_message(Y_LOG_LEVEL_ERROR, "safe_list - Error executing j_query");
     j_return = json_pack("{si}", "result", HU_ERROR_DB);
@@ -53,13 +54,14 @@ json_t * safe_get(struct config_elements * config, json_t * j_profile, const cha
   json_t * j_query, * j_result, * j_return;
   int res;
   
-  j_query = json_pack("{sss[sssss]s{sOsssi}}",
+  j_query = json_pack("{sss[ssssss]s{sOsssi}}",
                       "table", HUTCH_TABLE_SAFE,
                       "columns",
                         "hs_id",
                         "hs_name AS name",
                         "hs_display_name AS display_name",
                         "hs_enc_type AS enc_type",
+                        "hs_alg_type AS alg_type",
                         SWITCH_DB_TYPE(config->conn->type, "UNIX_TIMESTAMP(hs_last_updated) AS last_updated", "hs_last_updated AS last_updated", "EXTRACT(EPOCH FROM hs_last_updated)::integer AS last_updated"),
                       "where",
                         "hp_id", json_object_get(j_profile, "hp_id"),
@@ -114,6 +116,10 @@ json_t * safe_is_valid(struct config_elements * config, json_t * j_profile, json
         ret = HU_ERROR_PARAM;
         json_array_append_new(j_error, json_string("enc_type must be a string of maximum 128 characters"));
       }
+      if (json_object_get(j_safe, "alg_type") != NULL && (!json_is_string(json_object_get(j_safe, "alg_type")) || json_string_length(json_object_get(j_safe, "alg_type")) > 128)) {
+        ret = HU_ERROR_PARAM;
+        json_array_append_new(j_error, json_string("alg_type must be a string of maximum 128 characters"));
+      }
     } else {
       ret = HU_ERROR_PARAM;
       json_array_append_new(j_error, json_string("safe must be a JSON object"));
@@ -140,12 +146,13 @@ int safe_add(struct config_elements * config, json_t * j_profile, json_t * j_saf
   
   time(&now); 
   snprintf(str_now, EPOCH_STR_FORMAT, "%s%lu)", (SWITCH_DB_TYPE(config->conn->type, "FROM_UNIXTIME(", "(", "TO_TIMESTAMP(")), now);
-  j_query = json_pack("{sss{sOsO?sO?sOs{ss}}}",
+  j_query = json_pack("{sss{sOsO?sO?sO?sOs{ss}}}",
                       "table", HUTCH_TABLE_SAFE,
                       "values",
                         "hs_name", json_object_get(j_safe, "name"),
                         "hs_display_name", json_object_get(j_safe, "display_name"),
                         "hs_enc_type", json_object_get(j_safe, "enc_type"),
+                        "hs_alg_type", json_object_get(j_safe, "alg_type"),
                         "hp_id", json_object_get(j_profile, "hp_id"),
                         "hs_last_updated",
                           "raw",
@@ -169,11 +176,12 @@ int safe_set(struct config_elements * config, json_t * j_profile, const char * n
   
   time(&now); 
   snprintf(str_now, EPOCH_STR_FORMAT, "%s%lu)", (SWITCH_DB_TYPE(config->conn->type, "FROM_UNIXTIME(", "(", "TO_TIMESTAMP(")), now);
-  j_query = json_pack("{sss{sO?sO?s{ss}}s{sssOsi}}",
+  j_query = json_pack("{sss{sO?sO?sO?s{ss}}s{sssOsi}}",
                       "table", HUTCH_TABLE_SAFE,
                       "set",
                         "hs_display_name", json_object_get(j_safe, "display_name"),
                         "hs_enc_type", json_object_get(j_safe, "enc_type"),
+                        "hs_alg_type", json_object_get(j_safe, "alg_type"),
                         "hs_last_updated",
                           "raw",
                           str_now,

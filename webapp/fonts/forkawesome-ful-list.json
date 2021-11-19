@@ -1,0 +1,4462 @@
+{
+  "brand": [
+    {
+      "label": "500px",
+      "icon": "fa-500px"
+    },
+    {
+      "label": "activitypub",
+      "icon": "fa-activitypub"
+    },
+    {
+      "label": "adn",
+      "icon": "fa-adn"
+    },
+    {
+      "label": "amazon",
+      "icon": "fa-amazon"
+    },
+    {
+      "label": "android",
+      "icon": "fa-android"
+    },
+    {
+      "label": "angellist",
+      "icon": "fa-angellist"
+    },
+    {
+      "label": "apple",
+      "icon": "fa-apple"
+    },
+    {
+      "label": "archive-org",
+      "icon": "fa-archive-org"
+    },
+    {
+      "label": "archlinux",
+      "icon": "fa-archlinux"
+    },
+    {
+      "label": "artstation",
+      "icon": "fa-artstation"
+    },
+    {
+      "label": "att",
+      "icon": "fa-att"
+    },
+    {
+      "label": "bandcamp",
+      "icon": "fa-bandcamp"
+    },
+    {
+      "label": "behance",
+      "icon": "fa-behance"
+    },
+    {
+      "label": "behance-square",
+      "icon": "fa-behance-square"
+    },
+    {
+      "label": "bitbucket",
+      "icon": "fa-bitbucket"
+    },
+    {
+      "label": "bitbucket-square",
+      "icon": "fa-bitbucket-square"
+    },
+    {
+      "label": "bitcoin",
+      "icon": "fa-bitcoin"
+    },
+    {
+      "label": "black-tie",
+      "icon": "fa-black-tie"
+    },
+    {
+      "label": "bluetooth",
+      "icon": "fa-bluetooth"
+    },
+    {
+      "label": "bluetooth-b",
+      "icon": "fa-bluetooth-b"
+    },
+    {
+      "label": "bootstrap",
+      "icon": "fa-bootstrap"
+    },
+    {
+      "label": "btc",
+      "icon": "fa-btc"
+    },
+    {
+      "label": "buysellads",
+      "icon": "fa-buysellads"
+    },
+    {
+      "label": "c",
+      "icon": "fa-c"
+    },
+    {
+      "label": "cc-amex",
+      "icon": "fa-cc-amex"
+    },
+    {
+      "label": "cc-diners-club",
+      "icon": "fa-cc-diners-club"
+    },
+    {
+      "label": "cc-discover",
+      "icon": "fa-cc-discover"
+    },
+    {
+      "label": "cc-jcb",
+      "icon": "fa-cc-jcb"
+    },
+    {
+      "label": "cc-mastercard",
+      "icon": "fa-cc-mastercard"
+    },
+    {
+      "label": "cc-paypal",
+      "icon": "fa-cc-paypal"
+    },
+    {
+      "label": "cc-stripe",
+      "icon": "fa-cc-stripe"
+    },
+    {
+      "label": "cc-visa",
+      "icon": "fa-cc-visa"
+    },
+    {
+      "label": "chrome",
+      "icon": "fa-chrome"
+    },
+    {
+      "label": "codepen",
+      "icon": "fa-codepen"
+    },
+    {
+      "label": "codiepie",
+      "icon": "fa-codiepie"
+    },
+    {
+      "label": "connectdevelop",
+      "icon": "fa-connectdevelop"
+    },
+    {
+      "label": "contao",
+      "icon": "fa-contao"
+    },
+    {
+      "label": "css3",
+      "icon": "fa-css3"
+    },
+    {
+      "label": "dashcube",
+      "icon": "fa-dashcube"
+    },
+    {
+      "label": "debian",
+      "icon": "fa-debian"
+    },
+    {
+      "label": "delicious",
+      "icon": "fa-delicious"
+    },
+    {
+      "label": "dev-to",
+      "icon": "fa-dev-to"
+    },
+    {
+      "label": "deviantart",
+      "icon": "fa-deviantart"
+    },
+    {
+      "label": "diaspora",
+      "icon": "fa-diaspora"
+    },
+    {
+      "label": "digg",
+      "icon": "fa-digg"
+    },
+    {
+      "label": "digitalocean",
+      "icon": "fa-digitalocean"
+    },
+    {
+      "label": "discord",
+      "icon": "fa-discord"
+    },
+    {
+      "label": "discord-alt",
+      "icon": "fa-discord-alt"
+    },
+    {
+      "label": "dogmazic",
+      "icon": "fa-dogmazic"
+    },
+    {
+      "label": "dribbble",
+      "icon": "fa-dribbble"
+    },
+    {
+      "label": "dropbox",
+      "icon": "fa-dropbox"
+    },
+    {
+      "label": "drupal",
+      "icon": "fa-drupal"
+    },
+    {
+      "label": "edge",
+      "icon": "fa-edge"
+    },
+    {
+      "label": "eercast",
+      "icon": "fa-eercast"
+    },
+    {
+      "label": "emby",
+      "icon": "fa-emby"
+    },
+    {
+      "label": "empire",
+      "icon": "fa-empire"
+    },
+    {
+      "label": "envira",
+      "icon": "fa-envira"
+    },
+    {
+      "label": "ethereum",
+      "icon": "fa-ethereum"
+    },
+    {
+      "label": "etsy",
+      "icon": "fa-etsy"
+    },
+    {
+      "label": "expeditedssl",
+      "icon": "fa-expeditedssl"
+    },
+    {
+      "label": "f-droid",
+      "icon": "fa-f-droid"
+    },
+    {
+      "label": "fa",
+      "icon": "fa-fa"
+    },
+    {
+      "label": "facebook",
+      "icon": "fa-facebook"
+    },
+    {
+      "label": "facebook-f",
+      "icon": "fa-facebook-f"
+    },
+    {
+      "label": "facebook-messenger",
+      "icon": "fa-facebook-messenger"
+    },
+    {
+      "label": "facebook-official",
+      "icon": "fa-facebook-official"
+    },
+    {
+      "label": "facebook-square",
+      "icon": "fa-facebook-square"
+    },
+    {
+      "label": "ffmpeg",
+      "icon": "fa-ffmpeg"
+    },
+    {
+      "label": "firefox",
+      "icon": "fa-firefox"
+    },
+    {
+      "label": "first-order",
+      "icon": "fa-first-order"
+    },
+    {
+      "label": "flickr",
+      "icon": "fa-flickr"
+    },
+    {
+      "label": "font-awesome",
+      "icon": "fa-font-awesome"
+    },
+    {
+      "label": "fonticons",
+      "icon": "fa-fonticons"
+    },
+    {
+      "label": "fork-awesome",
+      "icon": "fa-fork-awesome"
+    },
+    {
+      "label": "fork-circle",
+      "icon": "fa-fork-circle"
+    },
+    {
+      "label": "fort-awesome",
+      "icon": "fa-fort-awesome"
+    },
+    {
+      "label": "forumbee",
+      "icon": "fa-forumbee"
+    },
+    {
+      "label": "foursquare",
+      "icon": "fa-foursquare"
+    },
+    {
+      "label": "free-code-camp",
+      "icon": "fa-free-code-camp"
+    },
+    {
+      "label": "freedombox",
+      "icon": "fa-freedombox"
+    },
+    {
+      "label": "friendica",
+      "icon": "fa-friendica"
+    },
+    {
+      "label": "ge",
+      "icon": "fa-ge"
+    },
+    {
+      "label": "get-pocket",
+      "icon": "fa-get-pocket"
+    },
+    {
+      "label": "gg",
+      "icon": "fa-gg"
+    },
+    {
+      "label": "gg-circle",
+      "icon": "fa-gg-circle"
+    },
+    {
+      "label": "gimp",
+      "icon": "fa-gimp"
+    },
+    {
+      "label": "git",
+      "icon": "fa-git"
+    },
+    {
+      "label": "git-square",
+      "icon": "fa-git-square"
+    },
+    {
+      "label": "gitea",
+      "icon": "fa-gitea"
+    },
+    {
+      "label": "github",
+      "icon": "fa-github"
+    },
+    {
+      "label": "github-alt",
+      "icon": "fa-github-alt"
+    },
+    {
+      "label": "github-square",
+      "icon": "fa-github-square"
+    },
+    {
+      "label": "gitlab",
+      "icon": "fa-gitlab"
+    },
+    {
+      "label": "gittip",
+      "icon": "fa-gittip"
+    },
+    {
+      "label": "glide",
+      "icon": "fa-glide"
+    },
+    {
+      "label": "glide-g",
+      "icon": "fa-glide-g"
+    },
+    {
+      "label": "gnu-social",
+      "icon": "fa-gnu-social"
+    },
+    {
+      "label": "gnupg",
+      "icon": "fa-gnupg"
+    },
+    {
+      "label": "google",
+      "icon": "fa-google"
+    },
+    {
+      "label": "google-plus",
+      "icon": "fa-google-plus"
+    },
+    {
+      "label": "google-plus-circle",
+      "icon": "fa-google-plus-circle"
+    },
+    {
+      "label": "google-plus-g",
+      "icon": "fa-google-plus-g"
+    },
+    {
+      "label": "google-plus-official",
+      "icon": "fa-google-plus-official"
+    },
+    {
+      "label": "google-plus-square",
+      "icon": "fa-google-plus-square"
+    },
+    {
+      "label": "google-wallet",
+      "icon": "fa-google-wallet"
+    },
+    {
+      "label": "gratipay",
+      "icon": "fa-gratipay"
+    },
+    {
+      "label": "grav",
+      "icon": "fa-grav"
+    },
+    {
+      "label": "hackaday",
+      "icon": "fa-hackaday"
+    },
+    {
+      "label": "hacker-news",
+      "icon": "fa-hacker-news"
+    },
+    {
+      "label": "hackster",
+      "icon": "fa-hackster"
+    },
+    {
+      "label": "hashnode",
+      "icon": "fa-hashnode"
+    },
+    {
+      "label": "houzz",
+      "icon": "fa-houzz"
+    },
+    {
+      "label": "html5",
+      "icon": "fa-html5"
+    },
+    {
+      "label": "hubzilla",
+      "icon": "fa-hubzilla"
+    },
+    {
+      "label": "imdb",
+      "icon": "fa-imdb"
+    },
+    {
+      "label": "inkscape",
+      "icon": "fa-inkscape"
+    },
+    {
+      "label": "instagram",
+      "icon": "fa-instagram"
+    },
+    {
+      "label": "internet-explorer",
+      "icon": "fa-internet-explorer"
+    },
+    {
+      "label": "ioxhost",
+      "icon": "fa-ioxhost"
+    },
+    {
+      "label": "jirafeau",
+      "icon": "fa-jirafeau"
+    },
+    {
+      "label": "joomla",
+      "icon": "fa-joomla"
+    },
+    {
+      "label": "joplin",
+      "icon": "fa-joplin"
+    },
+    {
+      "label": "jsfiddle",
+      "icon": "fa-jsfiddle"
+    },
+    {
+      "label": "keybase",
+      "icon": "fa-keybase"
+    },
+    {
+      "label": "laravel",
+      "icon": "fa-laravel"
+    },
+    {
+      "label": "lastfm",
+      "icon": "fa-lastfm"
+    },
+    {
+      "label": "lastfm-square",
+      "icon": "fa-lastfm-square"
+    },
+    {
+      "label": "leanpub",
+      "icon": "fa-leanpub"
+    },
+    {
+      "label": "liberapay",
+      "icon": "fa-liberapay"
+    },
+    {
+      "label": "liberapay-square",
+      "icon": "fa-liberapay-square"
+    },
+    {
+      "label": "linkedin",
+      "icon": "fa-linkedin"
+    },
+    {
+      "label": "linkedin-square",
+      "icon": "fa-linkedin-square"
+    },
+    {
+      "label": "linode",
+      "icon": "fa-linode"
+    },
+    {
+      "label": "linux",
+      "icon": "fa-linux"
+    },
+    {
+      "label": "mastodon",
+      "icon": "fa-mastodon"
+    },
+    {
+      "label": "mastodon-alt",
+      "icon": "fa-mastodon-alt"
+    },
+    {
+      "label": "mastodon-square",
+      "icon": "fa-mastodon-square"
+    },
+    {
+      "label": "matrix-org",
+      "icon": "fa-matrix-org"
+    },
+    {
+      "label": "maxcdn",
+      "icon": "fa-maxcdn"
+    },
+    {
+      "label": "meanpath",
+      "icon": "fa-meanpath"
+    },
+    {
+      "label": "medium",
+      "icon": "fa-medium"
+    },
+    {
+      "label": "medium-square",
+      "icon": "fa-medium-square"
+    },
+    {
+      "label": "meetup",
+      "icon": "fa-meetup"
+    },
+    {
+      "label": "mixcloud",
+      "icon": "fa-mixcloud"
+    },
+    {
+      "label": "modx",
+      "icon": "fa-modx"
+    },
+    {
+      "label": "nextcloud",
+      "icon": "fa-nextcloud"
+    },
+    {
+      "label": "nextcloud-square",
+      "icon": "fa-nextcloud-square"
+    },
+    {
+      "label": "nodejs",
+      "icon": "fa-nodejs"
+    },
+    {
+      "label": "odnoklassniki",
+      "icon": "fa-odnoklassniki"
+    },
+    {
+      "label": "odnoklassniki-square",
+      "icon": "fa-odnoklassniki-square"
+    },
+    {
+      "label": "opencart",
+      "icon": "fa-opencart"
+    },
+    {
+      "label": "openid",
+      "icon": "fa-openid"
+    },
+    {
+      "label": "opera",
+      "icon": "fa-opera"
+    },
+    {
+      "label": "optin-monster",
+      "icon": "fa-optin-monster"
+    },
+    {
+      "label": "pagelines",
+      "icon": "fa-pagelines"
+    },
+    {
+      "label": "patreon",
+      "icon": "fa-patreon"
+    },
+    {
+      "label": "paypal",
+      "icon": "fa-paypal"
+    },
+    {
+      "label": "peertube",
+      "icon": "fa-peertube"
+    },
+    {
+      "label": "php",
+      "icon": "fa-php"
+    },
+    {
+      "label": "pinterest",
+      "icon": "fa-pinterest"
+    },
+    {
+      "label": "pinterest-p",
+      "icon": "fa-pinterest-p"
+    },
+    {
+      "label": "pinterest-square",
+      "icon": "fa-pinterest-square"
+    },
+    {
+      "label": "pixelfed",
+      "icon": "fa-pixelfed"
+    },
+    {
+      "label": "pleroma",
+      "icon": "fa-pleroma"
+    },
+    {
+      "label": "product-hunt",
+      "icon": "fa-product-hunt"
+    },
+    {
+      "label": "python",
+      "icon": "fa-python"
+    },
+    {
+      "label": "qq",
+      "icon": "fa-qq"
+    },
+    {
+      "label": "quora",
+      "icon": "fa-quora"
+    },
+    {
+      "label": "ra",
+      "icon": "fa-ra"
+    },
+    {
+      "label": "ravelry",
+      "icon": "fa-ravelry"
+    },
+    {
+      "label": "react",
+      "icon": "fa-react"
+    },
+    {
+      "label": "rebel",
+      "icon": "fa-rebel"
+    },
+    {
+      "label": "reddit",
+      "icon": "fa-reddit"
+    },
+    {
+      "label": "reddit-alien",
+      "icon": "fa-reddit-alien"
+    },
+    {
+      "label": "reddit-square",
+      "icon": "fa-reddit-square"
+    },
+    {
+      "label": "renren",
+      "icon": "fa-renren"
+    },
+    {
+      "label": "resistance",
+      "icon": "fa-resistance"
+    },
+    {
+      "label": "safari",
+      "icon": "fa-safari"
+    },
+    {
+      "label": "scribd",
+      "icon": "fa-scribd"
+    },
+    {
+      "label": "scuttlebutt",
+      "icon": "fa-scuttlebutt"
+    },
+    {
+      "label": "sellsy",
+      "icon": "fa-sellsy"
+    },
+    {
+      "label": "shaarli",
+      "icon": "fa-shaarli"
+    },
+    {
+      "label": "shaarli-o",
+      "icon": "fa-shaarli-o"
+    },
+    {
+      "label": "share-alt",
+      "icon": "fa-share-alt"
+    },
+    {
+      "label": "share-alt-square",
+      "icon": "fa-share-alt-square"
+    },
+    {
+      "label": "shirtsinbulk",
+      "icon": "fa-shirtsinbulk"
+    },
+    {
+      "label": "simplybuilt",
+      "icon": "fa-simplybuilt"
+    },
+    {
+      "label": "skyatlas",
+      "icon": "fa-skyatlas"
+    },
+    {
+      "label": "skype",
+      "icon": "fa-skype"
+    },
+    {
+      "label": "slack",
+      "icon": "fa-slack"
+    },
+    {
+      "label": "slideshare",
+      "icon": "fa-slideshare"
+    },
+    {
+      "label": "snapchat",
+      "icon": "fa-snapchat"
+    },
+    {
+      "label": "snapchat-ghost",
+      "icon": "fa-snapchat-ghost"
+    },
+    {
+      "label": "snapchat-square",
+      "icon": "fa-snapchat-square"
+    },
+    {
+      "label": "snowdrift",
+      "icon": "fa-snowdrift"
+    },
+    {
+      "label": "social-home",
+      "icon": "fa-social-home"
+    },
+    {
+      "label": "soundcloud",
+      "icon": "fa-soundcloud"
+    },
+    {
+      "label": "spotify",
+      "icon": "fa-spotify"
+    },
+    {
+      "label": "ssb",
+      "icon": "fa-ssb"
+    },
+    {
+      "label": "stack-exchange",
+      "icon": "fa-stack-exchange"
+    },
+    {
+      "label": "stack-overflow",
+      "icon": "fa-stack-overflow"
+    },
+    {
+      "label": "steam",
+      "icon": "fa-steam"
+    },
+    {
+      "label": "steam-square",
+      "icon": "fa-steam-square"
+    },
+    {
+      "label": "stumbleupon",
+      "icon": "fa-stumbleupon"
+    },
+    {
+      "label": "stumbleupon-circle",
+      "icon": "fa-stumbleupon-circle"
+    },
+    {
+      "label": "superpowers",
+      "icon": "fa-superpowers"
+    },
+    {
+      "label": "syncthing",
+      "icon": "fa-syncthing"
+    },
+    {
+      "label": "telegram",
+      "icon": "fa-telegram"
+    },
+    {
+      "label": "tencent-weibo",
+      "icon": "fa-tencent-weibo"
+    },
+    {
+      "label": "themeisle",
+      "icon": "fa-themeisle"
+    },
+    {
+      "label": "tipeee",
+      "icon": "fa-tipeee"
+    },
+    {
+      "label": "trello",
+      "icon": "fa-trello"
+    },
+    {
+      "label": "tripadvisor",
+      "icon": "fa-tripadvisor"
+    },
+    {
+      "label": "tumblr",
+      "icon": "fa-tumblr"
+    },
+    {
+      "label": "tumblr-square",
+      "icon": "fa-tumblr-square"
+    },
+    {
+      "label": "twitch",
+      "icon": "fa-twitch"
+    },
+    {
+      "label": "twitter",
+      "icon": "fa-twitter"
+    },
+    {
+      "label": "twitter-square",
+      "icon": "fa-twitter-square"
+    },
+    {
+      "label": "unsplash",
+      "icon": "fa-unsplash"
+    },
+    {
+      "label": "usb",
+      "icon": "fa-usb"
+    },
+    {
+      "label": "viacoin",
+      "icon": "fa-viacoin"
+    },
+    {
+      "label": "viadeo",
+      "icon": "fa-viadeo"
+    },
+    {
+      "label": "viadeo-square",
+      "icon": "fa-viadeo-square"
+    },
+    {
+      "label": "vimeo",
+      "icon": "fa-vimeo"
+    },
+    {
+      "label": "vimeo-square",
+      "icon": "fa-vimeo-square"
+    },
+    {
+      "label": "vimeo-v",
+      "icon": "fa-vimeo-v"
+    },
+    {
+      "label": "vine",
+      "icon": "fa-vine"
+    },
+    {
+      "label": "vk",
+      "icon": "fa-vk"
+    },
+    {
+      "label": "wechat",
+      "icon": "fa-wechat"
+    },
+    {
+      "label": "weibo",
+      "icon": "fa-weibo"
+    },
+    {
+      "label": "weixin",
+      "icon": "fa-weixin"
+    },
+    {
+      "label": "whatsapp",
+      "icon": "fa-whatsapp"
+    },
+    {
+      "label": "wikidata",
+      "icon": "fa-wikidata"
+    },
+    {
+      "label": "wikipedia-w",
+      "icon": "fa-wikipedia-w"
+    },
+    {
+      "label": "windows",
+      "icon": "fa-windows"
+    },
+    {
+      "label": "wordpress",
+      "icon": "fa-wordpress"
+    },
+    {
+      "label": "wpbeginner",
+      "icon": "fa-wpbeginner"
+    },
+    {
+      "label": "wpexplorer",
+      "icon": "fa-wpexplorer"
+    },
+    {
+      "label": "wpforms",
+      "icon": "fa-wpforms"
+    },
+    {
+      "label": "xing",
+      "icon": "fa-xing"
+    },
+    {
+      "label": "xing-square",
+      "icon": "fa-xing-square"
+    },
+    {
+      "label": "xmpp",
+      "icon": "fa-xmpp"
+    },
+    {
+      "label": "y-combinator",
+      "icon": "fa-y-combinator"
+    },
+    {
+      "label": "y-combinator-square",
+      "icon": "fa-y-combinator-square"
+    },
+    {
+      "label": "yahoo",
+      "icon": "fa-yahoo"
+    },
+    {
+      "label": "yc",
+      "icon": "fa-yc"
+    },
+    {
+      "label": "yc-square",
+      "icon": "fa-yc-square"
+    },
+    {
+      "label": "yelp",
+      "icon": "fa-yelp"
+    },
+    {
+      "label": "yoast",
+      "icon": "fa-yoast"
+    },
+    {
+      "label": "youtube",
+      "icon": "fa-youtube"
+    },
+    {
+      "label": "youtube-play",
+      "icon": "fa-youtube-play"
+    },
+    {
+      "label": "youtube-square",
+      "icon": "fa-youtube-square"
+    },
+    {
+      "label": "zotero",
+      "icon": "fa-zotero"
+    }
+  ],
+  "new": [
+    {
+      "label": "activitypub",
+      "icon": "fa-activitypub"
+    },
+    {
+      "label": "archive-org",
+      "icon": "fa-archive-org"
+    },
+    {
+      "label": "archlinux",
+      "icon": "fa-archlinux"
+    },
+    {
+      "label": "artstation",
+      "icon": "fa-artstation"
+    },
+    {
+      "label": "att",
+      "icon": "fa-att"
+    },
+    {
+      "label": "barcode",
+      "icon": "fa-barcode"
+    },
+    {
+      "label": "biometric",
+      "icon": "fa-biometric"
+    },
+    {
+      "label": "bootstrap",
+      "icon": "fa-bootstrap"
+    },
+    {
+      "label": "c",
+      "icon": "fa-c"
+    },
+    {
+      "label": "debian",
+      "icon": "fa-debian"
+    },
+    {
+      "label": "dev-to",
+      "icon": "fa-dev-to"
+    },
+    {
+      "label": "diaspora",
+      "icon": "fa-diaspora"
+    },
+    {
+      "label": "digitalocean",
+      "icon": "fa-digitalocean"
+    },
+    {
+      "label": "discord",
+      "icon": "fa-discord"
+    },
+    {
+      "label": "discord-alt",
+      "icon": "fa-discord-alt"
+    },
+    {
+      "label": "dogmazic",
+      "icon": "fa-dogmazic"
+    },
+    {
+      "label": "emby",
+      "icon": "fa-emby"
+    },
+    {
+      "label": "ethereum",
+      "icon": "fa-ethereum"
+    },
+    {
+      "label": "f-droid",
+      "icon": "fa-f-droid"
+    },
+    {
+      "label": "facebook-messenger",
+      "icon": "fa-facebook-messenger"
+    },
+    {
+      "label": "ffmpeg",
+      "icon": "fa-ffmpeg"
+    },
+    {
+      "label": "file-epub",
+      "icon": "fa-file-epub"
+    },
+    {
+      "label": "fork-awesome",
+      "icon": "fa-fork-awesome"
+    },
+    {
+      "label": "freedombox",
+      "icon": "fa-freedombox"
+    },
+    {
+      "label": "friendica",
+      "icon": "fa-friendica"
+    },
+    {
+      "label": "gimp",
+      "icon": "fa-gimp"
+    },
+    {
+      "label": "gitea",
+      "icon": "fa-gitea"
+    },
+    {
+      "label": "globe",
+      "icon": "fa-globe"
+    },
+    {
+      "label": "globe-e",
+      "icon": "fa-globe-e"
+    },
+    {
+      "label": "globe-w",
+      "icon": "fa-globe-w"
+    },
+    {
+      "label": "gnu-social",
+      "icon": "fa-gnu-social"
+    },
+    {
+      "label": "gnupg",
+      "icon": "fa-gnupg"
+    },
+    {
+      "label": "hackaday",
+      "icon": "fa-hackaday"
+    },
+    {
+      "label": "hackster",
+      "icon": "fa-hackster"
+    },
+    {
+      "label": "hashnode",
+      "icon": "fa-hashnode"
+    },
+    {
+      "label": "hubzilla",
+      "icon": "fa-hubzilla"
+    },
+    {
+      "label": "inkscape",
+      "icon": "fa-inkscape"
+    },
+    {
+      "label": "jirafeau",
+      "icon": "fa-jirafeau"
+    },
+    {
+      "label": "joplin",
+      "icon": "fa-joplin"
+    },
+    {
+      "label": "key-modern",
+      "icon": "fa-key-modern"
+    },
+    {
+      "label": "keybase",
+      "icon": "fa-keybase"
+    },
+    {
+      "label": "laravel",
+      "icon": "fa-laravel"
+    },
+    {
+      "label": "liberapay",
+      "icon": "fa-liberapay"
+    },
+    {
+      "label": "liberapay-square",
+      "icon": "fa-liberapay-square"
+    },
+    {
+      "label": "mastodon",
+      "icon": "fa-mastodon"
+    },
+    {
+      "label": "mastodon-alt",
+      "icon": "fa-mastodon-alt"
+    },
+    {
+      "label": "mastodon-square",
+      "icon": "fa-mastodon-square"
+    },
+    {
+      "label": "matrix-org",
+      "icon": "fa-matrix-org"
+    },
+    {
+      "label": "medium",
+      "icon": "fa-medium"
+    },
+    {
+      "label": "medium-square",
+      "icon": "fa-medium-square"
+    },
+    {
+      "label": "moon",
+      "icon": "fa-moon"
+    },
+    {
+      "label": "nextcloud",
+      "icon": "fa-nextcloud"
+    },
+    {
+      "label": "nextcloud-square",
+      "icon": "fa-nextcloud-square"
+    },
+    {
+      "label": "nodejs",
+      "icon": "fa-nodejs"
+    },
+    {
+      "label": "patreon",
+      "icon": "fa-patreon"
+    },
+    {
+      "label": "peertube",
+      "icon": "fa-peertube"
+    },
+    {
+      "label": "php",
+      "icon": "fa-php"
+    },
+    {
+      "label": "pixelfed",
+      "icon": "fa-pixelfed"
+    },
+    {
+      "label": "pleroma",
+      "icon": "fa-pleroma"
+    },
+    {
+      "label": "python",
+      "icon": "fa-python"
+    },
+    {
+      "label": "qrcode",
+      "icon": "fa-qrcode"
+    },
+    {
+      "label": "react",
+      "icon": "fa-react"
+    },
+    {
+      "label": "scuttlebutt",
+      "icon": "fa-scuttlebutt"
+    },
+    {
+      "label": "shaarli",
+      "icon": "fa-shaarli"
+    },
+    {
+      "label": "shaarli-o",
+      "icon": "fa-shaarli-o"
+    },
+    {
+      "label": "signalapp",
+      "icon": "fa-signalapp"
+    },
+    {
+      "label": "snowdrift",
+      "icon": "fa-snowdrift"
+    },
+    {
+      "label": "social-home",
+      "icon": "fa-social-home"
+    },
+    {
+      "label": "spell-check",
+      "icon": "fa-spell-check"
+    },
+    {
+      "label": "sun",
+      "icon": "fa-sun"
+    },
+    {
+      "label": "syncthing",
+      "icon": "fa-syncthing"
+    },
+    {
+      "label": "tipeee",
+      "icon": "fa-tipeee"
+    },
+    {
+      "label": "unsplash",
+      "icon": "fa-unsplash"
+    },
+    {
+      "label": "wikidata",
+      "icon": "fa-wikidata"
+    },
+    {
+      "label": "xmpp",
+      "icon": "fa-xmpp"
+    },
+    {
+      "label": "zotero",
+      "icon": "fa-zotero"
+    }
+  ],
+  "web-application": [
+    {
+      "label": "address-book",
+      "icon": "fa-address-book"
+    },
+    {
+      "label": "address-book-o",
+      "icon": "fa-address-book-o"
+    },
+    {
+      "label": "address-card",
+      "icon": "fa-address-card"
+    },
+    {
+      "label": "address-card-o",
+      "icon": "fa-address-card-o"
+    },
+    {
+      "label": "adjust",
+      "icon": "fa-adjust"
+    },
+    {
+      "label": "american-sign-language-interpreting",
+      "icon": "fa-american-sign-language-interpreting"
+    },
+    {
+      "label": "anchor",
+      "icon": "fa-anchor"
+    },
+    {
+      "label": "archive",
+      "icon": "fa-archive"
+    },
+    {
+      "label": "area-chart",
+      "icon": "fa-area-chart"
+    },
+    {
+      "label": "arrows",
+      "icon": "fa-arrows"
+    },
+    {
+      "label": "arrows-h",
+      "icon": "fa-arrows-h"
+    },
+    {
+      "label": "arrows-v",
+      "icon": "fa-arrows-v"
+    },
+    {
+      "label": "artstation",
+      "icon": "fa-artstation"
+    },
+    {
+      "label": "asl-interpreting",
+      "icon": "fa-asl-interpreting"
+    },
+    {
+      "label": "assistive-listening-systems",
+      "icon": "fa-assistive-listening-systems"
+    },
+    {
+      "label": "asterisk",
+      "icon": "fa-asterisk"
+    },
+    {
+      "label": "at",
+      "icon": "fa-at"
+    },
+    {
+      "label": "audio-description",
+      "icon": "fa-audio-description"
+    },
+    {
+      "label": "automobile",
+      "icon": "fa-automobile"
+    },
+    {
+      "label": "balance-scale",
+      "icon": "fa-balance-scale"
+    },
+    {
+      "label": "ban",
+      "icon": "fa-ban"
+    },
+    {
+      "label": "bank",
+      "icon": "fa-bank"
+    },
+    {
+      "label": "bar-chart",
+      "icon": "fa-bar-chart"
+    },
+    {
+      "label": "bar-chart-o",
+      "icon": "fa-bar-chart-o"
+    },
+    {
+      "label": "barcode",
+      "icon": "fa-barcode"
+    },
+    {
+      "label": "bars",
+      "icon": "fa-bars"
+    },
+    {
+      "label": "bath",
+      "icon": "fa-bath"
+    },
+    {
+      "label": "bathtub",
+      "icon": "fa-bathtub"
+    },
+    {
+      "label": "battery",
+      "icon": "fa-battery"
+    },
+    {
+      "label": "battery-0",
+      "icon": "fa-battery-0"
+    },
+    {
+      "label": "battery-1",
+      "icon": "fa-battery-1"
+    },
+    {
+      "label": "battery-2",
+      "icon": "fa-battery-2"
+    },
+    {
+      "label": "battery-3",
+      "icon": "fa-battery-3"
+    },
+    {
+      "label": "battery-4",
+      "icon": "fa-battery-4"
+    },
+    {
+      "label": "battery-empty",
+      "icon": "fa-battery-empty"
+    },
+    {
+      "label": "battery-full",
+      "icon": "fa-battery-full"
+    },
+    {
+      "label": "battery-half",
+      "icon": "fa-battery-half"
+    },
+    {
+      "label": "battery-quarter",
+      "icon": "fa-battery-quarter"
+    },
+    {
+      "label": "battery-three-quarters",
+      "icon": "fa-battery-three-quarters"
+    },
+    {
+      "label": "bed",
+      "icon": "fa-bed"
+    },
+    {
+      "label": "beer",
+      "icon": "fa-beer"
+    },
+    {
+      "label": "bell",
+      "icon": "fa-bell"
+    },
+    {
+      "label": "bell-o",
+      "icon": "fa-bell-o"
+    },
+    {
+      "label": "bell-slash",
+      "icon": "fa-bell-slash"
+    },
+    {
+      "label": "bell-slash-o",
+      "icon": "fa-bell-slash-o"
+    },
+    {
+      "label": "bicycle",
+      "icon": "fa-bicycle"
+    },
+    {
+      "label": "binoculars",
+      "icon": "fa-binoculars"
+    },
+    {
+      "label": "biometric",
+      "icon": "fa-biometric"
+    },
+    {
+      "label": "birthday-cake",
+      "icon": "fa-birthday-cake"
+    },
+    {
+      "label": "blind",
+      "icon": "fa-blind"
+    },
+    {
+      "label": "bluetooth",
+      "icon": "fa-bluetooth"
+    },
+    {
+      "label": "bluetooth-b",
+      "icon": "fa-bluetooth-b"
+    },
+    {
+      "label": "bolt",
+      "icon": "fa-bolt"
+    },
+    {
+      "label": "bomb",
+      "icon": "fa-bomb"
+    },
+    {
+      "label": "book",
+      "icon": "fa-book"
+    },
+    {
+      "label": "bookmark",
+      "icon": "fa-bookmark"
+    },
+    {
+      "label": "bookmark-o",
+      "icon": "fa-bookmark-o"
+    },
+    {
+      "label": "braille",
+      "icon": "fa-braille"
+    },
+    {
+      "label": "briefcase",
+      "icon": "fa-briefcase"
+    },
+    {
+      "label": "bug",
+      "icon": "fa-bug"
+    },
+    {
+      "label": "building",
+      "icon": "fa-building"
+    },
+    {
+      "label": "building-o",
+      "icon": "fa-building-o"
+    },
+    {
+      "label": "bullhorn",
+      "icon": "fa-bullhorn"
+    },
+    {
+      "label": "bullseye",
+      "icon": "fa-bullseye"
+    },
+    {
+      "label": "bus",
+      "icon": "fa-bus"
+    },
+    {
+      "label": "cab",
+      "icon": "fa-cab"
+    },
+    {
+      "label": "calculator",
+      "icon": "fa-calculator"
+    },
+    {
+      "label": "calendar",
+      "icon": "fa-calendar"
+    },
+    {
+      "label": "calendar-check-o",
+      "icon": "fa-calendar-check-o"
+    },
+    {
+      "label": "calendar-minus-o",
+      "icon": "fa-calendar-minus-o"
+    },
+    {
+      "label": "calendar-o",
+      "icon": "fa-calendar-o"
+    },
+    {
+      "label": "calendar-plus-o",
+      "icon": "fa-calendar-plus-o"
+    },
+    {
+      "label": "calendar-times-o",
+      "icon": "fa-calendar-times-o"
+    },
+    {
+      "label": "camera",
+      "icon": "fa-camera"
+    },
+    {
+      "label": "camera-retro",
+      "icon": "fa-camera-retro"
+    },
+    {
+      "label": "car",
+      "icon": "fa-car"
+    },
+    {
+      "label": "caret-square-o-down",
+      "icon": "fa-caret-square-o-down"
+    },
+    {
+      "label": "caret-square-o-left",
+      "icon": "fa-caret-square-o-left"
+    },
+    {
+      "label": "caret-square-o-right",
+      "icon": "fa-caret-square-o-right"
+    },
+    {
+      "label": "caret-square-o-up",
+      "icon": "fa-caret-square-o-up"
+    },
+    {
+      "label": "cart-arrow-down",
+      "icon": "fa-cart-arrow-down"
+    },
+    {
+      "label": "cart-plus",
+      "icon": "fa-cart-plus"
+    },
+    {
+      "label": "cc",
+      "icon": "fa-cc"
+    },
+    {
+      "label": "certificate",
+      "icon": "fa-certificate"
+    },
+    {
+      "label": "check",
+      "icon": "fa-check"
+    },
+    {
+      "label": "check-circle",
+      "icon": "fa-check-circle"
+    },
+    {
+      "label": "check-circle-o",
+      "icon": "fa-check-circle-o"
+    },
+    {
+      "label": "check-square",
+      "icon": "fa-check-square"
+    },
+    {
+      "label": "check-square-o",
+      "icon": "fa-check-square-o"
+    },
+    {
+      "label": "child",
+      "icon": "fa-child"
+    },
+    {
+      "label": "circle",
+      "icon": "fa-circle"
+    },
+    {
+      "label": "circle-o",
+      "icon": "fa-circle-o"
+    },
+    {
+      "label": "circle-o-notch",
+      "icon": "fa-circle-o-notch"
+    },
+    {
+      "label": "circle-thin",
+      "icon": "fa-circle-thin"
+    },
+    {
+      "label": "clock-o",
+      "icon": "fa-clock-o"
+    },
+    {
+      "label": "clone",
+      "icon": "fa-clone"
+    },
+    {
+      "label": "close",
+      "icon": "fa-close"
+    },
+    {
+      "label": "closed-captioning",
+      "icon": "fa-closed-captioning"
+    },
+    {
+      "label": "cloud",
+      "icon": "fa-cloud"
+    },
+    {
+      "label": "cloud-download",
+      "icon": "fa-cloud-download"
+    },
+    {
+      "label": "cloud-upload",
+      "icon": "fa-cloud-upload"
+    },
+    {
+      "label": "code",
+      "icon": "fa-code"
+    },
+    {
+      "label": "code-fork",
+      "icon": "fa-code-fork"
+    },
+    {
+      "label": "coffee",
+      "icon": "fa-coffee"
+    },
+    {
+      "label": "cog",
+      "icon": "fa-cog"
+    },
+    {
+      "label": "cogs",
+      "icon": "fa-cogs"
+    },
+    {
+      "label": "comment",
+      "icon": "fa-comment"
+    },
+    {
+      "label": "comment-o",
+      "icon": "fa-comment-o"
+    },
+    {
+      "label": "commenting",
+      "icon": "fa-commenting"
+    },
+    {
+      "label": "commenting-o",
+      "icon": "fa-commenting-o"
+    },
+    {
+      "label": "comments",
+      "icon": "fa-comments"
+    },
+    {
+      "label": "comments-o",
+      "icon": "fa-comments-o"
+    },
+    {
+      "label": "community",
+      "icon": "fa-community"
+    },
+    {
+      "label": "compass",
+      "icon": "fa-compass"
+    },
+    {
+      "label": "copyright",
+      "icon": "fa-copyright"
+    },
+    {
+      "label": "creative-commons",
+      "icon": "fa-creative-commons"
+    },
+    {
+      "label": "credit-card",
+      "icon": "fa-credit-card"
+    },
+    {
+      "label": "credit-card-alt",
+      "icon": "fa-credit-card-alt"
+    },
+    {
+      "label": "crop",
+      "icon": "fa-crop"
+    },
+    {
+      "label": "crosshairs",
+      "icon": "fa-crosshairs"
+    },
+    {
+      "label": "cube",
+      "icon": "fa-cube"
+    },
+    {
+      "label": "cubes",
+      "icon": "fa-cubes"
+    },
+    {
+      "label": "cut-key",
+      "icon": "fa-cut-key"
+    },
+    {
+      "label": "cutlery",
+      "icon": "fa-cutlery"
+    },
+    {
+      "label": "dashboard",
+      "icon": "fa-dashboard"
+    },
+    {
+      "label": "database",
+      "icon": "fa-database"
+    },
+    {
+      "label": "deaf",
+      "icon": "fa-deaf"
+    },
+    {
+      "label": "deafness",
+      "icon": "fa-deafness"
+    },
+    {
+      "label": "desktop",
+      "icon": "fa-desktop"
+    },
+    {
+      "label": "diamond",
+      "icon": "fa-diamond"
+    },
+    {
+      "label": "diaspora",
+      "icon": "fa-diaspora"
+    },
+    {
+      "label": "discord",
+      "icon": "fa-discord"
+    },
+    {
+      "label": "discord-alt",
+      "icon": "fa-discord-alt"
+    },
+    {
+      "label": "dot-circle-o",
+      "icon": "fa-dot-circle-o"
+    },
+    {
+      "label": "download",
+      "icon": "fa-download"
+    },
+    {
+      "label": "drivers-license",
+      "icon": "fa-drivers-license"
+    },
+    {
+      "label": "drivers-license-o",
+      "icon": "fa-drivers-license-o"
+    },
+    {
+      "label": "edit",
+      "icon": "fa-edit"
+    },
+    {
+      "label": "ellipsis-h",
+      "icon": "fa-ellipsis-h"
+    },
+    {
+      "label": "ellipsis-v",
+      "icon": "fa-ellipsis-v"
+    },
+    {
+      "label": "envelope",
+      "icon": "fa-envelope"
+    },
+    {
+      "label": "envelope-o",
+      "icon": "fa-envelope-o"
+    },
+    {
+      "label": "envelope-open",
+      "icon": "fa-envelope-open"
+    },
+    {
+      "label": "envelope-open-o",
+      "icon": "fa-envelope-open-o"
+    },
+    {
+      "label": "envelope-square",
+      "icon": "fa-envelope-square"
+    },
+    {
+      "label": "eraser",
+      "icon": "fa-eraser"
+    },
+    {
+      "label": "exchange",
+      "icon": "fa-exchange"
+    },
+    {
+      "label": "exclamation",
+      "icon": "fa-exclamation"
+    },
+    {
+      "label": "exclamation-circle",
+      "icon": "fa-exclamation-circle"
+    },
+    {
+      "label": "exclamation-triangle",
+      "icon": "fa-exclamation-triangle"
+    },
+    {
+      "label": "external-link",
+      "icon": "fa-external-link"
+    },
+    {
+      "label": "external-link-square",
+      "icon": "fa-external-link-square"
+    },
+    {
+      "label": "eye",
+      "icon": "fa-eye"
+    },
+    {
+      "label": "eye-slash",
+      "icon": "fa-eye-slash"
+    },
+    {
+      "label": "eyedropper",
+      "icon": "fa-eyedropper"
+    },
+    {
+      "label": "fax",
+      "icon": "fa-fax"
+    },
+    {
+      "label": "feed",
+      "icon": "fa-feed"
+    },
+    {
+      "label": "female",
+      "icon": "fa-female"
+    },
+    {
+      "label": "fighter-jet",
+      "icon": "fa-fighter-jet"
+    },
+    {
+      "label": "file-archive-o",
+      "icon": "fa-file-archive-o"
+    },
+    {
+      "label": "file-audio-o",
+      "icon": "fa-file-audio-o"
+    },
+    {
+      "label": "file-code-o",
+      "icon": "fa-file-code-o"
+    },
+    {
+      "label": "file-epub",
+      "icon": "fa-file-epub"
+    },
+    {
+      "label": "file-excel-o",
+      "icon": "fa-file-excel-o"
+    },
+    {
+      "label": "file-image-o",
+      "icon": "fa-file-image-o"
+    },
+    {
+      "label": "file-movie-o",
+      "icon": "fa-file-movie-o"
+    },
+    {
+      "label": "file-pdf-o",
+      "icon": "fa-file-pdf-o"
+    },
+    {
+      "label": "file-photo-o",
+      "icon": "fa-file-photo-o"
+    },
+    {
+      "label": "file-picture-o",
+      "icon": "fa-file-picture-o"
+    },
+    {
+      "label": "file-powerpoint-o",
+      "icon": "fa-file-powerpoint-o"
+    },
+    {
+      "label": "file-sound-o",
+      "icon": "fa-file-sound-o"
+    },
+    {
+      "label": "file-video-o",
+      "icon": "fa-file-video-o"
+    },
+    {
+      "label": "file-word-o",
+      "icon": "fa-file-word-o"
+    },
+    {
+      "label": "file-zip-o",
+      "icon": "fa-file-zip-o"
+    },
+    {
+      "label": "film",
+      "icon": "fa-film"
+    },
+    {
+      "label": "filter",
+      "icon": "fa-filter"
+    },
+    {
+      "label": "fire",
+      "icon": "fa-fire"
+    },
+    {
+      "label": "fire-extinguisher",
+      "icon": "fa-fire-extinguisher"
+    },
+    {
+      "label": "flag",
+      "icon": "fa-flag"
+    },
+    {
+      "label": "flag-checkered",
+      "icon": "fa-flag-checkered"
+    },
+    {
+      "label": "flag-o",
+      "icon": "fa-flag-o"
+    },
+    {
+      "label": "flash",
+      "icon": "fa-flash"
+    },
+    {
+      "label": "flask",
+      "icon": "fa-flask"
+    },
+    {
+      "label": "folder",
+      "icon": "fa-folder"
+    },
+    {
+      "label": "folder-o",
+      "icon": "fa-folder-o"
+    },
+    {
+      "label": "folder-open",
+      "icon": "fa-folder-open"
+    },
+    {
+      "label": "folder-open-o",
+      "icon": "fa-folder-open-o"
+    },
+    {
+      "label": "friendica",
+      "icon": "fa-friendica"
+    },
+    {
+      "label": "frown-o",
+      "icon": "fa-frown-o"
+    },
+    {
+      "label": "futbol-o",
+      "icon": "fa-futbol-o"
+    },
+    {
+      "label": "gamepad",
+      "icon": "fa-gamepad"
+    },
+    {
+      "label": "gavel",
+      "icon": "fa-gavel"
+    },
+    {
+      "label": "gear",
+      "icon": "fa-gear"
+    },
+    {
+      "label": "gears",
+      "icon": "fa-gears"
+    },
+    {
+      "label": "gem",
+      "icon": "fa-gem"
+    },
+    {
+      "label": "gift",
+      "icon": "fa-gift"
+    },
+    {
+      "label": "glass",
+      "icon": "fa-glass"
+    },
+    {
+      "label": "globe",
+      "icon": "fa-globe"
+    },
+    {
+      "label": "globe-e",
+      "icon": "fa-globe-e"
+    },
+    {
+      "label": "globe-w",
+      "icon": "fa-globe-w"
+    },
+    {
+      "label": "gnu-social",
+      "icon": "fa-gnu-social"
+    },
+    {
+      "label": "graduation-cap",
+      "icon": "fa-graduation-cap"
+    },
+    {
+      "label": "group",
+      "icon": "fa-group"
+    },
+    {
+      "label": "hand-grab-o",
+      "icon": "fa-hand-grab-o"
+    },
+    {
+      "label": "hand-lizard-o",
+      "icon": "fa-hand-lizard-o"
+    },
+    {
+      "label": "hand-paper-o",
+      "icon": "fa-hand-paper-o"
+    },
+    {
+      "label": "hand-peace-o",
+      "icon": "fa-hand-peace-o"
+    },
+    {
+      "label": "hand-pointer-o",
+      "icon": "fa-hand-pointer-o"
+    },
+    {
+      "label": "hand-rock-o",
+      "icon": "fa-hand-rock-o"
+    },
+    {
+      "label": "hand-scissors-o",
+      "icon": "fa-hand-scissors-o"
+    },
+    {
+      "label": "hand-spock-o",
+      "icon": "fa-hand-spock-o"
+    },
+    {
+      "label": "hand-stop-o",
+      "icon": "fa-hand-stop-o"
+    },
+    {
+      "label": "handshake-o",
+      "icon": "fa-handshake-o"
+    },
+    {
+      "label": "hard-of-hearing",
+      "icon": "fa-hard-of-hearing"
+    },
+    {
+      "label": "hashtag",
+      "icon": "fa-hashtag"
+    },
+    {
+      "label": "hdd-o",
+      "icon": "fa-hdd-o"
+    },
+    {
+      "label": "headphones",
+      "icon": "fa-headphones"
+    },
+    {
+      "label": "heart",
+      "icon": "fa-heart"
+    },
+    {
+      "label": "heart-o",
+      "icon": "fa-heart-o"
+    },
+    {
+      "label": "heartbeat",
+      "icon": "fa-heartbeat"
+    },
+    {
+      "label": "history",
+      "icon": "fa-history"
+    },
+    {
+      "label": "home",
+      "icon": "fa-home"
+    },
+    {
+      "label": "hotel",
+      "icon": "fa-hotel"
+    },
+    {
+      "label": "hourglass",
+      "icon": "fa-hourglass"
+    },
+    {
+      "label": "hourglass-1",
+      "icon": "fa-hourglass-1"
+    },
+    {
+      "label": "hourglass-2",
+      "icon": "fa-hourglass-2"
+    },
+    {
+      "label": "hourglass-3",
+      "icon": "fa-hourglass-3"
+    },
+    {
+      "label": "hourglass-end",
+      "icon": "fa-hourglass-end"
+    },
+    {
+      "label": "hourglass-half",
+      "icon": "fa-hourglass-half"
+    },
+    {
+      "label": "hourglass-o",
+      "icon": "fa-hourglass-o"
+    },
+    {
+      "label": "hourglass-start",
+      "icon": "fa-hourglass-start"
+    },
+    {
+      "label": "hubzilla",
+      "icon": "fa-hubzilla"
+    },
+    {
+      "label": "i-cursor",
+      "icon": "fa-i-cursor"
+    },
+    {
+      "label": "id-badge",
+      "icon": "fa-id-badge"
+    },
+    {
+      "label": "id-card",
+      "icon": "fa-id-card"
+    },
+    {
+      "label": "id-card-o",
+      "icon": "fa-id-card-o"
+    },
+    {
+      "label": "image",
+      "icon": "fa-image"
+    },
+    {
+      "label": "inbox",
+      "icon": "fa-inbox"
+    },
+    {
+      "label": "industry",
+      "icon": "fa-industry"
+    },
+    {
+      "label": "info",
+      "icon": "fa-info"
+    },
+    {
+      "label": "info-circle",
+      "icon": "fa-info-circle"
+    },
+    {
+      "label": "institution",
+      "icon": "fa-institution"
+    },
+    {
+      "label": "key",
+      "icon": "fa-key"
+    },
+    {
+      "label": "key-modern",
+      "icon": "fa-key-modern"
+    },
+    {
+      "label": "keyboard-o",
+      "icon": "fa-keyboard-o"
+    },
+    {
+      "label": "language",
+      "icon": "fa-language"
+    },
+    {
+      "label": "laptop",
+      "icon": "fa-laptop"
+    },
+    {
+      "label": "leaf",
+      "icon": "fa-leaf"
+    },
+    {
+      "label": "legal",
+      "icon": "fa-legal"
+    },
+    {
+      "label": "lemon-o",
+      "icon": "fa-lemon-o"
+    },
+    {
+      "label": "level-down",
+      "icon": "fa-level-down"
+    },
+    {
+      "label": "level-up",
+      "icon": "fa-level-up"
+    },
+    {
+      "label": "liberapay",
+      "icon": "fa-liberapay"
+    },
+    {
+      "label": "liberapay-square",
+      "icon": "fa-liberapay-square"
+    },
+    {
+      "label": "life-bouy",
+      "icon": "fa-life-bouy"
+    },
+    {
+      "label": "life-buoy",
+      "icon": "fa-life-buoy"
+    },
+    {
+      "label": "life-ring",
+      "icon": "fa-life-ring"
+    },
+    {
+      "label": "life-saver",
+      "icon": "fa-life-saver"
+    },
+    {
+      "label": "lightbulb-o",
+      "icon": "fa-lightbulb-o"
+    },
+    {
+      "label": "line-chart",
+      "icon": "fa-line-chart"
+    },
+    {
+      "label": "location-arrow",
+      "icon": "fa-location-arrow"
+    },
+    {
+      "label": "lock",
+      "icon": "fa-lock"
+    },
+    {
+      "label": "low-vision",
+      "icon": "fa-low-vision"
+    },
+    {
+      "label": "magic",
+      "icon": "fa-magic"
+    },
+    {
+      "label": "magnet",
+      "icon": "fa-magnet"
+    },
+    {
+      "label": "mail-forward",
+      "icon": "fa-mail-forward"
+    },
+    {
+      "label": "mail-reply",
+      "icon": "fa-mail-reply"
+    },
+    {
+      "label": "mail-reply-all",
+      "icon": "fa-mail-reply-all"
+    },
+    {
+      "label": "male",
+      "icon": "fa-male"
+    },
+    {
+      "label": "map",
+      "icon": "fa-map"
+    },
+    {
+      "label": "map-marker",
+      "icon": "fa-map-marker"
+    },
+    {
+      "label": "map-o",
+      "icon": "fa-map-o"
+    },
+    {
+      "label": "map-pin",
+      "icon": "fa-map-pin"
+    },
+    {
+      "label": "map-signs",
+      "icon": "fa-map-signs"
+    },
+    {
+      "label": "mastodon",
+      "icon": "fa-mastodon"
+    },
+    {
+      "label": "mastodon-alt",
+      "icon": "fa-mastodon-alt"
+    },
+    {
+      "label": "meh-o",
+      "icon": "fa-meh-o"
+    },
+    {
+      "label": "microchip",
+      "icon": "fa-microchip"
+    },
+    {
+      "label": "microphone",
+      "icon": "fa-microphone"
+    },
+    {
+      "label": "microphone-slash",
+      "icon": "fa-microphone-slash"
+    },
+    {
+      "label": "minus",
+      "icon": "fa-minus"
+    },
+    {
+      "label": "minus-circle",
+      "icon": "fa-minus-circle"
+    },
+    {
+      "label": "minus-square",
+      "icon": "fa-minus-square"
+    },
+    {
+      "label": "minus-square-o",
+      "icon": "fa-minus-square-o"
+    },
+    {
+      "label": "mobile",
+      "icon": "fa-mobile"
+    },
+    {
+      "label": "mobile-phone",
+      "icon": "fa-mobile-phone"
+    },
+    {
+      "label": "money",
+      "icon": "fa-money"
+    },
+    {
+      "label": "moon",
+      "icon": "fa-moon"
+    },
+    {
+      "label": "moon-o",
+      "icon": "fa-moon-o"
+    },
+    {
+      "label": "mortar-board",
+      "icon": "fa-mortar-board"
+    },
+    {
+      "label": "motorcycle",
+      "icon": "fa-motorcycle"
+    },
+    {
+      "label": "mouse-pointer",
+      "icon": "fa-mouse-pointer"
+    },
+    {
+      "label": "music",
+      "icon": "fa-music"
+    },
+    {
+      "label": "navicon",
+      "icon": "fa-navicon"
+    },
+    {
+      "label": "newspaper-o",
+      "icon": "fa-newspaper-o"
+    },
+    {
+      "label": "object-group",
+      "icon": "fa-object-group"
+    },
+    {
+      "label": "object-ungroup",
+      "icon": "fa-object-ungroup"
+    },
+    {
+      "label": "paint-brush",
+      "icon": "fa-paint-brush"
+    },
+    {
+      "label": "paper-plane",
+      "icon": "fa-paper-plane"
+    },
+    {
+      "label": "paper-plane-o",
+      "icon": "fa-paper-plane-o"
+    },
+    {
+      "label": "paw",
+      "icon": "fa-paw"
+    },
+    {
+      "label": "peertube",
+      "icon": "fa-peertube"
+    },
+    {
+      "label": "pencil",
+      "icon": "fa-pencil"
+    },
+    {
+      "label": "pencil-square",
+      "icon": "fa-pencil-square"
+    },
+    {
+      "label": "pencil-square-o",
+      "icon": "fa-pencil-square-o"
+    },
+    {
+      "label": "percent",
+      "icon": "fa-percent"
+    },
+    {
+      "label": "phone",
+      "icon": "fa-phone"
+    },
+    {
+      "label": "phone-square",
+      "icon": "fa-phone-square"
+    },
+    {
+      "label": "phone-volume",
+      "icon": "fa-phone-volume"
+    },
+    {
+      "label": "photo",
+      "icon": "fa-photo"
+    },
+    {
+      "label": "picture-o",
+      "icon": "fa-picture-o"
+    },
+    {
+      "label": "pie-chart",
+      "icon": "fa-pie-chart"
+    },
+    {
+      "label": "plane",
+      "icon": "fa-plane"
+    },
+    {
+      "label": "pleroma",
+      "icon": "fa-pleroma"
+    },
+    {
+      "label": "plug",
+      "icon": "fa-plug"
+    },
+    {
+      "label": "plus",
+      "icon": "fa-plus"
+    },
+    {
+      "label": "plus-circle",
+      "icon": "fa-plus-circle"
+    },
+    {
+      "label": "plus-square",
+      "icon": "fa-plus-square"
+    },
+    {
+      "label": "plus-square-o",
+      "icon": "fa-plus-square-o"
+    },
+    {
+      "label": "podcast",
+      "icon": "fa-podcast"
+    },
+    {
+      "label": "power-off",
+      "icon": "fa-power-off"
+    },
+    {
+      "label": "print",
+      "icon": "fa-print"
+    },
+    {
+      "label": "puzzle-piece",
+      "icon": "fa-puzzle-piece"
+    },
+    {
+      "label": "qrcode",
+      "icon": "fa-qrcode"
+    },
+    {
+      "label": "question",
+      "icon": "fa-question"
+    },
+    {
+      "label": "question-circle",
+      "icon": "fa-question-circle"
+    },
+    {
+      "label": "question-circle-o",
+      "icon": "fa-question-circle-o"
+    },
+    {
+      "label": "quote-left",
+      "icon": "fa-quote-left"
+    },
+    {
+      "label": "quote-right",
+      "icon": "fa-quote-right"
+    },
+    {
+      "label": "random",
+      "icon": "fa-random"
+    },
+    {
+      "label": "recycle",
+      "icon": "fa-recycle"
+    },
+    {
+      "label": "refresh",
+      "icon": "fa-refresh"
+    },
+    {
+      "label": "registered",
+      "icon": "fa-registered"
+    },
+    {
+      "label": "remove",
+      "icon": "fa-remove"
+    },
+    {
+      "label": "reorder",
+      "icon": "fa-reorder"
+    },
+    {
+      "label": "reply",
+      "icon": "fa-reply"
+    },
+    {
+      "label": "reply-all",
+      "icon": "fa-reply-all"
+    },
+    {
+      "label": "retweet",
+      "icon": "fa-retweet"
+    },
+    {
+      "label": "road",
+      "icon": "fa-road"
+    },
+    {
+      "label": "rocket",
+      "icon": "fa-rocket"
+    },
+    {
+      "label": "rss",
+      "icon": "fa-rss"
+    },
+    {
+      "label": "rss-square",
+      "icon": "fa-rss-square"
+    },
+    {
+      "label": "s15",
+      "icon": "fa-s15"
+    },
+    {
+      "label": "scuttlebutt",
+      "icon": "fa-scuttlebutt"
+    },
+    {
+      "label": "search",
+      "icon": "fa-search"
+    },
+    {
+      "label": "search-minus",
+      "icon": "fa-search-minus"
+    },
+    {
+      "label": "search-plus",
+      "icon": "fa-search-plus"
+    },
+    {
+      "label": "send",
+      "icon": "fa-send"
+    },
+    {
+      "label": "send-o",
+      "icon": "fa-send-o"
+    },
+    {
+      "label": "server",
+      "icon": "fa-server"
+    },
+    {
+      "label": "share",
+      "icon": "fa-share"
+    },
+    {
+      "label": "share-alt",
+      "icon": "fa-share-alt"
+    },
+    {
+      "label": "share-alt-square",
+      "icon": "fa-share-alt-square"
+    },
+    {
+      "label": "share-square",
+      "icon": "fa-share-square"
+    },
+    {
+      "label": "share-square-o",
+      "icon": "fa-share-square-o"
+    },
+    {
+      "label": "shield",
+      "icon": "fa-shield"
+    },
+    {
+      "label": "ship",
+      "icon": "fa-ship"
+    },
+    {
+      "label": "shopping-bag",
+      "icon": "fa-shopping-bag"
+    },
+    {
+      "label": "shopping-basket",
+      "icon": "fa-shopping-basket"
+    },
+    {
+      "label": "shopping-cart",
+      "icon": "fa-shopping-cart"
+    },
+    {
+      "label": "shower",
+      "icon": "fa-shower"
+    },
+    {
+      "label": "sign-in",
+      "icon": "fa-sign-in"
+    },
+    {
+      "label": "sign-language",
+      "icon": "fa-sign-language"
+    },
+    {
+      "label": "sign-out",
+      "icon": "fa-sign-out"
+    },
+    {
+      "label": "signal",
+      "icon": "fa-signal"
+    },
+    {
+      "label": "signing",
+      "icon": "fa-signing"
+    },
+    {
+      "label": "sitemap",
+      "icon": "fa-sitemap"
+    },
+    {
+      "label": "sliders",
+      "icon": "fa-sliders"
+    },
+    {
+      "label": "smile-o",
+      "icon": "fa-smile-o"
+    },
+    {
+      "label": "snowflake-o",
+      "icon": "fa-snowflake-o"
+    },
+    {
+      "label": "soccer-ball-o",
+      "icon": "fa-soccer-ball-o"
+    },
+    {
+      "label": "social-home",
+      "icon": "fa-social-home"
+    },
+    {
+      "label": "sort",
+      "icon": "fa-sort"
+    },
+    {
+      "label": "sort-alpha-asc",
+      "icon": "fa-sort-alpha-asc"
+    },
+    {
+      "label": "sort-alpha-desc",
+      "icon": "fa-sort-alpha-desc"
+    },
+    {
+      "label": "sort-alpha-down",
+      "icon": "fa-sort-alpha-down"
+    },
+    {
+      "label": "sort-alpha-up",
+      "icon": "fa-sort-alpha-up"
+    },
+    {
+      "label": "sort-amount-asc",
+      "icon": "fa-sort-amount-asc"
+    },
+    {
+      "label": "sort-amount-desc",
+      "icon": "fa-sort-amount-desc"
+    },
+    {
+      "label": "sort-amount-down",
+      "icon": "fa-sort-amount-down"
+    },
+    {
+      "label": "sort-amount-up",
+      "icon": "fa-sort-amount-up"
+    },
+    {
+      "label": "sort-asc",
+      "icon": "fa-sort-asc"
+    },
+    {
+      "label": "sort-desc",
+      "icon": "fa-sort-desc"
+    },
+    {
+      "label": "sort-down",
+      "icon": "fa-sort-down"
+    },
+    {
+      "label": "sort-numeric-asc",
+      "icon": "fa-sort-numeric-asc"
+    },
+    {
+      "label": "sort-numeric-desc",
+      "icon": "fa-sort-numeric-desc"
+    },
+    {
+      "label": "sort-numeric-down",
+      "icon": "fa-sort-numeric-down"
+    },
+    {
+      "label": "sort-numeric-up",
+      "icon": "fa-sort-numeric-up"
+    },
+    {
+      "label": "sort-up",
+      "icon": "fa-sort-up"
+    },
+    {
+      "label": "space-shuttle",
+      "icon": "fa-space-shuttle"
+    },
+    {
+      "label": "spell-check",
+      "icon": "fa-spell-check"
+    },
+    {
+      "label": "spinner",
+      "icon": "fa-spinner"
+    },
+    {
+      "label": "spoon",
+      "icon": "fa-spoon"
+    },
+    {
+      "label": "square",
+      "icon": "fa-square"
+    },
+    {
+      "label": "square-o",
+      "icon": "fa-square-o"
+    },
+    {
+      "label": "ssb",
+      "icon": "fa-ssb"
+    },
+    {
+      "label": "star",
+      "icon": "fa-star"
+    },
+    {
+      "label": "star-half",
+      "icon": "fa-star-half"
+    },
+    {
+      "label": "star-half-empty",
+      "icon": "fa-star-half-empty"
+    },
+    {
+      "label": "star-half-full",
+      "icon": "fa-star-half-full"
+    },
+    {
+      "label": "star-half-o",
+      "icon": "fa-star-half-o"
+    },
+    {
+      "label": "star-o",
+      "icon": "fa-star-o"
+    },
+    {
+      "label": "sticky-note",
+      "icon": "fa-sticky-note"
+    },
+    {
+      "label": "sticky-note-o",
+      "icon": "fa-sticky-note-o"
+    },
+    {
+      "label": "street-view",
+      "icon": "fa-street-view"
+    },
+    {
+      "label": "suitcase",
+      "icon": "fa-suitcase"
+    },
+    {
+      "label": "sun",
+      "icon": "fa-sun"
+    },
+    {
+      "label": "sun-o",
+      "icon": "fa-sun-o"
+    },
+    {
+      "label": "support",
+      "icon": "fa-support"
+    },
+    {
+      "label": "sync",
+      "icon": "fa-sync"
+    },
+    {
+      "label": "tablet",
+      "icon": "fa-tablet"
+    },
+    {
+      "label": "tachometer",
+      "icon": "fa-tachometer"
+    },
+    {
+      "label": "tag",
+      "icon": "fa-tag"
+    },
+    {
+      "label": "tags",
+      "icon": "fa-tags"
+    },
+    {
+      "label": "tasks",
+      "icon": "fa-tasks"
+    },
+    {
+      "label": "taxi",
+      "icon": "fa-taxi"
+    },
+    {
+      "label": "television",
+      "icon": "fa-television"
+    },
+    {
+      "label": "terminal",
+      "icon": "fa-terminal"
+    },
+    {
+      "label": "thermometer",
+      "icon": "fa-thermometer"
+    },
+    {
+      "label": "thermometer-0",
+      "icon": "fa-thermometer-0"
+    },
+    {
+      "label": "thermometer-1",
+      "icon": "fa-thermometer-1"
+    },
+    {
+      "label": "thermometer-2",
+      "icon": "fa-thermometer-2"
+    },
+    {
+      "label": "thermometer-3",
+      "icon": "fa-thermometer-3"
+    },
+    {
+      "label": "thermometer-4",
+      "icon": "fa-thermometer-4"
+    },
+    {
+      "label": "thermometer-empty",
+      "icon": "fa-thermometer-empty"
+    },
+    {
+      "label": "thermometer-full",
+      "icon": "fa-thermometer-full"
+    },
+    {
+      "label": "thermometer-half",
+      "icon": "fa-thermometer-half"
+    },
+    {
+      "label": "thermometer-quarter",
+      "icon": "fa-thermometer-quarter"
+    },
+    {
+      "label": "thermometer-three-quarters",
+      "icon": "fa-thermometer-three-quarters"
+    },
+    {
+      "label": "thumb-tack",
+      "icon": "fa-thumb-tack"
+    },
+    {
+      "label": "thumbs-down",
+      "icon": "fa-thumbs-down"
+    },
+    {
+      "label": "thumbs-o-down",
+      "icon": "fa-thumbs-o-down"
+    },
+    {
+      "label": "thumbs-o-up",
+      "icon": "fa-thumbs-o-up"
+    },
+    {
+      "label": "thumbs-up",
+      "icon": "fa-thumbs-up"
+    },
+    {
+      "label": "ticket",
+      "icon": "fa-ticket"
+    },
+    {
+      "label": "times",
+      "icon": "fa-times"
+    },
+    {
+      "label": "times-circle",
+      "icon": "fa-times-circle"
+    },
+    {
+      "label": "times-circle-o",
+      "icon": "fa-times-circle-o"
+    },
+    {
+      "label": "times-rectangle",
+      "icon": "fa-times-rectangle"
+    },
+    {
+      "label": "times-rectangle-o",
+      "icon": "fa-times-rectangle-o"
+    },
+    {
+      "label": "tint",
+      "icon": "fa-tint"
+    },
+    {
+      "label": "toggle-down",
+      "icon": "fa-toggle-down"
+    },
+    {
+      "label": "toggle-left",
+      "icon": "fa-toggle-left"
+    },
+    {
+      "label": "toggle-off",
+      "icon": "fa-toggle-off"
+    },
+    {
+      "label": "toggle-on",
+      "icon": "fa-toggle-on"
+    },
+    {
+      "label": "toggle-right",
+      "icon": "fa-toggle-right"
+    },
+    {
+      "label": "toggle-up",
+      "icon": "fa-toggle-up"
+    },
+    {
+      "label": "trademark",
+      "icon": "fa-trademark"
+    },
+    {
+      "label": "trash",
+      "icon": "fa-trash"
+    },
+    {
+      "label": "trash-o",
+      "icon": "fa-trash-o"
+    },
+    {
+      "label": "tree",
+      "icon": "fa-tree"
+    },
+    {
+      "label": "trophy",
+      "icon": "fa-trophy"
+    },
+    {
+      "label": "truck",
+      "icon": "fa-truck"
+    },
+    {
+      "label": "tty",
+      "icon": "fa-tty"
+    },
+    {
+      "label": "tv",
+      "icon": "fa-tv"
+    },
+    {
+      "label": "umbrella",
+      "icon": "fa-umbrella"
+    },
+    {
+      "label": "universal-access",
+      "icon": "fa-universal-access"
+    },
+    {
+      "label": "university",
+      "icon": "fa-university"
+    },
+    {
+      "label": "unlock",
+      "icon": "fa-unlock"
+    },
+    {
+      "label": "unlock-alt",
+      "icon": "fa-unlock-alt"
+    },
+    {
+      "label": "unsorted",
+      "icon": "fa-unsorted"
+    },
+    {
+      "label": "upload",
+      "icon": "fa-upload"
+    },
+    {
+      "label": "user",
+      "icon": "fa-user"
+    },
+    {
+      "label": "user-circle",
+      "icon": "fa-user-circle"
+    },
+    {
+      "label": "user-circle-o",
+      "icon": "fa-user-circle-o"
+    },
+    {
+      "label": "user-o",
+      "icon": "fa-user-o"
+    },
+    {
+      "label": "user-plus",
+      "icon": "fa-user-plus"
+    },
+    {
+      "label": "user-secret",
+      "icon": "fa-user-secret"
+    },
+    {
+      "label": "user-times",
+      "icon": "fa-user-times"
+    },
+    {
+      "label": "users",
+      "icon": "fa-users"
+    },
+    {
+      "label": "utensil-spoon",
+      "icon": "fa-utensil-spoon"
+    },
+    {
+      "label": "utensils",
+      "icon": "fa-utensils"
+    },
+    {
+      "label": "vcard",
+      "icon": "fa-vcard"
+    },
+    {
+      "label": "vcard-o",
+      "icon": "fa-vcard-o"
+    },
+    {
+      "label": "video",
+      "icon": "fa-video"
+    },
+    {
+      "label": "video-camera",
+      "icon": "fa-video-camera"
+    },
+    {
+      "label": "volume-control-phone",
+      "icon": "fa-volume-control-phone"
+    },
+    {
+      "label": "volume-down",
+      "icon": "fa-volume-down"
+    },
+    {
+      "label": "volume-off",
+      "icon": "fa-volume-off"
+    },
+    {
+      "label": "volume-up",
+      "icon": "fa-volume-up"
+    },
+    {
+      "label": "warning",
+      "icon": "fa-warning"
+    },
+    {
+      "label": "wheelchair",
+      "icon": "fa-wheelchair"
+    },
+    {
+      "label": "wheelchair-alt",
+      "icon": "fa-wheelchair-alt"
+    },
+    {
+      "label": "wifi",
+      "icon": "fa-wifi"
+    },
+    {
+      "label": "window-close",
+      "icon": "fa-window-close"
+    },
+    {
+      "label": "window-close-o",
+      "icon": "fa-window-close-o"
+    },
+    {
+      "label": "window-maximize",
+      "icon": "fa-window-maximize"
+    },
+    {
+      "label": "window-minimize",
+      "icon": "fa-window-minimize"
+    },
+    {
+      "label": "window-restore",
+      "icon": "fa-window-restore"
+    },
+    {
+      "label": "wrench",
+      "icon": "fa-wrench"
+    }
+  ],
+  "accessibility": [
+    {
+      "label": "american-sign-language-interpreting",
+      "icon": "fa-american-sign-language-interpreting"
+    },
+    {
+      "label": "asl-interpreting",
+      "icon": "fa-asl-interpreting"
+    },
+    {
+      "label": "assistive-listening-systems",
+      "icon": "fa-assistive-listening-systems"
+    },
+    {
+      "label": "audio-description",
+      "icon": "fa-audio-description"
+    },
+    {
+      "label": "blind",
+      "icon": "fa-blind"
+    },
+    {
+      "label": "braille",
+      "icon": "fa-braille"
+    },
+    {
+      "label": "cc",
+      "icon": "fa-cc"
+    },
+    {
+      "label": "closed-captioning",
+      "icon": "fa-closed-captioning"
+    },
+    {
+      "label": "deaf",
+      "icon": "fa-deaf"
+    },
+    {
+      "label": "deafness",
+      "icon": "fa-deafness"
+    },
+    {
+      "label": "hard-of-hearing",
+      "icon": "fa-hard-of-hearing"
+    },
+    {
+      "label": "low-vision",
+      "icon": "fa-low-vision"
+    },
+    {
+      "label": "phone-volume",
+      "icon": "fa-phone-volume"
+    },
+    {
+      "label": "question-circle-o",
+      "icon": "fa-question-circle-o"
+    },
+    {
+      "label": "sign-language",
+      "icon": "fa-sign-language"
+    },
+    {
+      "label": "signing",
+      "icon": "fa-signing"
+    },
+    {
+      "label": "tty",
+      "icon": "fa-tty"
+    },
+    {
+      "label": "universal-access",
+      "icon": "fa-universal-access"
+    },
+    {
+      "label": "volume-control-phone",
+      "icon": "fa-volume-control-phone"
+    },
+    {
+      "label": "wheelchair",
+      "icon": "fa-wheelchair"
+    },
+    {
+      "label": "wheelchair-alt",
+      "icon": "fa-wheelchair-alt"
+    }
+  ],
+  "hand": [
+    {
+      "label": "hand-grab-o",
+      "icon": "fa-hand-grab-o"
+    },
+    {
+      "label": "hand-lizard-o",
+      "icon": "fa-hand-lizard-o"
+    },
+    {
+      "label": "hand-o-down",
+      "icon": "fa-hand-o-down"
+    },
+    {
+      "label": "hand-o-left",
+      "icon": "fa-hand-o-left"
+    },
+    {
+      "label": "hand-o-right",
+      "icon": "fa-hand-o-right"
+    },
+    {
+      "label": "hand-o-up",
+      "icon": "fa-hand-o-up"
+    },
+    {
+      "label": "hand-paper-o",
+      "icon": "fa-hand-paper-o"
+    },
+    {
+      "label": "hand-peace-o",
+      "icon": "fa-hand-peace-o"
+    },
+    {
+      "label": "hand-pointer-o",
+      "icon": "fa-hand-pointer-o"
+    },
+    {
+      "label": "hand-rock-o",
+      "icon": "fa-hand-rock-o"
+    },
+    {
+      "label": "hand-scissors-o",
+      "icon": "fa-hand-scissors-o"
+    },
+    {
+      "label": "hand-spock-o",
+      "icon": "fa-hand-spock-o"
+    },
+    {
+      "label": "hand-stop-o",
+      "icon": "fa-hand-stop-o"
+    },
+    {
+      "label": "thumbs-down",
+      "icon": "fa-thumbs-down"
+    },
+    {
+      "label": "thumbs-o-down",
+      "icon": "fa-thumbs-o-down"
+    },
+    {
+      "label": "thumbs-o-up",
+      "icon": "fa-thumbs-o-up"
+    },
+    {
+      "label": "thumbs-up",
+      "icon": "fa-thumbs-up"
+    }
+  ],
+  "transportation": [
+    {
+      "label": "ambulance",
+      "icon": "fa-ambulance"
+    },
+    {
+      "label": "automobile",
+      "icon": "fa-automobile"
+    },
+    {
+      "label": "bicycle",
+      "icon": "fa-bicycle"
+    },
+    {
+      "label": "bus",
+      "icon": "fa-bus"
+    },
+    {
+      "label": "cab",
+      "icon": "fa-cab"
+    },
+    {
+      "label": "car",
+      "icon": "fa-car"
+    },
+    {
+      "label": "fighter-jet",
+      "icon": "fa-fighter-jet"
+    },
+    {
+      "label": "motorcycle",
+      "icon": "fa-motorcycle"
+    },
+    {
+      "label": "plane",
+      "icon": "fa-plane"
+    },
+    {
+      "label": "rocket",
+      "icon": "fa-rocket"
+    },
+    {
+      "label": "ship",
+      "icon": "fa-ship"
+    },
+    {
+      "label": "space-shuttle",
+      "icon": "fa-space-shuttle"
+    },
+    {
+      "label": "subway",
+      "icon": "fa-subway"
+    },
+    {
+      "label": "taxi",
+      "icon": "fa-taxi"
+    },
+    {
+      "label": "train",
+      "icon": "fa-train"
+    },
+    {
+      "label": "truck",
+      "icon": "fa-truck"
+    },
+    {
+      "label": "wheelchair",
+      "icon": "fa-wheelchair"
+    },
+    {
+      "label": "wheelchair-alt",
+      "icon": "fa-wheelchair-alt"
+    }
+  ],
+  "gender": [
+    {
+      "label": "genderless",
+      "icon": "fa-genderless"
+    },
+    {
+      "label": "intersex",
+      "icon": "fa-intersex"
+    },
+    {
+      "label": "mars",
+      "icon": "fa-mars"
+    },
+    {
+      "label": "mars-double",
+      "icon": "fa-mars-double"
+    },
+    {
+      "label": "mars-stroke",
+      "icon": "fa-mars-stroke"
+    },
+    {
+      "label": "mars-stroke-h",
+      "icon": "fa-mars-stroke-h"
+    },
+    {
+      "label": "mars-stroke-v",
+      "icon": "fa-mars-stroke-v"
+    },
+    {
+      "label": "mercury",
+      "icon": "fa-mercury"
+    },
+    {
+      "label": "neuter",
+      "icon": "fa-neuter"
+    },
+    {
+      "label": "transgender",
+      "icon": "fa-transgender"
+    },
+    {
+      "label": "transgender-alt",
+      "icon": "fa-transgender-alt"
+    },
+    {
+      "label": "venus",
+      "icon": "fa-venus"
+    },
+    {
+      "label": "venus-double",
+      "icon": "fa-venus-double"
+    },
+    {
+      "label": "venus-mars",
+      "icon": "fa-venus-mars"
+    }
+  ],
+  "file-type": [
+    {
+      "label": "file",
+      "icon": "fa-file"
+    },
+    {
+      "label": "file-archive-o",
+      "icon": "fa-file-archive-o"
+    },
+    {
+      "label": "file-audio-o",
+      "icon": "fa-file-audio-o"
+    },
+    {
+      "label": "file-code-o",
+      "icon": "fa-file-code-o"
+    },
+    {
+      "label": "file-epub",
+      "icon": "fa-file-epub"
+    },
+    {
+      "label": "file-excel-o",
+      "icon": "fa-file-excel-o"
+    },
+    {
+      "label": "file-image-o",
+      "icon": "fa-file-image-o"
+    },
+    {
+      "label": "file-movie-o",
+      "icon": "fa-file-movie-o"
+    },
+    {
+      "label": "file-o",
+      "icon": "fa-file-o"
+    },
+    {
+      "label": "file-pdf-o",
+      "icon": "fa-file-pdf-o"
+    },
+    {
+      "label": "file-photo-o",
+      "icon": "fa-file-photo-o"
+    },
+    {
+      "label": "file-picture-o",
+      "icon": "fa-file-picture-o"
+    },
+    {
+      "label": "file-powerpoint-o",
+      "icon": "fa-file-powerpoint-o"
+    },
+    {
+      "label": "file-sound-o",
+      "icon": "fa-file-sound-o"
+    },
+    {
+      "label": "file-text",
+      "icon": "fa-file-text"
+    },
+    {
+      "label": "file-text-o",
+      "icon": "fa-file-text-o"
+    },
+    {
+      "label": "file-video-o",
+      "icon": "fa-file-video-o"
+    },
+    {
+      "label": "file-word-o",
+      "icon": "fa-file-word-o"
+    },
+    {
+      "label": "file-zip-o",
+      "icon": "fa-file-zip-o"
+    }
+  ],
+  "form-control": [
+    {
+      "label": "check-square",
+      "icon": "fa-check-square"
+    },
+    {
+      "label": "check-square-o",
+      "icon": "fa-check-square-o"
+    },
+    {
+      "label": "circle",
+      "icon": "fa-circle"
+    },
+    {
+      "label": "circle-o",
+      "icon": "fa-circle-o"
+    },
+    {
+      "label": "dot-circle-o",
+      "icon": "fa-dot-circle-o"
+    },
+    {
+      "label": "minus-square",
+      "icon": "fa-minus-square"
+    },
+    {
+      "label": "minus-square-o",
+      "icon": "fa-minus-square-o"
+    },
+    {
+      "label": "plus-square",
+      "icon": "fa-plus-square"
+    },
+    {
+      "label": "plus-square-o",
+      "icon": "fa-plus-square-o"
+    },
+    {
+      "label": "square",
+      "icon": "fa-square"
+    },
+    {
+      "label": "square-o",
+      "icon": "fa-square-o"
+    }
+  ],
+  "payment": [
+    {
+      "label": "bitcoin",
+      "icon": "fa-bitcoin"
+    },
+    {
+      "label": "btc",
+      "icon": "fa-btc"
+    },
+    {
+      "label": "cc-amex",
+      "icon": "fa-cc-amex"
+    },
+    {
+      "label": "cc-diners-club",
+      "icon": "fa-cc-diners-club"
+    },
+    {
+      "label": "cc-discover",
+      "icon": "fa-cc-discover"
+    },
+    {
+      "label": "cc-jcb",
+      "icon": "fa-cc-jcb"
+    },
+    {
+      "label": "cc-mastercard",
+      "icon": "fa-cc-mastercard"
+    },
+    {
+      "label": "cc-paypal",
+      "icon": "fa-cc-paypal"
+    },
+    {
+      "label": "cc-stripe",
+      "icon": "fa-cc-stripe"
+    },
+    {
+      "label": "cc-visa",
+      "icon": "fa-cc-visa"
+    },
+    {
+      "label": "credit-card",
+      "icon": "fa-credit-card"
+    },
+    {
+      "label": "credit-card-alt",
+      "icon": "fa-credit-card-alt"
+    },
+    {
+      "label": "ethereum",
+      "icon": "fa-ethereum"
+    },
+    {
+      "label": "google-wallet",
+      "icon": "fa-google-wallet"
+    },
+    {
+      "label": "liberapay",
+      "icon": "fa-liberapay"
+    },
+    {
+      "label": "liberapay-square",
+      "icon": "fa-liberapay-square"
+    },
+    {
+      "label": "patreon",
+      "icon": "fa-patreon"
+    },
+    {
+      "label": "paypal",
+      "icon": "fa-paypal"
+    },
+    {
+      "label": "tipeee",
+      "icon": "fa-tipeee"
+    }
+  ],
+  "chart": [
+    {
+      "label": "area-chart",
+      "icon": "fa-area-chart"
+    },
+    {
+      "label": "bar-chart",
+      "icon": "fa-bar-chart"
+    },
+    {
+      "label": "bar-chart-o",
+      "icon": "fa-bar-chart-o"
+    },
+    {
+      "label": "line-chart",
+      "icon": "fa-line-chart"
+    },
+    {
+      "label": "pie-chart",
+      "icon": "fa-pie-chart"
+    }
+  ],
+  "currency": [
+    {
+      "label": "bitcoin",
+      "icon": "fa-bitcoin"
+    },
+    {
+      "label": "btc",
+      "icon": "fa-btc"
+    },
+    {
+      "label": "cny",
+      "icon": "fa-cny"
+    },
+    {
+      "label": "dollar",
+      "icon": "fa-dollar"
+    },
+    {
+      "label": "eur",
+      "icon": "fa-eur"
+    },
+    {
+      "label": "euro",
+      "icon": "fa-euro"
+    },
+    {
+      "label": "gbp",
+      "icon": "fa-gbp"
+    },
+    {
+      "label": "gg",
+      "icon": "fa-gg"
+    },
+    {
+      "label": "gg-circle",
+      "icon": "fa-gg-circle"
+    },
+    {
+      "label": "ils",
+      "icon": "fa-ils"
+    },
+    {
+      "label": "inr",
+      "icon": "fa-inr"
+    },
+    {
+      "label": "jpy",
+      "icon": "fa-jpy"
+    },
+    {
+      "label": "krw",
+      "icon": "fa-krw"
+    },
+    {
+      "label": "money",
+      "icon": "fa-money"
+    },
+    {
+      "label": "pound",
+      "icon": "fa-pound"
+    },
+    {
+      "label": "rmb",
+      "icon": "fa-rmb"
+    },
+    {
+      "label": "rouble",
+      "icon": "fa-rouble"
+    },
+    {
+      "label": "rub",
+      "icon": "fa-rub"
+    },
+    {
+      "label": "ruble",
+      "icon": "fa-ruble"
+    },
+    {
+      "label": "rupee",
+      "icon": "fa-rupee"
+    },
+    {
+      "label": "shekel",
+      "icon": "fa-shekel"
+    },
+    {
+      "label": "sheqel",
+      "icon": "fa-sheqel"
+    },
+    {
+      "label": "try",
+      "icon": "fa-try"
+    },
+    {
+      "label": "turkish-lira",
+      "icon": "fa-turkish-lira"
+    },
+    {
+      "label": "usd",
+      "icon": "fa-usd"
+    },
+    {
+      "label": "viacoin",
+      "icon": "fa-viacoin"
+    },
+    {
+      "label": "won",
+      "icon": "fa-won"
+    },
+    {
+      "label": "yen",
+      "icon": "fa-yen"
+    }
+  ],
+  "text-editor": [
+    {
+      "label": "align-center",
+      "icon": "fa-align-center"
+    },
+    {
+      "label": "align-justify",
+      "icon": "fa-align-justify"
+    },
+    {
+      "label": "align-left",
+      "icon": "fa-align-left"
+    },
+    {
+      "label": "align-right",
+      "icon": "fa-align-right"
+    },
+    {
+      "label": "bold",
+      "icon": "fa-bold"
+    },
+    {
+      "label": "chain",
+      "icon": "fa-chain"
+    },
+    {
+      "label": "chain-broken",
+      "icon": "fa-chain-broken"
+    },
+    {
+      "label": "clipboard",
+      "icon": "fa-clipboard"
+    },
+    {
+      "label": "columns",
+      "icon": "fa-columns"
+    },
+    {
+      "label": "copy",
+      "icon": "fa-copy"
+    },
+    {
+      "label": "cut",
+      "icon": "fa-cut"
+    },
+    {
+      "label": "dedent",
+      "icon": "fa-dedent"
+    },
+    {
+      "label": "eraser",
+      "icon": "fa-eraser"
+    },
+    {
+      "label": "file",
+      "icon": "fa-file"
+    },
+    {
+      "label": "file-o",
+      "icon": "fa-file-o"
+    },
+    {
+      "label": "file-text",
+      "icon": "fa-file-text"
+    },
+    {
+      "label": "file-text-o",
+      "icon": "fa-file-text-o"
+    },
+    {
+      "label": "files-o",
+      "icon": "fa-files-o"
+    },
+    {
+      "label": "floppy-o",
+      "icon": "fa-floppy-o"
+    },
+    {
+      "label": "font",
+      "icon": "fa-font"
+    },
+    {
+      "label": "header",
+      "icon": "fa-header"
+    },
+    {
+      "label": "heading",
+      "icon": "fa-heading"
+    },
+    {
+      "label": "indent",
+      "icon": "fa-indent"
+    },
+    {
+      "label": "italic",
+      "icon": "fa-italic"
+    },
+    {
+      "label": "link",
+      "icon": "fa-link"
+    },
+    {
+      "label": "list",
+      "icon": "fa-list"
+    },
+    {
+      "label": "list-alt",
+      "icon": "fa-list-alt"
+    },
+    {
+      "label": "list-ol",
+      "icon": "fa-list-ol"
+    },
+    {
+      "label": "list-ul",
+      "icon": "fa-list-ul"
+    },
+    {
+      "label": "outdent",
+      "icon": "fa-outdent"
+    },
+    {
+      "label": "paperclip",
+      "icon": "fa-paperclip"
+    },
+    {
+      "label": "paragraph",
+      "icon": "fa-paragraph"
+    },
+    {
+      "label": "paste",
+      "icon": "fa-paste"
+    },
+    {
+      "label": "repeat",
+      "icon": "fa-repeat"
+    },
+    {
+      "label": "rotate-left",
+      "icon": "fa-rotate-left"
+    },
+    {
+      "label": "rotate-right",
+      "icon": "fa-rotate-right"
+    },
+    {
+      "label": "save",
+      "icon": "fa-save"
+    },
+    {
+      "label": "scissors",
+      "icon": "fa-scissors"
+    },
+    {
+      "label": "strikethrough",
+      "icon": "fa-strikethrough"
+    },
+    {
+      "label": "subscript",
+      "icon": "fa-subscript"
+    },
+    {
+      "label": "superscript",
+      "icon": "fa-superscript"
+    },
+    {
+      "label": "table",
+      "icon": "fa-table"
+    },
+    {
+      "label": "text-height",
+      "icon": "fa-text-height"
+    },
+    {
+      "label": "text-width",
+      "icon": "fa-text-width"
+    },
+    {
+      "label": "th",
+      "icon": "fa-th"
+    },
+    {
+      "label": "th-large",
+      "icon": "fa-th-large"
+    },
+    {
+      "label": "th-list",
+      "icon": "fa-th-list"
+    },
+    {
+      "label": "underline",
+      "icon": "fa-underline"
+    },
+    {
+      "label": "undo",
+      "icon": "fa-undo"
+    },
+    {
+      "label": "unlink",
+      "icon": "fa-unlink"
+    }
+  ],
+  "directional": [
+    {
+      "label": "angle-double-down",
+      "icon": "fa-angle-double-down"
+    },
+    {
+      "label": "angle-double-left",
+      "icon": "fa-angle-double-left"
+    },
+    {
+      "label": "angle-double-right",
+      "icon": "fa-angle-double-right"
+    },
+    {
+      "label": "angle-double-up",
+      "icon": "fa-angle-double-up"
+    },
+    {
+      "label": "angle-down",
+      "icon": "fa-angle-down"
+    },
+    {
+      "label": "angle-left",
+      "icon": "fa-angle-left"
+    },
+    {
+      "label": "angle-right",
+      "icon": "fa-angle-right"
+    },
+    {
+      "label": "angle-up",
+      "icon": "fa-angle-up"
+    },
+    {
+      "label": "arrow-circle-down",
+      "icon": "fa-arrow-circle-down"
+    },
+    {
+      "label": "arrow-circle-left",
+      "icon": "fa-arrow-circle-left"
+    },
+    {
+      "label": "arrow-circle-o-down",
+      "icon": "fa-arrow-circle-o-down"
+    },
+    {
+      "label": "arrow-circle-o-left",
+      "icon": "fa-arrow-circle-o-left"
+    },
+    {
+      "label": "arrow-circle-o-right",
+      "icon": "fa-arrow-circle-o-right"
+    },
+    {
+      "label": "arrow-circle-o-up",
+      "icon": "fa-arrow-circle-o-up"
+    },
+    {
+      "label": "arrow-circle-right",
+      "icon": "fa-arrow-circle-right"
+    },
+    {
+      "label": "arrow-circle-up",
+      "icon": "fa-arrow-circle-up"
+    },
+    {
+      "label": "arrow-down",
+      "icon": "fa-arrow-down"
+    },
+    {
+      "label": "arrow-left",
+      "icon": "fa-arrow-left"
+    },
+    {
+      "label": "arrow-right",
+      "icon": "fa-arrow-right"
+    },
+    {
+      "label": "arrow-up",
+      "icon": "fa-arrow-up"
+    },
+    {
+      "label": "arrows",
+      "icon": "fa-arrows"
+    },
+    {
+      "label": "arrows-alt",
+      "icon": "fa-arrows-alt"
+    },
+    {
+      "label": "arrows-h",
+      "icon": "fa-arrows-h"
+    },
+    {
+      "label": "arrows-v",
+      "icon": "fa-arrows-v"
+    },
+    {
+      "label": "caret-down",
+      "icon": "fa-caret-down"
+    },
+    {
+      "label": "caret-left",
+      "icon": "fa-caret-left"
+    },
+    {
+      "label": "caret-right",
+      "icon": "fa-caret-right"
+    },
+    {
+      "label": "caret-square-o-down",
+      "icon": "fa-caret-square-o-down"
+    },
+    {
+      "label": "caret-square-o-left",
+      "icon": "fa-caret-square-o-left"
+    },
+    {
+      "label": "caret-square-o-right",
+      "icon": "fa-caret-square-o-right"
+    },
+    {
+      "label": "caret-square-o-up",
+      "icon": "fa-caret-square-o-up"
+    },
+    {
+      "label": "caret-up",
+      "icon": "fa-caret-up"
+    },
+    {
+      "label": "chevron-circle-down",
+      "icon": "fa-chevron-circle-down"
+    },
+    {
+      "label": "chevron-circle-left",
+      "icon": "fa-chevron-circle-left"
+    },
+    {
+      "label": "chevron-circle-right",
+      "icon": "fa-chevron-circle-right"
+    },
+    {
+      "label": "chevron-circle-up",
+      "icon": "fa-chevron-circle-up"
+    },
+    {
+      "label": "chevron-down",
+      "icon": "fa-chevron-down"
+    },
+    {
+      "label": "chevron-left",
+      "icon": "fa-chevron-left"
+    },
+    {
+      "label": "chevron-right",
+      "icon": "fa-chevron-right"
+    },
+    {
+      "label": "chevron-up",
+      "icon": "fa-chevron-up"
+    },
+    {
+      "label": "exchange",
+      "icon": "fa-exchange"
+    },
+    {
+      "label": "hand-o-down",
+      "icon": "fa-hand-o-down"
+    },
+    {
+      "label": "hand-o-left",
+      "icon": "fa-hand-o-left"
+    },
+    {
+      "label": "hand-o-right",
+      "icon": "fa-hand-o-right"
+    },
+    {
+      "label": "hand-o-up",
+      "icon": "fa-hand-o-up"
+    },
+    {
+      "label": "long-arrow-down",
+      "icon": "fa-long-arrow-down"
+    },
+    {
+      "label": "long-arrow-left",
+      "icon": "fa-long-arrow-left"
+    },
+    {
+      "label": "long-arrow-right",
+      "icon": "fa-long-arrow-right"
+    },
+    {
+      "label": "long-arrow-up",
+      "icon": "fa-long-arrow-up"
+    },
+    {
+      "label": "toggle-down",
+      "icon": "fa-toggle-down"
+    },
+    {
+      "label": "toggle-left",
+      "icon": "fa-toggle-left"
+    },
+    {
+      "label": "toggle-right",
+      "icon": "fa-toggle-right"
+    },
+    {
+      "label": "toggle-up",
+      "icon": "fa-toggle-up"
+    }
+  ],
+  "video-player": [
+    {
+      "label": "arrows-alt",
+      "icon": "fa-arrows-alt"
+    },
+    {
+      "label": "backward",
+      "icon": "fa-backward"
+    },
+    {
+      "label": "compress",
+      "icon": "fa-compress"
+    },
+    {
+      "label": "eject",
+      "icon": "fa-eject"
+    },
+    {
+      "label": "expand",
+      "icon": "fa-expand"
+    },
+    {
+      "label": "fast-backward",
+      "icon": "fa-fast-backward"
+    },
+    {
+      "label": "fast-forward",
+      "icon": "fa-fast-forward"
+    },
+    {
+      "label": "forward",
+      "icon": "fa-forward"
+    },
+    {
+      "label": "pause",
+      "icon": "fa-pause"
+    },
+    {
+      "label": "pause-circle",
+      "icon": "fa-pause-circle"
+    },
+    {
+      "label": "pause-circle-o",
+      "icon": "fa-pause-circle-o"
+    },
+    {
+      "label": "play",
+      "icon": "fa-play"
+    },
+    {
+      "label": "play-circle",
+      "icon": "fa-play-circle"
+    },
+    {
+      "label": "play-circle-o",
+      "icon": "fa-play-circle-o"
+    },
+    {
+      "label": "random",
+      "icon": "fa-random"
+    },
+    {
+      "label": "step-backward",
+      "icon": "fa-step-backward"
+    },
+    {
+      "label": "step-forward",
+      "icon": "fa-step-forward"
+    },
+    {
+      "label": "stop",
+      "icon": "fa-stop"
+    },
+    {
+      "label": "stop-circle",
+      "icon": "fa-stop-circle"
+    },
+    {
+      "label": "stop-circle-o",
+      "icon": "fa-stop-circle-o"
+    },
+    {
+      "label": "youtube-play",
+      "icon": "fa-youtube-play"
+    }
+  ],
+  "medical": [
+    {
+      "label": "ambulance",
+      "icon": "fa-ambulance"
+    },
+    {
+      "label": "h-square",
+      "icon": "fa-h-square"
+    },
+    {
+      "label": "heart",
+      "icon": "fa-heart"
+    },
+    {
+      "label": "heart-o",
+      "icon": "fa-heart-o"
+    },
+    {
+      "label": "heartbeat",
+      "icon": "fa-heartbeat"
+    },
+    {
+      "label": "hospital-o",
+      "icon": "fa-hospital-o"
+    },
+    {
+      "label": "medkit",
+      "icon": "fa-medkit"
+    },
+    {
+      "label": "plus-square",
+      "icon": "fa-plus-square"
+    },
+    {
+      "label": "stethoscope",
+      "icon": "fa-stethoscope"
+    },
+    {
+      "label": "user-md",
+      "icon": "fa-user-md"
+    },
+    {
+      "label": "wheelchair",
+      "icon": "fa-wheelchair"
+    },
+    {
+      "label": "wheelchair-alt",
+      "icon": "fa-wheelchair-alt"
+    }
+  ]
+}

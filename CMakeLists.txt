@@ -29,10 +29,11 @@ set(PROJECT_DESCRIPTION "Online password and secret locker")
 set(PROJECT_BUGREPORT_PATH "https://github.com/babelouest/hutch/issues")
 set(ORCANIA_VERSION_REQUIRED "2.2.1")
 set(YDER_VERSION_REQUIRED "1.4.14")
-set(ULFIUS_VERSION_REQUIRED "2.7.3")
-set(RHONABWY_VERSION_REQUIRED "0.9.9999")
-set(IDDAWC_VERSION_REQUIRED "1.0.0")
 set(HOEL_VERSION_REQUIRED "1.4.18")
+set(ULFIUS_VERSION_REQUIRED "2.7.6")
+set(RHONABWY_VERSION_REQUIRED "1.1.2")
+set(IDDAWC_VERSION_REQUIRED "1.1.1")
+set(JANSSON_VERSION_REQUIRED "2.11")
 
 include(GNUInstallDirs)
 include(CheckSymbolExists)
@@ -63,12 +64,6 @@ if (JANSSON_FOUND)
     set(LIBS ${JANSSON_LIBRARIES})
 endif ()
 
-include(FindLibJWT)
-find_package(LibJWT REQUIRED)
-if (LIBJWT_FOUND)
-    set(LIBS ${LIBS} ${LIBJWT_LIBRARIES})
-endif ()
-
 include(FindLibconfig)
 find_package(Libconfig REQUIRED)
 if (LIBCONFIG_FOUND)
@@ -80,16 +75,22 @@ include(FindZLIB)
 find_package(ZLIB REQUIRED)
 set(LIBS ${LIBS} ${ZLIB_LIBRARIES})
 
+find_package(Threads REQUIRED)
+set(LIBS ${LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
 # build
 
 add_executable(hutch ${CMAKE_CURRENT_SOURCE_DIR}/src/hutch.h
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/glewlwyd_resource.h
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/static_file_callback.h
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/glewlwyd_resource.c
-                     ${CMAKE_CURRENT_SOURCE_DIR}/src/static_file_callback.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/iddawc_resource.h
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/static_compressed_inmemory_website_callback.h
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/http_compression_callback.h
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/iddawc_resource.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/static_compressed_inmemory_website_callback.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/http_compression_callback.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/coin.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/profile.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/safe.c
+                     ${CMAKE_CURRENT_SOURCE_DIR}/src/safe_key.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/webservice.c
                      ${CMAKE_CURRENT_SOURCE_DIR}/src/hutch.c )
 target_link_libraries(hutch ${LIBS})
@@ -126,7 +127,7 @@ elseif (NOT ORCANIA_FOUND AND DOWNLOAD_DEPENDENCIES)
 			QUIET)
 	add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
 	include_directories(${orcania_SOURCE_DIR}/include)
-	add_dependencies(angharad orcania)
+	add_dependencies(hutch orcania)
 	set(ORCANIA_LIBRARIES orcania)
 	include_directories(${orcania_BINARY_DIR})
 else ()
@@ -149,7 +150,7 @@ elseif (NOT YDER_FOUND AND DOWNLOAD_DEPENDENCIES)
 	add_subdirectory(${yder_SOURCE_DIR} ${yder_BINARY_DIR})
 	include_directories(${yder_SOURCE_DIR}/include)
 	include_directories(${orcania_SOURCE_DIR}/include)
-	add_dependencies(angharad yder)
+	add_dependencies(hutch yder)
 	add_dependencies(yder orcania)
 	set(YDER_LIBRARIES yder)
 	include_directories(${yder_BINARY_DIR})
@@ -176,7 +177,7 @@ elseif (NOT ULFIUS_FOUND AND DOWNLOAD_DEPENDENCIES)
 	include_directories(${yder_SOURCE_DIR}/include)
 	include_directories(${orcania_SOURCE_DIR}/include)
 	include_directories(${ulfius_SOURCE_DIR}/include)
-	add_dependencies(angharad ulfius)
+	add_dependencies(hutch ulfius)
 	add_dependencies(ulfius yder)
 	add_dependencies(ulfius orcania)
 	set(ULFIUS_LIBRARIES ulfius)
@@ -201,7 +202,7 @@ elseif (NOT HOEL_FOUND AND DOWNLOAD_DEPENDENCIES)
 			QUIET)
 	add_subdirectory(${hoel_SOURCE_DIR} ${hoel_BINARY_DIR})
 	include_directories(${hoel_SOURCE_DIR}/include)
-	add_dependencies(angharad hoel)
+	add_dependencies(hutch hoel)
 	add_dependencies(hoel yder)
 	add_dependencies(hoel orcania)
 	set(HOEL_LIBRARIES hoel)
@@ -229,7 +230,7 @@ elseif (NOT RHONABWY_FOUND AND DOWNLOAD_DEPENDENCIES)
   add_dependencies(rhonabwy orcania)
   add_dependencies(rhonabwy yder)
   add_dependencies(rhonabwy ulfius)
-  add_dependencies(angharad rhonabwy)
+  add_dependencies(hutch rhonabwy)
   set (RHONABWY_FOUND ON)
 else ()
   message( FATAL_ERROR "Rhonabwy not found")
@@ -256,7 +257,7 @@ elseif (NOT IDDAWC_FOUND AND DOWNLOAD_DEPENDENCIES)
   add_dependencies(iddawc yder)
   add_dependencies(iddawc ulfius)
   add_dependencies(iddawc rhonabwy)
-  add_dependencies(angharad iddawc)
+  add_dependencies(hutch iddawc)
 else ()
   message( FATAL_ERROR "Iddawc not found")
 endif ()
@@ -284,7 +285,7 @@ if (BUILD_TESTING)
         find_package(Threads REQUIRED)
         set(LIBS ${LIBS} ${SUBUNIT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} m rt)
 
-				set(TESTS hutch_coin hutch_profile hutch_safe. )
+				set(TESTS coin profile safe safe_key )
 
         configure_file(
                 "${CMAKE_MODULE_PATH}/CTestCustom.cmake.in"
@@ -296,8 +297,7 @@ if (BUILD_TESTING)
             target_include_directories(${t} PUBLIC ${TST_DIR})
             target_link_libraries(${t} PUBLIC ${LIBS})
             add_test(NAME ${t}
-                    WORKING_DIRECTORY ${TST_DIR}
-                    COMMAND ${t})
+                    COMMAND ${t} "private-test.jwks")
         endforeach ()
     endif ()
 endif ()
@@ -363,14 +363,26 @@ set(CPACK_GENERATOR "TGZ;DEB")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "mail@babelouest.org")
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION ${PROJECT_DESCRIPTION})
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/babelouest/hutch")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.4), libconfig9, libjansson4 (>= 2.7), liborcania (>= 1.2), libyder (>= 1.2), libulfius (>= 2.3), libhoel (>= 1.4), lsb-base (>= 3.0-6)")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.4), libconfig9, libgnutls30 (>= 3.5.0), liborcania|liborcania-dev (>= ${ORCANIA_VERSION_REQUIRED}), libyder|libyder-dev (>= ${YDER_VERSION_REQUIRED}), libulfius|libulfius-dev (>= ${ULFIUS_VERSION_REQUIRED}), libhoel|libhoel-dev (>= ${HOEL_VERSION_REQUIRED}), librhonabwy|librhonabwy-dev (>= ${RHONABWY_VERSION_REQUIRED}), libiddawc|libiddawc-dev (>= ${IDDAWC_VERSION_REQUIRED}), lsb-base (>= 3.0-6)")
 set(CPACK_PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
 
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
 set(CPACK_SOURCE_IGNORE_FILES ${PACKAGE_IGNORED_FILES})
 
+option(BUILD_RPM "Build a RPM for your system" OFF)
+if (BUILD_RPM)
+  set(CPACK_GENERATOR "TGZ;DEB;RPM")
+  set(CPACK_RPM_PACKAGE_LICENSE "GPL")
+  set(CPACK_RPM_PACKAGE_URL "http://babelouest.github.io/hutch/")
+  set(CPACK_RPM_PACKAGE_REQUIRES "libconfig, gnutls >= 3.5.0, jansson >= ${JANSSON_VERSION_REQUIRED}, liborcania >= ${ORCANIA_VERSION_REQUIRED}, libyder >= ${YDER_VERSION_REQUIRED}, libulfius >= ${ULFIUS_VERSION_REQUIRED}, libhoel >= ${HOEL_VERSION_REQUIRED}, librhonabwy >= ${RHONABWY_VERSION_REQUIRED}, libiddawc >= ${IDDAWC_VERSION_REQUIRED}")
+endif ()
+
 include(CPack)
 
 add_custom_target(dist
         COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+
+message(STATUS "Download required dependencies:       ${DOWNLOAD_DEPENDENCIES}")
+message(STATUS "Build the testing tree:               ${BUILD_TESTING}")
+message(STATUS "Build RPM package:                    ${BUILD_RPM}")

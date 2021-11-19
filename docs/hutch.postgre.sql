@@ -16,7 +16,7 @@ CREATE TABLE h_profile (
   hp_id SERIAL PRIMARY KEY,
   hp_sub VARCHAR(128) NOT NULL,
   hp_name VARCHAR(256),
-  hp_fortune VARCHAR(512),
+  hp_message VARCHAR(512),
   hp_picture TEXT,
   hp_sign_kid VARCHAR(128),
   hp_deleted SMALLINT DEFAULT 0,
@@ -31,6 +31,7 @@ CREATE TABLE h_safe (
   hs_name VARCHAR(128) NOT NULL,
   hs_display_name VARCHAR(512),
   hs_enc_type VARCHAR(128),
+  hs_alg_type VARCHAR(128),
   hs_deleted SMALLINT DEFAULT 0,
   hs_last_updated TIMESTAMPTZ,
   FOREIGN KEY(hp_id) REFERENCES h_profile(hp_id) ON DELETE CASCADE

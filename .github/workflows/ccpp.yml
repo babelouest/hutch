@@ -1,0 +1,39 @@
+name: C/C++ CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libconfig-dev libsystemd-dev libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libsqlite3-dev sqlite3 libpq-dev default-mysql-client default-libmysqlclient-dev cmake pkg-config check libsubunit-dev cppcheck
+    - name: cppcheck
+      run: cppcheck --force --enable=warning,missingInclude --error-exitcode=1 src/
+    - name: build
+      run: |
+        mkdir build
+        cd build
+        cmake -DBUILD_TESTING=ON -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib ..
+        make
+        sudo make install
+    - name: build-webapp
+      run: |
+        cd webapp-src
+        npm install
+        make build-webapp
+    - name: test
+      run: |
+        sqlite3 /tmp/hutch.db < docs/hutch.sqlite3.sql
+        cd build
+        rnbyc -j -g RSA2048 -a RS256 -k RS256 -g EC256 -a ES256 -k ES256 -o sign.jwks -p /dev/null
+        rnbyc -j -g EC256 -a ES256 -o private-test.jwks -p public-test.jwks
+        hutch --config-file=../test/hutch-ci.conf &
+        export G_PID=$!
+        make test || (cat Testing/Temporary/LastTest.log && cat /tmp/hutch.log && false)
+        kill $G_PID
