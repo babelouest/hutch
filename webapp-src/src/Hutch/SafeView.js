@@ -41,6 +41,7 @@ class SafeView extends Component {
       filtering: false
     };
     
+    this.reloadSafe = this.reloadSafe.bind(this);
     this.editSafe = this.editSafe.bind(this);
     this.unlockSafe = this.unlockSafe.bind(this);
     this.unlockSafeCallback = this.unlockSafeCallback.bind(this);
@@ -58,12 +59,14 @@ class SafeView extends Component {
   
   static getDerivedStateFromProps(props, state) {
     var newState = Object.assign({}, props);
-    if (props.safe.name !== state.safe.name) {
-      newState.safeContent = props.safeContent;
-      newState.filteredCoinList = getUnlockedCoinList(props);
-      newState.filter = "";
-    }
+    newState.safeContent = props.safeContent;
+    newState.filteredCoinList = getUnlockedCoinList(props);
+    newState.filter = "";
     return newState;
+  }
+  
+  reloadSafe() {
+    messageDispatcher.sendMessage('App', {action: "loadSafe", target: this.state.safe.name});
   }
   
   editSafe() {
@@ -301,6 +304,13 @@ class SafeView extends Component {
           {this.state.safe.display_name||this.state.safe.name}
           <div className="btn-group float-end" role="group">
             {lockButtonJsx}
+            <button type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={this.reloadSafe}
+                    disabled={!isUnlocked || this.state.oidcStatus !== "connected"}
+                    title={i18next.t("reloadSafe")}>
+              <i className="fa fa-refresh" aria-hidden="true"></i>
+            </button>
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={this.editSafe}

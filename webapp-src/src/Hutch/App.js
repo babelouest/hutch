@@ -7,6 +7,7 @@ import { generateSecret } from 'jose-browser-runtime/util/generate_secret';
 import { fromKeyLike } from 'jose-browser-runtime/jwk/from_key_like';
 import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
 import { jwtDecrypt } from 'jose-browser-runtime/jwt/decrypt';
+import { decodeProtectedHeader } from 'jose-browser-runtime/util/decode_protected_header';
 
 import i18next from 'i18next';
 
@@ -128,6 +129,8 @@ class App extends Component {
         this.setState({nav: "config"});
       } else if (message.action === "addSafe") {
         this.setState({nav: "safe", curSafe: {name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), display_name: "", enc_type: "A256GCM", alg_type: "A256GCMKW"}, editSafeMode: 1});
+      } else if (message.action === "loadSafe") {
+        this.getSafe(message.target);
       } else if (message.action === "editSafe") {
         this.state.safeList.forEach((safe) => {
           if (safe.name === message.target) {
@@ -247,7 +250,7 @@ class App extends Component {
           }
         }
         this.setState({safeContent: safeContent}, () => {
-          this.unlockCoinList(message.target.name);
+          this.unlockCoinList(message.target.name, this.state.safeContent[message.target.name].key);
           if (this.state.safeContent[message.target.name].extractableKey) {
             setTimeout(() => {
               var curSafeContent = this.state.safeContent;
@@ -264,11 +267,10 @@ class App extends Component {
           setTimeout(() => {
             var curSafeContent = this.state.safeContent;
             delete(curSafeContent[message.safe.name].extractableKey);
-            this.setState({safeContent: curSafeContent}, () => {
-            });
+            this.setState({safeContent: curSafeContent});
           }, 600000);
           if (safeContent[message.safe.name].unlockedCoinList.length !== safeContent[message.safe.name].coinList.length) {
-            this.unlockCoinList(message.safe.name)
+            this.unlockCoinList(message.safe.name, this.state.safeContent[message.safe.name].key)
           }
         });
       } else if (message.action === "lockAllSafe") {
@@ -409,7 +411,7 @@ class App extends Component {
             .then((coinList) => {
               var trustworthy = true;
               coinList.payload.list.forEach((coin) => {
-                var coinHeader = JSON.parse(atob(coin.data.split(".")[0].replace(/-/g, '+').replace(/_/g, '/')));
+                var coinHeader = decodeProtectedHeader(coin.data);
                 if (coinHeader.sign_thumb !== this.state.config.sign_thumb) {
                   trustworthy = false;
                 }
@@ -440,7 +442,7 @@ class App extends Component {
                             var safeContent = this.state.safeContent;
                             safeContent[safe.name].key = curSafeKey;
                             this.setState({safeContent: safeContent}, () => {
-                              this.unlockCoinList(safe.name);
+                              this.unlockCoinList(safe.name, safeContent[safe.name].key);
                             });
                           });
                         });
@@ -451,13 +453,13 @@ class App extends Component {
               });
             })
             .fail((error) => {
-              console.log("getSafeCoins", error);
+              console.error("getSafeCoins", error);
               messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinList")});
               this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
             });
           })
           .fail((error) => {
-            console.log("getSafeKeys", error);
+            console.error("getSafeKeys", error);
             messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorKeyList")});
             this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
           });
@@ -465,25 +467,74 @@ class App extends Component {
       });
     })
     .fail((error) => {
-      console.log("getSafeList", error);
+      console.error("getSafeList", error);
+      messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSafeList")});
+      this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
+    });
+  }
+  
+  getSafe(safeName) {
+    return apiManager.requestSigned(this.state.config.safe_endpoint + "/" + safeName)
+    .then((result) => {
+      var safeList = this.state.safeList;
+      safeList.forEach((safe, index) => {
+        if (safe.name === safeName) {
+          safeList[index] = result.payload;
+        }
+      });
+      return this.setState({safeList: safeList}, () => {
+        return apiManager.requestSigned(this.state.config.safe_endpoint + "/" + safeName + "/key")
+        .then((keyList) => {
+          return apiManager.requestSigned(this.state.config.safe_endpoint + "/" + safeName + "/coin")
+          .then((coinList) => {
+            var trustworthy = true;
+            coinList.payload.list.forEach((coin) => {
+              var coinHeader = decodeProtectedHeader(coin.data);
+              if (coinHeader.sign_thumb !== this.state.config.sign_thumb) {
+                trustworthy = false;
+              }
+            });
+            var safeContent = this.state.safeContent;
+            safeContent[safeName].keyList = keyList.payload.list;
+            safeContent[safeName].coinList = coinList.payload.list;
+            safeContent[safeName].unlockedCoinList = [];
+            this.setState({safeContent: safeContent, trustworthy: (this.state.trustworthy && trustworthy)}, () => {
+              this.unlockCoinList(safeName, safeContent[safeName].key);
+              messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSafeLoaded")});
+            });
+          })
+          .fail((error) => {
+            console.error("getSafeCoins", error);
+            messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinList")});
+            this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
+          });
+        })
+        .fail((error) => {
+          console.error("getSafeKeys", error);
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorKeyList")});
+          this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
+        });
+      });
+    })
+    .fail((error) => {
+      console.error("getSafe", error);
       messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSafeList")});
       this.setState({hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}});
     });
   }
   
   compareCoin( a, b ) {
-    if ( a.data.displayName < b.data.displayName ){
+    if ( a.data.displayName.toUpperCase() < b.data.displayName.toUpperCase() ){
       return -1;
     }
-    if ( a.data.displayName > b.data.displayName ){
+    if ( a.data.displayName.toUpperCase() > b.data.displayName.toUpperCase() ){
       return 1;
     }
     return 0;
   }
 
-  unlockCoinList(safeName) {
+  unlockCoinList(safeName, key) {
     var safeContent = this.state.safeContent;
-    var key = safeContent[safeName].key;
     if (key && (this.state.trustworthy || this.state.forceTrust)) {
       safeContent[safeName].coinList.forEach((encCoin, index) => {
         jwtDecrypt(encCoin.data, key)
@@ -517,7 +568,7 @@ class App extends Component {
     this.setState({forceTrust: true}, () => {
       this.state.safeList.forEach((safe) => {
         if (this.state.safeContent[safe.name].key) {
-          this.unlockCoinList(safe.name);
+          this.unlockCoinList(safe.name, this.state.safeContent[safe.name].key);
         }
       });
     });
