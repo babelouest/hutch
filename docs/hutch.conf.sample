@@ -35,7 +35,7 @@ log_file="/tmp/hutch.log"
 hutch_scope="hutch"
 
 # sign content
-sign_key="/etc/hutch/sign.jwks"
+sign_key="/usr/etc/hutch/sign.jwks"
 
 # signature expiration
 sign_exp = 600
@@ -46,22 +46,22 @@ secure_connection_key_file="/etc/hutch/cert.key"
 secure_connection_pem_file="/etc/hutch/cert.pem"
 
 # MariaDB/Mysql database connection
-database =
-{
-  type = "mariadb";
-  host = "localhost";
-  user = "hutch";
-  password = "hutch";
-  dbname = "hutch";
-  port = 0;
-}
-
-# SQLite database connection
 #database =
 #{
-#   type               = "sqlite3";
-#   path               = "/var/cache/hutch/hutch.db";
+#  type = "mariadb";
+#  host = "localhost";
+#  user = "hutch";
+#  password = "hutch";
+#  dbname = "hutch";
+#  port = 0;
 #}
+
+# SQLite database connection
+database =
+{
+   type               = "sqlite3";
+   path               = "/var/cache/hutch/hutch.db";
+}
 
 # PostgreSQL database connection
 #database =
@@ -73,9 +73,9 @@ database =
 # oidc parameters
 oidc =
 {
-  server_remote_config = "https://example.com/.well-known/openid-configuration"
+#  server_remote_config = "https://example.com/.well-known/openid-configuration"
 #  server_remote_config_verify_cert = true
-#  server_public_jwks = "/etc/hutch/public-test.jwks"
+  server_public_jwks = "/usr/etc/hutch/public-test.jwks"
 #  iss = "https://example.com/"
 #  realm = "hutch"
 #  aud = "me"
