@@ -168,6 +168,20 @@ class CoinElementSecretQuestions extends Component {
             </div>
           </div>
         </div>
+        <div className="row">
+          <div className="col">
+            <span className="badge bg-info text-dark">
+              {i18next.t("coinElementQuestionQ")}
+            </span>
+          </div>
+          <div className="col">
+            <span className="badge bg-info text-dark">
+              {i18next.t("coinElementQuestionA")}
+            </span>
+          </div>
+          <div className="col">
+          </div>
+        </div>
         {questionList}
         <div className="row">
           <div className="col">

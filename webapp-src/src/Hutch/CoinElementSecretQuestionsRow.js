@@ -31,7 +31,8 @@ class CoinElementSecretQuestionsRow extends Component {
     });
   }
   
-  toggleShowAnswer() {
+  toggleShowAnswer(e) {
+    e.preventDefault();
     this.setState({showAnswer: !this.state.showAnswer});
   }
   
@@ -45,26 +46,20 @@ class CoinElementSecretQuestionsRow extends Component {
     return (
       <div className="row">
         <div className="col">
-          <span className="badge bg-info text-dark">
-            {i18next.t("coinElementQuestionQ")}
-          </span>
           <code className="btn-icon-right">
             {this.state.value.question}
           </code>
+          <a className="link-secondary btn-icon-right" href="#" alt={i18next.t("coinElementShowAnswer")} onClick={this.toggleShowAnswer}>
+            <i className="fa fa-eye" aria-hidden="true"></i>
+          </a>
         </div>
         <div className="col">
-          <span className="badge bg-info text-dark">
-            {i18next.t("coinElementQuestionA")}
-          </span>
           <code className="btn-icon-right">
             {answer}
           </code>
         </div>
         <div className="col">
           <div className="btn-group float-end btn-icon" role="group">
-            <button type="button" className="btn btn-outline-secondary btn-sm" title={i18next.t("coinElementShowAnswer")} onClick={this.toggleShowAnswer}>
-              <i className="fa fa-eye" aria-hidden="true"></i>
-            </button>
             <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementCopy")} onClick={this.copyToClipboard}>
               <i className="fa fa-files-o" aria-hidden="true"></i>
             </button>

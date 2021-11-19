@@ -71,13 +71,13 @@ class CoinElementPassword extends Component {
                   {i18next.t("coinElementPassword")}
                 </span>
               </span>
+              <a className="link-secondary btn-icon-right" alt={i18next.t("coinElementShowPassword")} href="#" onClick={this.toggleShowPassword}>
+                <i className="fa fa-eye" aria-hidden="true"></i>
+              </a>
             </div>
             {password}
             <div className="col">
               <div className="btn-group float-end btn-icon" role="group">
-                <button type="button" className="btn btn-outline-secondary btn-sm" title={i18next.t("coinElementShowPassword")} onClick={this.toggleShowPassword}>
-                  <i className="fa fa-eye" aria-hidden="true"></i>
-                </button>
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementCopy")} onClick={this.copyToClipboard}>
                   <i className="fa fa-files-o" aria-hidden="true"></i>
                 </button>
