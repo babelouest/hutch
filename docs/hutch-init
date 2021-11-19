@@ -21,13 +21,13 @@ pidfile=/var/run/hutch.pid
 
 case "$1" in
   stop)
-    echo -n "Stopping Glewlwyd "
+    echo -n "Stopping Hutch "
     start-stop-daemon --stop --pidfile $pidfile
     echo "OK"
     ;;
 
   start)
-    echo -n "Starting Glewlwyd "
+    echo -n "Starting Hutch "
     touch $pidfile
     chown $user:$group $pidfile
     start-stop-daemon --start --quiet --make-pidfile --pidfile $pidfile \
