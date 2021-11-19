@@ -52,6 +52,7 @@
   "messageProfileSaved": "Profil sauvegardé",
   "messageErrorSaveSafe": "Erreur lors de la sauvegarde du coffre",
   "messageSaveSafe": "Coffre sauvegardé",
+  "messageSafeLoaded": "Coffre rechargé",
   "modalSafeKey-password": "Mot de passe",
   "modalSafeKey-master-password": "Mot de passe maître",
   "modalSafeKey-jwk": "Clé JWK",
