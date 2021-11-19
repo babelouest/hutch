@@ -51,7 +51,7 @@ class CoinElementUrl extends Component {
             </div>
             <div className="col text-truncate">
               <span className="btn-icon-right">
-                <a href={this.state.element.value} target="_blank" title={this.state.element.value} className="link-secondary">{this.state.element.value}</a>
+                <a href={this.state.element.value} target="_blank" rel="noreferrer noopener" title={this.state.element.value} className="link-secondary">{this.state.element.value}</a>
               </span>
             </div>
             <div className="col">
