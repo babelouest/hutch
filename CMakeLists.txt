@@ -313,23 +313,23 @@ install(DIRECTORY webapp/
 install(FILES webapp/config.json.sample 
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/hutch/webapp/ RENAME config.json COMPONENT config)
 install(FILES README.md
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 install(FILES docs/INSTALL.md
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 install(FILES docs/API.md
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 install(FILES docs/FRONT-END.md
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 install(FILES docs/hutch-init
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 install(FILES docs/hutch.service
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 install(FILES docs/hutch.mariadb.sql
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 install(FILES docs/hutch.sqlite3.sql
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 install(FILES docs/hutch.postgre.sql
-        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/hutch/doc/ COMPONENT runtime)
 
 set(TARGETS hutch)
 
