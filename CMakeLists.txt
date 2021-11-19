@@ -328,6 +328,8 @@ install(FILES docs/hutch.mariadb.sql
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
 install(FILES docs/hutch.sqlite3.sql
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
+install(FILES docs/hutch.postgre.sql
+        DESTINATION ${CMAKE_INSTALL_DOCDIR}/ COMPONENT runtime)
 
 set(TARGETS hutch)
 
