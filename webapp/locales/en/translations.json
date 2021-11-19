@@ -52,6 +52,7 @@
   "messageProfileSaved": "Profile saved",
   "messageErrorSaveSafe": "Error while saving safe",
   "messageSaveSafe": "Safe saved",
+  "messageSafeLoaded": "Safe reloaded",
   "modalSafeKey-password": "Password safe key",
   "modalSafeKey-master-password": "Master password safe key",
   "modalSafeKey-jwk": "JWK safe key",
