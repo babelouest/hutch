@@ -118,6 +118,6 @@ try {
 } catch (e) {
   $("#root").html('<div class="alert alert-danger" role="alert">' +
                     '<i class="fas fa-exclamation-triangle"></i>' +
-                    '<span class="btn-icon-right">You must use a browser compatible with Glewlwyd SSO</span>' +
+                    '<span class="btn-icon-right">You must use a browser compatible with Hutch</span>' +
                   '</div>');
 }
