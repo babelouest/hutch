@@ -21,6 +21,17 @@ function getUnlockedCoinList(props) {
   }
 }
 
+function filterCoins(unlockedCoinList, filter) {
+  var filteredCoinList = [];
+  unlockedCoinList.forEach((coin) => {
+    if (coin.data.displayName.toUpperCase().search(filter.toUpperCase()) > -1) {
+      filteredCoinList.push(coin);
+    }
+  });
+  console.log(filteredCoinList);
+  return filteredCoinList;
+}
+  
 class SafeView extends Component {
   constructor(props) {
     super(props);
@@ -58,10 +69,12 @@ class SafeView extends Component {
   }
   
   static getDerivedStateFromProps(props, state) {
-    var newState = Object.assign({}, props);
-    newState.safeContent = props.safeContent;
-    newState.filteredCoinList = getUnlockedCoinList(props);
-    newState.filter = "";
+    let newState = Object.assign({}, props);
+    if (state.filter) {
+      newState.filteredCoinList = filterCoins(newState.safeContent[newState.safe.name].unlockedCoinList, state.filter);
+    } else {
+      newState.filteredCoinList = newState.safeContent[newState.safe.name].unlockedCoinList
+    }
     return newState;
   }
   
@@ -123,23 +136,7 @@ class SafeView extends Component {
   }
 
   changeFilter(e) {
-    if (e.target.value) {
-      this.setState({filter: e.target.value, filtering: true}, () => {
-        clearTimeout(this.state.filterTimeout);
-        var filterTimeout = setTimeout(() => {
-          var filteredCoinList = [];
-          this.state.safeContent[this.state.safe.name].unlockedCoinList.forEach((coin) => {
-            if (coin.data.displayName.toUpperCase().search(this.state.filter.toUpperCase()) > -1) {
-              filteredCoinList.push(coin);
-            }
-          });
-          this.setState({filteredCoinList: filteredCoinList, filterTimeout: false, filtering: false});
-        }, 3000);
-      });
-    } else {
-      clearTimeout(this.state.filterTimeout);
-      this.setState({filter: e.target.value, filtering: false, filteredCoinList: this.state.safeContent[this.state.safe.name].unlockedCoinList, filterTimeout: false, filtering: false});
-    }
+    this.setState({filter: e.target.value});
   }
   
   addCoin() {
@@ -250,20 +247,12 @@ class SafeView extends Component {
   }
 
 	render() {
-    var lockButtonJsx, secretHeaderJsx, secretListJsx = [], spinnerJsx, isUnlocked = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key);
+    var lockButtonJsx, secretHeaderJsx, secretListJsx = [], isUnlocked = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key);
     if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key) {
       lockButtonJsx =
         <button type="button" className="btn btn-secondary btn-sm" onClick={this.lockSafe} title={i18next.t("safeLock")}>
           <i className="fa fa-lock" aria-hidden="true"></i>
         </button>
-      if (this.state.filtering) {
-        spinnerJsx =
-          <div className="input-group-append">
-            <button className="btn btn-outline-secondary" type="button" disabled={true}>
-              <i className="fa fa-spinner fa-spin fa-fw"></i>
-            </button>
-          </div>
-      }
       secretHeaderJsx =
         <div className="mb-3">
           <form onSubmit={(e) => e.preventDefault()}>
@@ -276,7 +265,6 @@ class SafeView extends Component {
                      name="coinFilter"
                      value={this.state.filter}
                      onChange={this.changeFilter}/>
-              {spinnerJsx}
             </div>
           </form>
         </div>
