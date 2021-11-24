@@ -1,5 +1,5 @@
 #
-# Glewlwyd SSO Server
+# Hutch - Password and private data locker
 #
 # Makefile used to build and install the front-end webapp
 #
