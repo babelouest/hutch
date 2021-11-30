@@ -3,6 +3,9 @@
 ## 2.0.0
 
 - Complete rework for the better good
+- Rewrite backend to sign output data
+- Rewrite front-end in ReactJs and handle secrets and safe keys as JWTs
+- Use Access Tokens from any OIDC server who sends JWT access tokens, rather than glewlwyd only
 
 ## 1.1.2
 
