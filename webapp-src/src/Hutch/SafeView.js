@@ -70,10 +70,12 @@ class SafeView extends Component {
   
   static getDerivedStateFromProps(props, state) {
     let newState = Object.assign({}, props);
-    if (state.filter) {
-      newState.filteredCoinList = filterCoins(newState.safeContent[newState.safe.name].unlockedCoinList, state.filter);
-    } else {
-      newState.filteredCoinList = newState.safeContent[newState.safe.name].unlockedCoinList
+    if (props.oidcStatus === "connected") {
+      if (state.filter) {
+        newState.filteredCoinList = filterCoins(newState.safeContent[newState.safe.name].unlockedCoinList, state.filter);
+      } else {
+        newState.filteredCoinList = newState.safeContent[newState.safe.name].unlockedCoinList
+      }
     }
     return newState;
   }
