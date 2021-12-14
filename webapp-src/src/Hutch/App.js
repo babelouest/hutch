@@ -16,6 +16,7 @@ import messageDispatcher from '../lib/MessageDispatcher';
 import routage from '../lib/Routage';
 import storage from '../lib/Storage';
 import Notification from '../lib/Notification';
+import oidcConnector from '../lib/OIDCConnector';
 
 import TopMenu from './TopMenu';
 import Profile from './Profile';
@@ -39,6 +40,7 @@ class App extends Component {
       oidcStatus: "connecting",
       tokenTimeout: false,
       nav: "profile",
+      oldNav: false,
       langChanged: false,
       editProfile: false,
       editSafeMode: 0, // 0: read, 1: add, 2: edit
@@ -61,7 +63,7 @@ class App extends Component {
           messageDispatcher.sendMessage('Notification', {type: "success", message: i18next.t("messageConnected")});
         }
         var tokenTimeout = false;
-        if (this.state.config.frontend.oidc.responseType.search("code") === -1) {
+        if (oidcConnector.getParameter("responseType").search("code") === -1) {
           clearTimeout(this.state.tokenTimeout);
           tokenTimeout = setTimeout(() => {
             messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
@@ -117,7 +119,7 @@ class App extends Component {
         this.setState({nav: "profile", editProfile: false, hutchProfile: false, hasProfile: false, safeList: [], safeContent: {}, curSafe: false});
       } else if (message.action === "nav") {
         if (!message.target) {
-          this.setState({nav: "profile", editProfile: false});
+          this.setState({nav: "profile", editProfile: false, curSafe: false});
         } else {
           this.state.safeList.forEach((safe) => {
             if (safe.name === message.target) {
@@ -126,7 +128,11 @@ class App extends Component {
           });
         }
       } else if (message.action === "config") {
-        this.setState({nav: "config"});
+        if (this.state.nav === "config" && !!this.state.oldNav) {
+          this.setState({nav: this.state.oldNav, oldNav: false});
+        } else {
+          this.setState({nav: "config", oldNav: this.state.nav});
+        }
       } else if (message.action === "addSafe") {
         this.setState({nav: "safe", curSafe: {name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), display_name: "", enc_type: "A256GCM", alg_type: "A256GCMKW"}, editSafeMode: 1});
       } else if (message.action === "loadSafe") {
@@ -622,6 +628,7 @@ class App extends Component {
                  oidcStatus={this.state.oidcStatus}
                  safeList={safeList}
                  safeContent={this.state.safeContent}
+                 curSafe={this.state.curSafe}
                  hasProfile={this.state.hasProfile}/>
         {trustworthyJsx}
         {bodyJsx}
