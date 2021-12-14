@@ -44,7 +44,7 @@ pthread_cond_t  global_handler_close_cond;
  *
  */
 int main (int argc, char ** argv) {
-  struct config_elements * config = malloc(sizeof(struct config_elements));
+  struct config_elements * config = o_malloc(sizeof(struct config_elements));
   int res;
   char * str_jwks;
   json_t * j_jwks, * j_tmp;
@@ -66,9 +66,9 @@ int main (int argc, char ** argv) {
   config->log_level = Y_LOG_LEVEL_NONE;
   config->log_file = NULL;
   config->conn = NULL;
-  config->instance = malloc(sizeof(struct _u_instance));
+  config->instance = o_malloc(sizeof(struct _u_instance));
   config->allow_origin = NULL;
-  config->iddawc_resource_config = malloc(sizeof(struct _iddawc_resource_config));
+  config->iddawc_resource_config = o_malloc(sizeof(struct _iddawc_resource_config));
   config->static_file_config = o_malloc(sizeof(struct _u_compressed_inmemory_website_config));
   config->use_secure_connection = 0;
   config->secure_connection_key_file = NULL;
@@ -269,8 +269,8 @@ int main (int argc, char ** argv) {
     } else {
       res = U_ERROR_PARAMS;
     }
-    free(key_file);
-    free(pem_file);
+    o_free(key_file);
+    o_free(pem_file);
   } else {
     res = ulfius_start_framework(config->instance);
   }
@@ -298,13 +298,13 @@ void exit_server(struct config_elements ** config, int exit_value) {
   
   if (config != NULL && *config != NULL) {
     // Cleaning data
-    free((*config)->config_file);
-    free((*config)->api_prefix);
-    free((*config)->external_url);
-    free((*config)->log_file);
-    free((*config)->allow_origin);
-    free((*config)->secure_connection_key_file);
-    free((*config)->secure_connection_pem_file);
+    o_free((*config)->config_file);
+    o_free((*config)->api_prefix);
+    o_free((*config)->external_url);
+    o_free((*config)->log_file);
+    o_free((*config)->allow_origin);
+    o_free((*config)->secure_connection_key_file);
+    o_free((*config)->secure_connection_pem_file);
     i_jwt_profile_access_token_close_config((*config)->iddawc_resource_config);
     o_free((*config)->oidc_server_remote_config);
     o_free((*config)->oidc_server_public_jwks);
@@ -326,9 +326,9 @@ void exit_server(struct config_elements ** config, int exit_value) {
     h_clean_connection((*config)->conn);
     ulfius_stop_framework((*config)->instance);
     ulfius_clean_instance((*config)->instance);
-    free((*config)->instance);
+    o_free((*config)->instance);
     
-    free(*config);
+    o_free(*config);
     (*config) = NULL;
   }
   y_close_logs();
@@ -408,7 +408,7 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
               }
               one_log_mode = strtok(NULL, ",");
             }
-            free(to_free);
+            o_free(to_free);
           } else {
             fprintf(stderr, "Error!\nNo mode specified\n");
             return 0;
@@ -874,7 +874,7 @@ char to_hex(char code) {
  * http://www.geekhideout.com/urlcode.shtml
  */
 char * url_encode(char * str) {
-  char * pstr = str, * buf = malloc(strlen(str) * 3 + 1), * pbuf = buf;
+  char * pstr = str, * buf = o_malloc(strlen(str) * 3 + 1), * pbuf = buf;
   while (* pstr) {
     if (isalnum(* pstr) || * pstr == '-' || * pstr == '_' || * pstr == '.' || * pstr == '~') 
       * pbuf++ = * pstr;
@@ -895,7 +895,7 @@ char * url_encode(char * str) {
  * http://www.geekhideout.com/urlcode.shtml
  */
 char * url_decode(char * str) {
-  char * pstr = str, * buf = malloc(strlen(str) + 1), * pbuf = buf;
+  char * pstr = str, * buf = o_malloc(strlen(str) + 1), * pbuf = buf;
   while (* pstr) {
     if (* pstr == '%') {
       if (pstr[1] && pstr[2]) {
@@ -929,7 +929,7 @@ char * get_file_content(const char * file_path) {
     fseek (f, 0, SEEK_END);
     length = ftell (f);
     fseek (f, 0, SEEK_SET);
-    buffer = malloc((length+1)*sizeof(char));
+    buffer = o_malloc((length+1)*sizeof(char));
     if (buffer) {
       res = fread (buffer, 1, length, f);
       if (res != length) {
