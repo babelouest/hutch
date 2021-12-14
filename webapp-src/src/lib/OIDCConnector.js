@@ -69,6 +69,14 @@ class OIDCConnector {
     this.parameters[param] = value;
   }
   
+  getParameter(param) {
+    if (this.parameters[param]) {
+      return this.parameters[param];
+    } else {
+      return false;
+    }
+  }
+  
   parseInitialUrl() {
     var storedData;
     var token;
