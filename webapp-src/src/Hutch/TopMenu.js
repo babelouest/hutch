@@ -16,6 +16,7 @@ class TopMenu extends Component {
       oidcStatus: props.oidcStatus,
       safeList: props.safeList,
       safeContent: props.safeContent,
+      curSafe: props.curSafe,
       hasProfile: props.hasProfile
     };
     
@@ -46,9 +47,13 @@ class TopMenu extends Component {
       } else {
         safeIconJsx = <i className="fa fa-lock btn-icon-right" aria-hidden="true"></i>;
       }
+      let className = "nav-link";
+      if (this.state.curSafe.name === safe.name) {
+        className += " active"
+      }
       safeListJsx.push(
         <li className="nav-item" key={index}>
-          <a className="nav-link active"
+          <a className={className}
               data-bs-toggle="collapse"
               data-bs-target=".navbar-collapse.show"
               href="#" aria-current="page"
@@ -64,7 +69,7 @@ class TopMenu extends Component {
       classAddSafe += " disabled-cursor";
     }
     return (
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <nav className="navbar navbar-expand-lg nav-pills bg-light">
         <div className="container-fluid">
           <a className="navbar-brand"
              href="#"
