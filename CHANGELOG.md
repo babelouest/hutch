@@ -1,5 +1,11 @@
 # Hutch Changelog
 
+## 2.0.1
+
+- UI bug fixes and improvements
+- Fix timeout when using token response type
+- Fix disconnection bug
+
 ## 2.0.0
 
 - Complete rework for the better good
