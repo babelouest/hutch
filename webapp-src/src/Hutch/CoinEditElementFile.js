@@ -41,7 +41,7 @@ class CoinEditElementFile extends Component {
       filenameJsx = <code className="btn-icon-right">{this.state.element.value.name}</code>
     }
     return (
-      <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>
+      <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index} className="border border-secondary rounded coin-element">
         <div className="mb-3">
           <input type="file"
                  className="upload"

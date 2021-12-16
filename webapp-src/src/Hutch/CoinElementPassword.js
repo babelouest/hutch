@@ -63,7 +63,7 @@ class CoinElementPassword extends Component {
         </div>
     }
     return (
-        <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index}>
+        <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index} className="border border-secondary rounded coin-element">
           <div className="row btn-icon-bottom">
             <div className="col text-truncate">
               <span className="btn-icon-right">
@@ -93,7 +93,7 @@ class CoinElementPassword extends Component {
               </div>
             </div>
           </div>
-          <div className="row">
+          <div className="row coin-tag">
             <div className="col">
               {tagListJsx}
             </div>
