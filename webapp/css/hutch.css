@@ -14,6 +14,13 @@
 .btn-icon-bottom {
   margin-top: 5px;
 }
+.coin-element {
+  margin-bottom: 2px;
+}
+.coin-tag {
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
 .error-input {
   width: 100%;
   margin-top: .25rem;
