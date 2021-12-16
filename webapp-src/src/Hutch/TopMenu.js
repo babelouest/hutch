@@ -56,7 +56,8 @@ class TopMenu extends Component {
           <a className={className}
               data-bs-toggle="collapse"
               data-bs-target=".navbar-collapse.show"
-              href="#" aria-current="page"
+              href="#"
+              aria-current="page"
               onClick={(e) => this.navigateTo(e, safe.name)}>
             {safe.display_name||safe.name}
             {safeIconJsx}
@@ -69,7 +70,7 @@ class TopMenu extends Component {
       classAddSafe += " disabled-cursor";
     }
     return (
-      <nav className="navbar navbar-expand-lg nav-pills bg-light">
+      <nav className="navbar navbar-expand-lg nav-pills navbar-light bg-light">
         <div className="container-fluid">
           <a className="navbar-brand"
              href="#"
@@ -91,7 +92,11 @@ class TopMenu extends Component {
             </ul>
             <ul className="navbar-nav ms-auto flex-nowrap text-right">
               <li className="nav-item">
-                <a className="nav-link" onClick={(e) => this.navigateoConfig(e)} href="#">
+                <a className="nav-link"
+                   data-bs-toggle="collapse"
+                   data-bs-target=".navbar-collapse.show"
+                   href="#"
+                   onClick={(e) => this.navigateoConfig(e)} href="#">
                   <i className="fa fa-cog btn-icon-right" aria-hidden="true"></i>
                 </a>
               </li>
