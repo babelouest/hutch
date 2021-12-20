@@ -58,7 +58,7 @@ class JwkInput extends Component {
           <textarea className={className}
                     autoComplete="off"
                     placeholder={this.state.ph}
-                    value={(!this.state.filename?"":this.state.value)}
+                    value={this.state.value}
                     onChange={(e) => this.changeValue(e)}></textarea>
           <input type="file"
                  className="upload"
