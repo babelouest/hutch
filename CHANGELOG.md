@@ -5,6 +5,7 @@
 - UI bug fixes and improvements
 - Fix timeout when using token response type
 - Fix disconnection bug
+- Upgrade front-end dependencies to last version
 
 ## 2.0.0
 

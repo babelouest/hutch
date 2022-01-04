@@ -24,7 +24,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
 
 set(PROGRAM_VERSION_MAJOR "2")
 set(PROGRAM_VERSION_MINOR "0")
-set(PROGRAM_VERSION_PATCH "0")
+set(PROGRAM_VERSION_PATCH "1")
 set(PROJECT_DESCRIPTION "Online password and secret locker")
 set(PROJECT_BUGREPORT_PATH "https://github.com/babelouest/hutch/issues")
 set(ORCANIA_VERSION_REQUIRED "2.2.1")
