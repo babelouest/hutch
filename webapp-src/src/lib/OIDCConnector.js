@@ -1,7 +1,6 @@
 import Cookies from 'js-cookie';
 
-import { createRemoteJWKSet } from 'jose-browser-runtime/jwks/remote';
-import { jwtVerify } from 'jose-browser-runtime/jwt/verify';
+import * as jose from 'jose-browser-runtime';
 
 class OIDCConnector {
 
@@ -52,7 +51,7 @@ class OIDCConnector {
           this.parameters.tokenUrl = result.token_endpoint;
           this.parameters.userinfoUrl = result.userinfo_endpoint;
           if (result.jwks_uri) {
-            this.jwks = createRemoteJWKSet(new URL(result.jwks_uri));
+            this.jwks = jose.createRemoteJWKSet(new URL(result.jwks_uri));
           }
           this.parseInitialUrl();
         },
@@ -484,7 +483,7 @@ class OIDCConnector {
 
   getConnectedProfile(cb) {
     if (this.getStoredData().IDToken && this.jwks) {
-      jwtVerify(this.getStoredData().IDToken, this.jwks)
+      jose.jwtVerify(this.getStoredData().IDToken, this.jwks)
       .then((result) => {
         if (cb) {
           cb(true, result.payload);

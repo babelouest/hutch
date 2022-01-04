@@ -14,8 +14,7 @@ import i18next from 'i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-import { parseJwk } from 'jose-browser-runtime/jwk/parse';
-import { jwtVerify } from 'jose-browser-runtime/jwt/verify';
+import { importJWK, jwtVerify } from 'jose-browser-runtime';
 
 import App from './Hutch/App';
 
@@ -35,7 +34,7 @@ function getServerConfig(rootUrl) {
     .then((backendJwks) => {
       var backendJwksHeader = JSON.parse(atob(backendJwks.split(".")[0].replace(/-/g, '+').replace(/_/g, '/')));
       backendConfig.jwks = JSON.parse(atob(backendJwks.split(".")[1].replace(/-/g, '+').replace(/_/g, '/')));
-      return parseJwk(backendConfig.jwks.keys[0], backendConfig.jwks.keys[0].alg)
+      return importJWK(backendConfig.jwks.keys[0], backendConfig.jwks.keys[0].alg)
       .then((publicKey) => {
         return jwtVerify(serverConfig, publicKey)
         .then(() => {

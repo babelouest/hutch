@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
 
-import { jwtDecrypt } from 'jose-browser-runtime/jwt/decrypt';
-import { parseJwk } from 'jose-browser-runtime/jwk/parse'
-import { decodeProtectedHeader } from 'jose-browser-runtime/util/decode_protected_header';
+import { jwtDecrypt, importJWK, decodeProtectedHeader } from 'jose-browser-runtime';
 
 import JwkInput from './JwkInput';
 
@@ -126,7 +124,7 @@ class ModalSafeUnlock extends Component {
         jwtDecrypt(this.state.safeKey.data, enc.encode(this.state.safePrefixPassword+this.state.safePassword))
         .then((result) => {
           this.setState({safeSecretError: false}, () => {
-            parseJwk(result.payload, this.state.safe.alg_type)
+            importJWK(result.payload, this.state.safe.alg_type)
             .then((masterKey) => {
               this.setState({safePassword : "", safePrefixPassword: "", safeKeyJwk: "", safeSecretError: false}, () => {
                 this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);
@@ -146,12 +144,12 @@ class ModalSafeUnlock extends Component {
           } else {
             jwk = parsedKey;
           }
-          parseJwk(jwk, jwk.alg)
+          importJWK(jwk, jwk.alg)
           .then(decKey => {
             jwtDecrypt(this.state.safeKey.data, decKey)
             .then((result) => {
               this.setState({safeSecretError: false}, () => {
-                parseJwk(result.payload, this.state.safe.alg_type)
+                importJWK(result.payload, this.state.safe.alg_type)
                 .then((masterKey) => {
                   this.setState({safePassword : "", safePrefixPassword: "", safeKeyJwk: "", safeSecretError: false}, () => {
                     this.state.cb(true, masterKey, this.state.keepUnlocked, this.state.unlockKeyName, result.payload);

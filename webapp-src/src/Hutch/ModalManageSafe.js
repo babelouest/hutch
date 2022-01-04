@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 
 import i18next from 'i18next';
 
-import { decodeProtectedHeader } from 'jose-browser-runtime/util/decode_protected_header';
-import { jwtDecrypt } from 'jose-browser-runtime/jwt/decrypt';
-import { parseJwk } from 'jose-browser-runtime/jwk/parse';
+import { decodeProtectedHeader, jwtDecrypt, importJWK } from 'jose-browser-runtime';
 
 import ManageExportData from './ManageExportData';
 import JwkInput from './JwkInput';
@@ -151,7 +149,7 @@ class ModalManageSafe extends Component {
       try {
         var key = JSON.parse(this.state.importJwk);
         key.use = "enc";
-        parseJwk(key, key.alg)
+        importJWK(key, key.alg)
         .then((exportKey) => {
           jwtDecrypt(this.state.importData, exportKey)
           .then((decImport) => {

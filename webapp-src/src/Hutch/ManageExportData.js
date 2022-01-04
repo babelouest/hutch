@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 
 import i18next from 'i18next';
 
-import { parseJwk } from 'jose-browser-runtime/jwk/parse';
-import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
+import { importJWK, EncryptJWT } from 'jose-browser-runtime';
 
 import JwkInput from './JwkInput';
 
@@ -117,7 +116,7 @@ class ManageExportData extends Component {
       } else if (this.state.exportSecurityType === "jwk") {
         var key = JSON.parse(this.state.exportJwk);
         key.use = "enc";
-        parseJwk(key, key.alg)
+        importJWK(key, key.alg)
         .then((exportKey) => {
           if (exportKey.type === "public" || exportKey.type === "secret") {
             new EncryptJWT({data: exported})

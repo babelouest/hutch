@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 
-import { parseJwk } from 'jose-browser-runtime/jwk/parse';
-import { jwtVerify } from 'jose-browser-runtime/jwt/verify';
-import { calculateThumbprint } from 'jose-browser-runtime/jwk/thumbprint';
-import { generateSecret } from 'jose-browser-runtime/util/generate_secret';
-import { fromKeyLike } from 'jose-browser-runtime/jwk/from_key_like';
-import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
-import { jwtDecrypt } from 'jose-browser-runtime/jwt/decrypt';
-import { decodeProtectedHeader } from 'jose-browser-runtime/util/decode_protected_header';
+import { importJWK, jwtVerify, calculateJwkThumbprint, generateSecret, exportJWK, EncryptJWT, jwtDecrypt, decodeProtectedHeader } from 'jose-browser-runtime';
 
 import i18next from 'i18next';
 
@@ -240,7 +233,7 @@ class App extends Component {
                 this.setState({safeContent: curSafeContent});
                 apiManager.request(this.state.config.safe_endpoint + "/" + message.target.name + "/key", "POST", safeKey)
                 .then(() => {
-                  fromKeyLike(unlockKey)
+                  exportJWK(unlockKey)
                   .then((exportedUnlockKey) => {
                     exportedUnlockKey.kid = kid;
                     exportedUnlockKey.alg = unlockAlg;
@@ -367,9 +360,9 @@ class App extends Component {
       this.state.config.jwks.keys.forEach((jwk) => {
         if (jwk.kid === profileJwtContent.sign_kid) {
           signJwk = true;
-          parseJwk(jwk, jwk.alg)
+          importJWK(jwk, jwk.alg)
           .then((pubkey) => {
-            calculateThumbprint(jwk)
+            calculateJwkThumbprint(jwk)
             .then((thumbprint) => {
               jwtVerify(profileJwt, pubkey)
               .then((profile) => {
@@ -440,11 +433,11 @@ class App extends Component {
                 if (exportedUnlockKey) {
                   keyList.payload.list.forEach((safeKey) => {
                     if (safeKey.name === exportedUnlockKey.kid) {
-                      parseJwk(exportedUnlockKey, exportedUnlockKey.alg)
+                      importJWK(exportedUnlockKey, exportedUnlockKey.alg)
                       .then((unlockKey) => {
                         jwtDecrypt(safeKey.data, unlockKey)
                         .then((curSafeKeyJson) => {
-                          parseJwk(curSafeKeyJson.payload, safe.alg_type)
+                          importJWK(curSafeKeyJson.payload, safe.alg_type)
                           .then((curSafeKey) => {
                             var safeContent = this.state.safeContent;
                             safeContent[safe.name].key = curSafeKey;

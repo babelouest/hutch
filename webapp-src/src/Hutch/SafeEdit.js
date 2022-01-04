@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
-import { generateSecret } from 'jose-browser-runtime/util/generate_secret';
-import { fromKeyLike } from 'jose-browser-runtime/jwk/from_key_like';
-import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
-import { parseJwk } from 'jose-browser-runtime/jwk/parse';
+import { generateSecret, exportJWK, EncryptJWT, importJWK } from 'jose-browser-runtime';
 
 import i18next from 'i18next';
 
@@ -102,9 +99,9 @@ class SafeEdit extends Component {
   createKeyForSafe() {
     return generateSecret(this.state.safe.alg_type, {extractable: true})
     .then((newKey) => {
-      return fromKeyLike(newKey)
+      return exportJWK(newKey)
       .then((extractableKey) => {
-        return parseJwk(extractableKey, this.state.safe.alg_type)
+        return importJWK(extractableKey, this.state.safe.alg_type)
         .then((key) => {
           return {key: key, extractableKey: extractableKey};
           setTimeout(() => {
@@ -162,20 +159,20 @@ class SafeEdit extends Component {
               curSafeContent[this.state.safe.name].extractableKey = keyData.extractableKey;
               curSafeContent[this.state.safe.name].key = keyData.key;
               this.setState({safeContent: curSafeContent}, () => {
-                parseJwk(jwk, jwk.alg)
+                importJWK(jwk, jwk.alg)
                 .then(containerKey => {
                   this.completeAddSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
                 });
               });
             });
           } else {
-            parseJwk(jwk, jwk.alg)
+            importJWK(jwk, jwk.alg)
             .then(containerKey => {
               this.completeAddSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
             });
           }
         } else {
-          parseJwk(jwk, jwk.alg)
+          importJWK(jwk, jwk.alg)
           .then(containerKey => {
             this.completeSetSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
           });

@@ -1,4 +1,4 @@
-import { jwtVerify } from 'jose-browser-runtime/jwt/verify';
+import * as jose from 'jose-browser-runtime';
 
 import messageDispatcher from './MessageDispatcher';
 import oidcConnector from './OIDCConnector';
@@ -83,7 +83,7 @@ class APIManager {
     .then((body, result, response) => {
       if (response.getResponseHeader("content-type") === "application/jwt") {
         if (this.signJwk) {
-          return jwtVerify(body, this.signJwk);
+          return jose.jwtVerify(body, this.signJwk);
         } else {
           return $.Deferred().reject("No public key to verify signature");
         }

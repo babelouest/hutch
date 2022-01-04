@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
 import i18next from 'i18next';
-
-import { EncryptJWT } from 'jose-browser-runtime/jwt/encrypt';
+import * as jose from 'jose-browser-runtime';
 
 import apiManager from '../lib/APIManager';
 import messageDispatcher from '../lib/MessageDispatcher';
@@ -188,7 +187,7 @@ class SafeView extends Component {
     modalCoinEditModal && modalCoinEditModal.hide();
     if (result) {
       if (name) {
-        return new EncryptJWT(content)
+        return new jose.EncryptJWT(content)
         .setProtectedHeader({ alg: this.state.safe.alg_type, enc: this.state.safe.enc_type, sign_thumb: this.state.config.sign_thumb })
         .encrypt(this.state.safeContent[this.state.safe.name].key)
         .then((data) => {
@@ -206,7 +205,7 @@ class SafeView extends Component {
           })
         });
       } else {
-        return new EncryptJWT(content)
+        return new jose.EncryptJWT(content)
         .setProtectedHeader({ alg: this.state.safe.alg_type, enc: this.state.safe.enc_type, sign_thumb: this.state.config.sign_thumb })
         .encrypt(this.state.safeContent[this.state.safe.name].key)
         .then((data) => {
