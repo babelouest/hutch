@@ -51,7 +51,6 @@ int main (int argc, char ** argv) {
   size_t i;
   jwk_t * jwk, * jwk_pub;
   
-  srand(time(NULL));
   if (config == NULL) {
     fprintf(stderr, "Memory error - config\n");
     return 1;
