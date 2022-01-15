@@ -192,6 +192,7 @@
   "coinElementFile": "Fichier",
   "coinElementMisc": "Divers",
   "coinElementMiscPh": "information",
+  "coinElementShowShortcut": "Afficher le raccourci",
   "exportJwk": "Clé JWK pour chiffrer l'export",
   "jwkError": "La clé doit être un JWK valide, avec une valeur 'alg' spécifiée et doit être une clé publique ou symétrique",
   "importSafe": "Importer une sauvegarde dans ce coffre",

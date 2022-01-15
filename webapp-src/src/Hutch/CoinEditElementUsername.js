@@ -18,6 +18,7 @@ class CoinEditElementUsername extends Component {
     };
     
     this.changeValue = this.changeValue.bind(this);
+    this.changeHideMenu = this.changeHideMenu.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -27,6 +28,12 @@ class CoinEditElementUsername extends Component {
   changeValue(e) {
     var element = this.state.element;
     element.value = e.target.value;
+    this.setState({element: element});
+  }
+  
+  changeHideMenu() {
+    var element = this.state.element;
+    element.hideMenu = !element.hideMenu;
     this.setState({element: element});
   }
 
@@ -42,6 +49,16 @@ class CoinEditElementUsername extends Component {
                    value={this.state.element.value}
                    placeholder={i18next.t("coinElementLoginPh")}
                    onChange={this.changeValue} />
+          </div>
+          <div className="mb-3">
+            <input className="form-check-input btn-icon"
+                   type="checkbox"
+                   id={this.state.coin.name+"-"+this.state.index+"-hideMenu"}
+                   onChange={this.changeHideMenu}
+                   checked={!this.state.element.hideMenu} />
+            <label className="form-check-label" htmlFor={this.state.coin.name+"-"+this.state.index+"-hideMenu"}>
+              {i18next.t("coinElementShowShortcut")}
+            </label>
           </div>
           <div className="mb-3 btn-group">
             <button type="button" className="btn btn-secondary" onClick={(e) => this.state.cbCancel(e, this.state.index)}>{i18next.t("modalClose")}</button>

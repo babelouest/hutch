@@ -20,8 +20,8 @@ class CoinEditElementPassword extends Component {
       isDraggable: props.isDraggable,
       cbOnDragStart: props.cbOnDragStart,
       cbOnDragOver: props.cbOnDragOver,
-      password: "",
-      passwordConfirm: "",
+      password: props.element.value||"",
+      passwordConfirm: props.element.value||"",
       showModalGeneratePassword: false,
       modalElement: false,
       originalPassword: false,
@@ -33,6 +33,7 @@ class CoinEditElementPassword extends Component {
     this.closeAndSave = this.closeAndSave.bind(this);
     this.openGenerateModal = this.openGenerateModal.bind(this);
     this.getGeneratedPassword = this.getGeneratedPassword.bind(this);
+    this.changeHideMenu = this.changeHideMenu.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -51,6 +52,12 @@ class CoinEditElementPassword extends Component {
     this.setState({passwordConfirm: e.target.value});
   }
   
+  changeHideMenu() {
+    var element = this.state.element;
+    element.hideMenu = !element.hideMenu;
+    this.setState({element: element});
+  }
+
   closeAndSave(e) {
     if (this.state.password && this.state.password === this.state.passwordConfirm) {
       var element = this.state.element;
@@ -134,6 +141,16 @@ class CoinEditElementPassword extends Component {
                    id={this.state.coin.name+"-"+this.state.index+"-confirm"}
                    value={this.state.passwordConfirm}
                    onChange={this.changePasswordConfirm} />
+          </div>
+          <div className="mb-3">
+            <input className="form-check-input btn-icon"
+                   type="checkbox"
+                   id={this.state.coin.name+"-"+this.state.index+"-hideMenu"}
+                   onChange={this.changeHideMenu}
+                   checked={!this.state.element.hideMenu} />
+            <label className="form-check-label" htmlFor={this.state.coin.name+"-"+this.state.index+"-hideMenu"}>
+              {i18next.t("coinElementShowShortcut")}
+            </label>
           </div>
           <div className="mb-3">
             <div className="btn-group">
