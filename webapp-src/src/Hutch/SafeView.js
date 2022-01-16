@@ -142,7 +142,7 @@ class SafeView extends Component {
   }
   
   addCoin() {
-    this.setState({name: false, coinEditContent: {displayName: "", rows: []}}, () => {
+    this.setState({coinEditName: false, name: false, coinEditContent: {displayName: "", rows: []}}, () => {
       var addCoinModal = new bootstrap.Modal(document.getElementById('modalCoinEdit'), {
         keyboard: false
       });
