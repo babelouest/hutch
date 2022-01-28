@@ -15,6 +15,7 @@ import TopMenu from './TopMenu';
 import Profile from './Profile';
 import Safe from './Safe';
 import Config from './Config';
+import ModalGeneratePassword from './ModalGeneratePassword';
 
 class App extends Component {
   constructor(props) {
@@ -38,7 +39,23 @@ class App extends Component {
       editProfile: false,
       editSafeMode: 0, // 0: read, 1: add, 2: edit
       trustworthy: true,
-      forceTrust: false
+      forceTrust: false,
+      showModalGeneratePassword: false,
+      modalGeneratePasswordElement: {
+        params: {
+          type: "chars",
+          lowercase: true,
+          upprcase: true,
+          numbers: true,
+          special: true,
+          spaces: true,
+          noSimilarFollowingChars: false,
+          passwordCharLength: 32,
+          wordsNumber: 4,
+          wordsLangsList: [i18next.language],
+          wordSeparator: " "
+        }
+      }
     };
 
     routage.addChangeRouteCallback((route) => {
@@ -126,6 +143,14 @@ class App extends Component {
         } else {
           this.setState({nav: "config", oldNav: this.state.nav});
         }
+      } else if (message.action === "generate") {
+        this.setState({showModalGeneratePassword: true}, () => {
+          var modalGeneratePassword = new bootstrap.Modal(document.getElementById('modalGeneratePassword'), {
+            keyboard: false
+          });
+          modalGeneratePassword.show();
+        });
+        this.setState({showModalGeneratePassword: true});
       } else if (message.action === "addSafe") {
         this.setState({nav: "safe", curSafe: {name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), display_name: "", enc_type: "A256GCM", alg_type: "A256GCMKW"}, editSafeMode: 1});
       } else if (message.action === "loadSafe") {
@@ -338,6 +363,7 @@ class App extends Component {
     this.getSafeKeyList = this.getSafeKeyList.bind(this);
     this.unlockCoinList = this.unlockCoinList.bind(this);
     this.gotoRoute = this.gotoRoute.bind(this);
+    this.closeGenerateModal = this.closeGenerateModal.bind(this);
   }
 
   gotoRoute(route) {
@@ -574,6 +600,12 @@ class App extends Component {
     });
   }
 
+  closeGenerateModal() {
+    var modalGeneratePassword = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalGeneratePassword'));
+    modalGeneratePassword.hide();
+    this.setState({showModalGeneratePassword: false});
+  }
+
 	render() {
     var bodyJsx, trustworthyJsx, forceTrustJsx, safeList = [];
     if (this.state.trustworthy || (!this.state.trustworthy && this.state.forceTrust)) {
@@ -615,6 +647,14 @@ class App extends Component {
           {forceTrustJsx}
         </div>
     }
+    var modalGenerate;
+    if (this.state.showModalGeneratePassword) {
+      modalGenerate = <ModalGeneratePassword config={this.state.config}
+                                             element={this.state.modalGeneratePasswordElement}
+                                             originalPassword={false}
+                                             callback={this.closeGenerateModal}
+                                             hideSaveAndClose={true} />
+    }
     return (
       <div className="container-fluid">
         <TopMenu config={this.state.config}
@@ -626,6 +666,7 @@ class App extends Component {
         {trustworthyJsx}
         {bodyJsx}
         <Notification loggedIn={this.state.oidcStatus}/>
+        {modalGenerate}
       </div>
     );
 	}

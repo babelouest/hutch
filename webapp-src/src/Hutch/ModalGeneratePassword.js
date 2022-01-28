@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 
 import apiManager from '../lib/APIManager';
+import messageDispatcher from '../lib/MessageDispatcher';
 
 class ModalGeneratePassword extends Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class ModalGeneratePassword extends Component {
       cb: props.callback,
       element: props.element,
       originalPassword: props.originalPassword,
+      hideSaveAndClose: props.hideSaveAndClose,
       wordsLists: {},
       showPassword: false,
       passwordGenerated: false
@@ -205,6 +207,10 @@ class ModalGeneratePassword extends Component {
         </div>
       );
     });
+    var hideSaveAndCloseJsx;
+    if (!this.state.hideSaveAndClose) {
+      hideSaveAndCloseJsx = <button type="button" className="btn btn-primary" onClick={(e) => this.closeModal(e, true)} disabled={!this.state.passwordGenerated}>{i18next.t("modalCloseAndSave")}</button>;
+    }
 		return (
       <div className="modal" tabIndex="-1" id="modalGeneratePassword">
         <div className="modal-dialog">
@@ -315,7 +321,7 @@ class ModalGeneratePassword extends Component {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)}>{i18next.t("modalClose")}</button>
-              <button type="button" className="btn btn-primary" onClick={(e) => this.closeModal(e, true)} disabled={!this.state.passwordGenerated}>{i18next.t("modalCloseAndSave")}</button>
+              {hideSaveAndCloseJsx}
             </div>
           </div>
         </div>

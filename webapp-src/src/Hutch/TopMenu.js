@@ -38,6 +38,11 @@ class TopMenu extends Component {
     messageDispatcher.sendMessage("App", {action: 'config'});
   }
   
+  openGenerateModal(e) {
+    e.preventDefault();
+    messageDispatcher.sendMessage("App", {action: 'generate'});
+  }
+  
 	render() {
     var safeListJsx = [];
     this.state.safeList.forEach((safe, index) => {
@@ -91,6 +96,15 @@ class TopMenu extends Component {
               {safeListJsx}
             </ul>
             <ul className="navbar-nav ms-auto flex-nowrap text-right">
+              <li className="nav-item">
+                <a className="nav-link"
+                   data-bs-toggle="collapse"
+                   data-bs-target=".navbar-collapse.show"
+                   href="#"
+                   onClick={(e) => this.openGenerateModal(e)} href="#">
+                  <i className="fa fa-magic btn-icon-right" aria-hidden="true"></i>
+                </a>
+              </li>
               <li className="nav-item">
                 <a className="nav-link"
                    data-bs-toggle="collapse"
