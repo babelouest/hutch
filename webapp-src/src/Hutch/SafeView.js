@@ -28,7 +28,6 @@ function filterCoins(unlockedCoinList, filter) {
       filteredCoinList.push(coin);
     }
   });
-  console.log(filteredCoinList);
   return filteredCoinList;
 }
   
@@ -70,7 +69,7 @@ class SafeView extends Component {
   
   static getDerivedStateFromProps(props, state) {
     let newState = Object.assign({}, props);
-    if (props.oidcStatus === "connected") {
+    if (props.oidcStatus === "connected" || props.oidcStatus === "timeout") {
       if (state.filter) {
         newState.filteredCoinList = filterCoins(newState.safeContent[newState.safe.name].unlockedCoinList, state.filter);
       } else {
