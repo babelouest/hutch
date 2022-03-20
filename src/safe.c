@@ -92,7 +92,7 @@ json_t * safe_is_valid(struct config_elements * config, json_t * j_profile, json
     if (json_is_object(j_safe)) {
       ret = HU_OK;
       if (add) {
-        if (!json_string_length(json_object_get(j_safe, "name")) || json_string_length(json_object_get(j_safe, "name")) > 128) {
+        if (o_strnullempty(json_string_value(json_object_get(j_safe, "name"))) || json_string_length(json_object_get(j_safe, "name")) > 128) {
           ret = HU_ERROR_PARAM;
           json_array_append_new(j_error, json_string("name must be a string of maximum 128 characters"));
         } else {

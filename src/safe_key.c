@@ -113,7 +113,7 @@ json_t * safe_key_is_valid(struct config_elements * config, json_t * j_profile, 
         ret = HU_ERROR_PARAM;
         json_array_append_new(j_error, json_string("type must be a string of maximum 128 characters"));
       }
-      if (!json_string_length(json_object_get(j_safe_key, "data")) || json_string_length(json_object_get(j_safe_key, "data")) > 16*1024*1024) {
+      if (o_strnullempty(json_string_value(json_object_get(j_safe_key, "data"))) || json_string_length(json_object_get(j_safe_key, "data")) > 16*1024*1024) {
         ret = HU_ERROR_PARAM;
         json_array_append_new(j_error, json_string("data must be a string of maximum 16M characters"));
       }

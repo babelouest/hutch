@@ -85,7 +85,7 @@ json_t * coin_is_valid(struct config_elements * config, json_t * j_profile, cons
     if (json_is_object(j_coin)) {
       ret = HU_OK;
       if (add) {
-        if (!json_string_length(json_object_get(j_coin, "name")) || json_string_length(json_object_get(j_coin, "name")) > 128) {
+        if (o_strnullempty(json_string_value(json_object_get(j_coin, "name"))) || json_string_length(json_object_get(j_coin, "name")) > 128) {
           ret = HU_ERROR_PARAM;
           json_array_append_new(j_error, json_string("name must be a string of maximum 128 characters"));
         } else {
@@ -101,7 +101,7 @@ json_t * coin_is_valid(struct config_elements * config, json_t * j_profile, cons
           json_decref(j_cur_coin);
         }
       }
-      if (!json_string_length(json_object_get(j_coin, "data")) || json_string_length(json_object_get(j_coin, "data")) > 16*1024*1024) {
+      if (o_strnullempty(json_string_value(json_object_get(j_coin, "data"))) || json_string_length(json_object_get(j_coin, "data")) > 16*1024*1024) {
         ret = HU_ERROR_PARAM;
         json_array_append_new(j_error, json_string("data must be a string of maximum 16M characters"));
       }

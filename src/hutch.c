@@ -571,7 +571,7 @@ int build_config_from_file(struct config_elements * config) {
                 ret = 0;
                 break;
               } else {
-                if (h_exec_query_sqlite(config->conn, "PRAGMA foreign_keys = ON;") != H_OK) {
+                if (h_execute_query_sqlite(config->conn, "PRAGMA foreign_keys = ON;") != H_OK) {
                   y_log_message(Y_LOG_LEVEL_ERROR, "Error executing sqlite3 query 'PRAGMA foreign_keys = ON;, exiting'");
                   ret = 0;
                   break;
@@ -797,7 +797,7 @@ int check_config(struct config_elements * config) {
       break;
     }
     
-    if (!o_strlen(config->external_url)) {
+    if (o_strnullempty(config->external_url)) {
       fprintf(stderr, "external_url missing, exiting\n");
       ret = 0;
       break;
@@ -816,11 +816,11 @@ int check_config(struct config_elements * config) {
         fprintf(stderr, "Invalid jwk at index %zu, must be a private key, exiting\n", i);
         ret = 0;
       }
-      if (!o_strlen(r_jwk_get_property_str(jwk, "kid"))) {
+      if (o_strnullempty(r_jwk_get_property_str(jwk, "kid"))) {
         fprintf(stderr, "Invalid jwk at index %zu, kid property missing, exiting\n", i);
         ret = 0;
       }
-      if (!o_strlen(r_jwk_get_property_str(jwk, "alg"))) {
+      if (o_strnullempty(r_jwk_get_property_str(jwk, "alg"))) {
         fprintf(stderr, "Invalid jwk at index %zu, alg property missing, exiting\n", i);
         ret = 0;
       }
@@ -957,7 +957,7 @@ char * serialize_json_to_jwt(struct config_elements * config, const char * sign_
   char * token = NULL;
   time_t now;
   
-  if (o_strlen(sign_kid)) {
+  if (!o_strnullempty(sign_kid)) {
     jwk = r_jwks_get_by_kid(config->sign_key, sign_kid);
   } else {
     jwk = r_jwks_get_at(config->sign_key, 0);
