@@ -48,9 +48,7 @@ class ModalCoinEdit extends Component {
             delete(iconList[category]);
           }
         });
-        this.setState({iconList: iconList}, () => {
-          console.log(iconList, this.state.iconList);
-        });
+        this.setState({iconList: iconList});
       } else {
         this.setState({iconList: this.state.iconListOrig});
       }
