@@ -33,7 +33,7 @@ int callback_hutch_options (const struct _u_request * request, struct _u_respons
   UNUSED(user_data);
   ulfius_set_response_properties(response, U_OPT_STATUS, 200,
                                            U_OPT_HEADER_PARAMETER, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS",
-                                           U_OPT_HEADER_PARAMETER, "Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Bearer, Authorization",
+                                           U_OPT_HEADER_PARAMETER, "Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Bearer, Authorization, DPoP",
                                            U_OPT_HEADER_PARAMETER, "Access-Control-Max-Age", "1800",
                                            U_OPT_NONE);
   return U_CALLBACK_COMPLETE;
