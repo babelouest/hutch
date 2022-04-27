@@ -22,7 +22,7 @@
 CC=gcc
 #CC=clang
 CFLAGS=-c -Wall -Werror -Wextra $(ADDITIONALFLAGS)
-LIBS=-lc -lulfius -lyder -ljansson -lorcania -lhoel -liddawc -lrhonabwy -ljwt -lconfig -lz -lpthread
+LIBS=-lc -lulfius -lyder -ljansson -lorcania -lhoel -liddawc -lrhonabwy -lconfig -lz -lpthread
 OBJECTS=hutch.o webservice.o http_compression_callback.o iddawc_resource.o static_compressed_inmemory_website_callback.o profile.o safe.o safe_key.o coin.o
 PREFIX=/usr/local
 CONFIG_FILE=../hutch.conf
