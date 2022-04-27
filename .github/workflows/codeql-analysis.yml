@@ -48,7 +48,7 @@ jobs:
 
     - run: |
         sudo apt-get update
-        sudo apt-get install -y libconfig-dev libsystemd-dev libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libsqlite3-dev sqlite3 libpq-dev mariadb-client default-libmysqlclient-dev cmake pkg-config check libsubunit-dev cppcheck
+        sudo apt-get install -y libconfig-dev libsystemd-dev libjansson-dev libcurl4-gnutls-dev libmicrohttpd-dev libsqlite3-dev sqlite3 libpq-dev default-libmysqlclient-dev cmake pkg-config check libsubunit-dev cppcheck
         
         mkdir build
         cd build
