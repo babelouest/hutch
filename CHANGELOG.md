@@ -6,6 +6,8 @@
 - Fix timeout when using token response type
 - Fix disconnection bug
 - Upgrade front-end dependencies to last version
+- Add password generator modal to generate passwords outside of a coin
+- Fix `static_compressed_inmemory_website_callback`
 
 ## 2.0.0
 
