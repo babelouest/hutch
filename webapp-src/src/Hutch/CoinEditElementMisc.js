@@ -18,6 +18,7 @@ class CoinEditElementMisc extends Component {
     };
     
     this.changeValue = this.changeValue.bind(this);
+    this.changeHide = this.changeHide.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -29,6 +30,12 @@ class CoinEditElementMisc extends Component {
     element.value = e.target.value;
     this.setState({element: element});
   }
+  
+  changeHide() {
+    var element = this.state.element;
+    element.hide = !element.hide;
+    this.setState({element: element});
+  }
 
 	render() {
     return (
@@ -36,12 +43,22 @@ class CoinEditElementMisc extends Component {
         <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>
           <div className="mb-3">
             <label htmlFor={this.state.coin.name+"-"+this.state.index} className="form-label">{i18next.t("coinElementMisc")}</label>
-            <input type="text"
-                   className="form-control"
-                   id={this.state.coin.name+"-"+this.state.index}
-                   value={this.state.element.value}
-                   placeholder={i18next.t("coinElementMiscPh")}
-                   onChange={this.changeValue} />
+            <textarea className="form-control"
+                      id={this.state.coin.name+"-"+this.state.index}
+                      value={this.state.element.value}
+                      placeholder={i18next.t("coinElementMiscPh")}
+                      onChange={this.changeValue}>
+            </textarea>
+          </div>
+          <div className="mb-3">
+            <input className="form-check-input btn-icon"
+                   type="checkbox"
+                   id={this.state.coin.name+"-"+this.state.index+"-hide"}
+                   onChange={this.changeHide}
+                   checked={!!this.state.element.hide} />
+            <label className="form-check-label" htmlFor={this.state.coin.name+"-"+this.state.index+"-hide"}>
+              {i18next.t("coinElementHide")}
+            </label>
           </div>
           <div className="mb-3 btn-group">
             <button type="button" className="btn btn-secondary" onClick={(e) => this.state.cbCancel(e, this.state.index)}>{i18next.t("modalClose")}</button>

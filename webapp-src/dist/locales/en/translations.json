@@ -193,6 +193,8 @@
   "coinElementMisc": "Misc",
   "coinElementMiscPh": "Some data",
   "coinElementShowShortcut": "Show shortcut",
+  "coinElementHide": "Default hide",
+  "coinElementShow": "Show/Hide",
   "exportJwk": "JWK to encrypt the backup",
   "jwkError": "The key must be a valid JWK, with a 'alg' value specified, and must be a public or symmetric key.",
   "importSafe": "Import a safe backup",

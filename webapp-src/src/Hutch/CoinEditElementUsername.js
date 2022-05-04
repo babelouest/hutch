@@ -19,6 +19,7 @@ class CoinEditElementUsername extends Component {
     
     this.changeValue = this.changeValue.bind(this);
     this.changeHideMenu = this.changeHideMenu.bind(this);
+    this.changeHide = this.changeHide.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -34,6 +35,12 @@ class CoinEditElementUsername extends Component {
   changeHideMenu() {
     var element = this.state.element;
     element.hideMenu = !element.hideMenu;
+    this.setState({element: element});
+  }
+
+  changeHide() {
+    var element = this.state.element;
+    element.hide = !element.hide;
     this.setState({element: element});
   }
 
@@ -58,6 +65,16 @@ class CoinEditElementUsername extends Component {
                    checked={!this.state.element.hideMenu} />
             <label className="form-check-label" htmlFor={this.state.coin.name+"-"+this.state.index+"-hideMenu"}>
               {i18next.t("coinElementShowShortcut")}
+            </label>
+          </div>
+          <div className="mb-3">
+            <input className="form-check-input btn-icon"
+                   type="checkbox"
+                   id={this.state.coin.name+"-"+this.state.index+"-hide"}
+                   onChange={this.changeHide}
+                   checked={!!this.state.element.hide} />
+            <label className="form-check-label" htmlFor={this.state.coin.name+"-"+this.state.index+"-hide"}>
+              {i18next.t("coinElementHide")}
             </label>
           </div>
           <div className="mb-3 btn-group">

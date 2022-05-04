@@ -350,7 +350,7 @@ class Coin extends Component {
           break;
         case "login":
           if (!row.hideMenu) {
-            headerButtonList.push({type: "login", value: row.value, tags: (row.tags||[]).join(" ")});
+            headerButtonList.push({type: "login", value: row.value, tags: (row.tags||[i18next.t("coinElementLogin")]).join(" ")});
           }
           if (this.state.editElementList.indexOf(index) === -1) {
             elementListJsx.push(<CoinElementUsername key={index}
@@ -378,7 +378,7 @@ class Coin extends Component {
           break;
         case "password":
           if (!row.hideMenu) {
-            headerButtonList.push({type: "password", value: row.value, tags: (row.tags||[]).join(" ")});
+            headerButtonList.push({type: "password", value: row.value, tags: (row.tags||[i18next.t("coinElementPassword")]).join(" ")});
           }
           if (this.state.editElementList.indexOf(index) === -1) {
             elementListJsx.push(<CoinElementPassword key={index}

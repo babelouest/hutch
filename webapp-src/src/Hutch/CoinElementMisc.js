@@ -18,10 +18,12 @@ class CoinElementMisc extends Component {
       cbTags: props.cbTags,
       isDraggable: props.isDraggable,
       cbOnDragStart: props.cbOnDragStart,
-      cbOnDragOver: props.cbOnDragOver
+      cbOnDragOver: props.cbOnDragOver,
+      showElement: false
     };
     
     this.copyToClipboard = this.copyToClipboard.bind(this);
+    this.toggleShowValue = this.toggleShowValue.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -34,11 +36,45 @@ class CoinElementMisc extends Component {
     });
   }
   
+  toggleShowValue(e) {
+    e.preventDefault();
+    this.setState({showElement: !this.state.showElement});
+  }
+  
 	render() {
     var tagListJsx = [];
     this.state.element.tags && this.state.element.tags.forEach((tag, index) => {
       tagListJsx.push(<span key={index} className="badge rounded-pill bg-secondary btn-icon">{tag}</span>);
     });
+    var value, showIcon;
+    if (this.state.element.hide) {
+      if (this.state.showElement) {
+        value = 
+          <div className="col">
+            <span className="btn-icon-right">
+              <pre>{this.state.element.value}</pre>
+            </span>
+          </div>
+      } else {
+        value =
+          <div className="col text-truncate">
+            <span className="btn-icon-right">
+              ********
+            </span>
+          </div>
+      }
+      showIcon = 
+        <a className="link-secondary btn-icon-right" alt={i18next.t("coinElementShow")} href="#" onClick={this.toggleShowValue}>
+          <i className="fa fa-eye" aria-hidden="true"></i>
+        </a>
+    } else {
+      value = 
+        <div className="col">
+          <span className="btn-icon-right">
+            <pre>{this.state.element.value}</pre>
+          </span>
+        </div>
+    }
     return (
         <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index} className="border border-secondary rounded coin-element">
           <div className="row btn-icon-bottom">
@@ -48,12 +84,9 @@ class CoinElementMisc extends Component {
                   {i18next.t("coinElementMisc")}
                 </span>
               </span>
+              {showIcon}
             </div>
-            <div className="col text-truncate">
-              <span className="btn-icon-right">
-                <code>{this.state.element.value}</code>
-              </span>
-            </div>
+            {value}
             <div className="col">
               <div className="btn-group float-end btn-icon" role="group">
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementCopy")} onClick={this.copyToClipboard}>
