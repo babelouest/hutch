@@ -8,6 +8,7 @@
 - Upgrade front-end dependencies to last version
 - Add password generator modal to generate passwords outside of a coin
 - Fix `static_compressed_inmemory_website_callback`
+- Allow to disable static files server
 
 ## 2.0.0
 
