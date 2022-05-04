@@ -243,8 +243,10 @@ int main (int argc, char ** argv) {
   ulfius_add_endpoint_by_val(config->instance, "DELETE", config->api_prefix, "/safe/:safe/coin/:coin", HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_coin_delete, (void*)config);
   
   // Other endpoints
+  if (config->static_file_config->files_path != NULL) {
+    ulfius_add_endpoint_by_val(config->instance, "GET", config->static_file_config->url_prefix, "*", HUTCH_CALLBACK_PRIORITY_FILE, &callback_static_compressed_inmemory_website, (void*)config->static_file_config);
+  }
   ulfius_add_endpoint_by_val(config->instance, "*", config->api_prefix, "*", HUTCH_CALLBACK_PRIORITY_AUTHENTICATION, &callback_check_jwt_profile_access_token, config->iddawc_resource_config);
-  ulfius_add_endpoint_by_val(config->instance, "GET", config->static_file_config->url_prefix, "*", HUTCH_CALLBACK_PRIORITY_FILE, &callback_static_compressed_inmemory_website, (void*)config->static_file_config);
   ulfius_add_endpoint_by_val(config->instance, "GET", "/.well-known/hutch-configuration", NULL, HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_server_configuration, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "GET", "/jwks/", NULL, HUTCH_CALLBACK_PRIORITY_APPLICATION, &callback_hutch_server_jwks, (void*)config);
   ulfius_add_endpoint_by_val(config->instance, "OPTIONS", NULL, "*", HUTCH_CALLBACK_PRIORITY_ZERO, &callback_hutch_options, (void*)config);
