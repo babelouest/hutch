@@ -3,6 +3,7 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: path.resolve(__dirname, './src/hutch.js'),
+  mode: 'production',
   module: {
     rules: [
       {
@@ -22,7 +23,6 @@ module.exports = {
   plugins: [new webpack.HotModuleReplacementPlugin()],
   devServer: {
     static: path.resolve(__dirname, './dist'),
-    hot: true,
     compress: true,
     port: 3000,
     host: 'localhost',
