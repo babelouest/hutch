@@ -1,6 +1,6 @@
 # Hutch Changelog
 
-## 2.0.1
+## 2.1.0
 
 - UI bug fixes and improvements
 - Fix timeout when using token response type
@@ -9,6 +9,7 @@
 - Add password generator modal to generate passwords outside of a coin
 - Fix `static_compressed_inmemory_website_callback`
 - Allow to disable static files server
+- Allow offline mode and offline safe
 
 ## 2.0.0
 

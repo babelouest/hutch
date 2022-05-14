@@ -24,7 +24,7 @@
 #ifndef __HUTCH_H_
 #define __HUTCH_H_
 
-#define _HUTCH_VERSION_ "2.0.1"
+#define _HUTCH_VERSION_ "2.1.0"
 
 /** Angharad libraries **/
 #include <ulfius.h>
