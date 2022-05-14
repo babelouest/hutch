@@ -55,44 +55,58 @@ var initApp = () => {
     if (!frontEndConfig.lang) {
       frontEndConfig.lang = ["en","fr"];
     }
-    storage.setStorageType(frontEndConfig.storageType);
-    getServerConfig(frontEndConfig.hutchRootUrl)
-    .then((backendConfig) => {
-      var config = {
-        oidc: {
-          status: "connecting"
-        },
-        frontend: frontEndConfig,
-        backend: backendConfig.config,
-        jwks: backendConfig.jwks,
-        profile_endpoint: frontEndConfig.profile_endpoint || backendConfig.config.profile_endpoint,
-        safe_endpoint: frontEndConfig.safe_endpoint || backendConfig.config.safe_endpoint,
-        oidc_server_remote_config: frontEndConfig.oidc.oidc_server_remote_config || backendConfig.config.oidc_server_remote_config,
-        scope: frontEndConfig.oidc.scope || backendConfig.config.scope
-      }
-      oidcConnector.init({
-        storagePrefix: "hutchOidc",
-        storageType: storage.storageType,
-        responseType: storage.getValue("longSession")?"code":"token id_token",
-        openidConfigUrl: config.oidc_server_remote_config,
-        authUrl: frontEndConfig.oidc.authUrl,
-        tokenUrl: frontEndConfig.oidc.tokenUrl,
-        clientId: frontEndConfig.oidc.clientId,
-        redirectUri: frontEndConfig.oidc.redirectUri,
-        usePkce: frontEndConfig.oidc.usePkce,
-        scope: config.scope,
-        userinfoUrl: frontEndConfig.oidc.userinfoUrl,
-        refreshTokenLoop: frontEndConfig.oidc.refreshTokenLoop,
-        changeStatusCb: function (newStatus, token, expires_in, profile) {
-          messageDispatcher.sendMessage('OIDC', {status: newStatus, token: token, expires_in: expires_in, profile: profile});
+    if (!frontEndConfig.offline) {
+      storage.setStorageType(frontEndConfig.storageType);
+      getServerConfig(frontEndConfig.hutchRootUrl)
+      .then((backendConfig) => {
+        var config = {
+          oidc: {
+            status: "connecting"
+          },
+          frontend: frontEndConfig,
+          backend: backendConfig.config,
+          jwks: backendConfig.jwks,
+          profile_endpoint: frontEndConfig.profile_endpoint || backendConfig.config.profile_endpoint,
+          safe_endpoint: frontEndConfig.safe_endpoint || backendConfig.config.safe_endpoint,
+          oidc_server_remote_config: frontEndConfig.oidc.oidc_server_remote_config || backendConfig.config.oidc_server_remote_config,
+          scope: frontEndConfig.oidc.scope || backendConfig.config.scope
         }
+        oidcConnector.init({
+          storagePrefix: "hutchOidc",
+          storageType: storage.storageType,
+          responseType: storage.getValue("longSession")?"code":"token id_token",
+          openidConfigUrl: config.oidc_server_remote_config,
+          authUrl: frontEndConfig.oidc.authUrl,
+          tokenUrl: frontEndConfig.oidc.tokenUrl,
+          clientId: frontEndConfig.oidc.clientId,
+          redirectUri: frontEndConfig.oidc.redirectUri,
+          usePkce: frontEndConfig.oidc.usePkce,
+          scope: config.scope,
+          userinfoUrl: frontEndConfig.oidc.userinfoUrl,
+          refreshTokenLoop: frontEndConfig.oidc.refreshTokenLoop,
+          changeStatusCb: function (newStatus, token, expires_in, profile) {
+            messageDispatcher.sendMessage('OIDC', {status: newStatus, token: token, expires_in: expires_in, profile: profile});
+          }
+        });
+        apiManager.setConfig(frontEndConfig.APIUrl);
+        ReactDOM.render(<App config={config} />, document.getElementById('root'));
+      })
+      .fail((error) => {
+        ReactDOM.render(<ErrorConfig message={"Error getting hutch backend config"}/>, document.getElementById('root'));
       });
-      apiManager.setConfig(frontEndConfig.APIUrl);
+    } else {
+      var config = {
+        oidc: false,
+        frontend: frontEndConfig,
+        backend: false,
+        jwks: false,
+        profile_endpoint: false,
+        safe_endpoint: false,
+        oidc_server_remote_config: false,
+        scope: false
+      };
       ReactDOM.render(<App config={config} />, document.getElementById('root'));
-    })
-    .fail((error) => {
-      ReactDOM.render(<ErrorConfig message={"Error getting hutch backend config"}/>, document.getElementById('root'));
-    });
+    }
   })
   .fail((error) => {
     ReactDOM.render(<ErrorConfig message={"Error getting hutch frontend config"}/>, document.getElementById('root'));

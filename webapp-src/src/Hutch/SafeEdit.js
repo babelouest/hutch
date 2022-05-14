@@ -42,6 +42,7 @@ class SafeEdit extends Component {
     this.createKeyForSafe = this.createKeyForSafe.bind(this);
     this.removeSafe = this.removeSafe.bind(this);
     this.removeSafeConfirm = this.removeSafeConfirm.bind(this);
+    this.toggleOffline = this.toggleOffline.bind(this);
     
   }
   
@@ -71,24 +72,34 @@ class SafeEdit extends Component {
     e.preventDefault();
     var safe = this.state.safe;
     if (this.state.editMode === 1) {
-      apiManager.request(this.state.config.safe_endpoint, "POST", safe)
-      .then(() => {
+      if (!safe.offline) {
+        apiManager.request(this.state.config.safe_endpoint, "POST", safe)
+        .then(() => {
+          messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSaveSafe")});
+        })
+        .catch(() => {
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
+        });
+      } else {
         messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSaveSafe")});
-      })
-      .catch(() => {
-        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
-      });
+      }
       this.setState({nameMandatory: false, namePresent: false});
     } else {
-      apiManager.request(this.state.config.safe_endpoint + "/" + safe.name, "PUT", safe)
-      .then(() => {
+      if (!safe.offline) {
+        apiManager.request(this.state.config.safe_endpoint + "/" + safe.name, "PUT", safe)
+        .then(() => {
+          messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSaveSafe")});
+        })
+        .catch(() => {
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
+        });
+      } else {
         messageDispatcher.sendMessage('App', {action: "saveSafe", safe: safe});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSaveSafe")});
-      })
-      .catch(() => {
-        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
-      });
+      }
     }
   }
   
@@ -345,6 +356,12 @@ class SafeEdit extends Component {
     removeModal.hide();
   }
 
+  toggleOffline() {
+    let safe = this.state.safe;
+    safe.offline = !safe.offline;
+    this.setState({safe: safe});
+  }
+
 	render() {
     var safeKeyListJsx = [], modalSafeKeyJsx;
     if (this.state.safeContent && this.state.safe && this.state.safeContent[this.state.safe.name]) {
@@ -394,9 +411,13 @@ class SafeEdit extends Component {
             <label htmlFor="safeDisplayName" className="form-label">{i18next.t("safeDisplayName")}</label>
             <input type="text" className="form-control" id="safeDisplayName" value={this.state.safe.display_name||""} onChange={(e) => this.editDisplayName(e)}/>
           </div>
+          <div className="mb-3 form-check">
+          <input type="checkbox" className="form-check-input" id="safeOfflineFlag" checked={this.state.safe.offline} onChange={this.toggleOffline} disabled={this.state.editMode!==1||this.state.config.frontend.offline}/>
+            <label className="form-check-label" htmlFor="safeOfflineFlag">{i18next.t("safeOfflineFlag")}</label>
+          </div>
           <div className="mb-3">
             <label htmlFor="encType" className="form-label">{i18next.t("safeEncType")}</label>
-            <select disabled={this.state.editMode===2} className="form-select" aria-label="enc type" id="encType" onChange={(e) => this.editEncType(e)} value={this.state.safe.enc_type}>
+            <select disabled={this.state.editMode===2 || this.state.safe.offline} className="form-select" aria-label="enc type" id="encType" onChange={(e) => this.editEncType(e)} value={this.state.safe.enc_type}>
               <option value="A128CBC-HS256">A128CBC-HS256</option>
               <option value="A192CBC-HS384">A192CBC-HS384</option>
               <option value="A256CBC-HS512">A256CBC-HS512</option>
@@ -407,7 +428,7 @@ class SafeEdit extends Component {
           </div>
           <div className="mb-3">
             <label htmlFor="algType" className="form-label">{i18next.t("safeAlgType")}</label>
-            <select disabled={this.state.editMode===2} className="form-select" aria-label="enc type" id="algType" onChange={(e) => this.editAlgType(e)} value={this.state.safe.alg_type}>
+            <select disabled={this.state.editMode===2 || this.state.safe.offline} className="form-select" aria-label="enc type" id="algType" onChange={(e) => this.editAlgType(e)} value={this.state.safe.alg_type}>
               <option value="A128KW">A128KW</option>
               <option value="A192KW">A192KW</option>
               <option value="A256KW">A256KW</option>
@@ -421,7 +442,7 @@ class SafeEdit extends Component {
               {i18next.t("safeKeyList")}
               <div className="input-group">
                 <div className="input-group mb-3">
-                  <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled={this.state.editMode===1}>
+                  <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled={this.state.editMode===1 || this.state.safe.offline}>
                     <i className="fa fa-plus" aria-hidden="true"></i>
                   </button>
                   <ul className="dropdown-menu">
@@ -442,7 +463,7 @@ class SafeEdit extends Component {
               <button type="button" className="btn btn-secondary" onClick={this.cancelEditSafe}>{i18next.t("profileCancel")}</button>
             </div>
             <div className="btn-group" role="group" aria-label="First group">
-              <button type="button" className="btn btn-secondary" onClick={this.removeSafe}>{i18next.t("removeSafe")}</button>
+              <button type="button" className="btn btn-secondary" onClick={this.removeSafe} disabled={this.state.editMode!==2}>{i18next.t("removeSafe")}</button>
             </div>
           </div>
         </form>

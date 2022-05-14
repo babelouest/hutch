@@ -27,29 +27,48 @@ class Safe extends Component {
   
   static getDerivedStateFromProps(props, state) {
     var nextProps = Object.assign({}, props);
-    if (!props.editMode && props.safeContent && props.safe && props.safeContent[props.safe.name] && !props.safeContent[props.safe.name].keyList.length) {
+    if (!props.editMode && props.safeContent && props.safe && props.safeContent[props.safe.name] && !props.safeContent[props.safe.name].keyList.length && !props.safe.offline) {
       nextProps.editMode = 2;
     }
     return nextProps;
   }
   
 	render() {
-    var hasKeys = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].keyList.length);
-    if ((!this.state.editMode && hasKeys) || this.state.oidcStatus !== "connected") {
-      return (
-        <SafeView config={this.state.config}
-                  safe={this.state.safe}
-                  safeContent={this.state.safeContent}
-                  oidcStatus={this.state.oidcStatus}
-                  iconList={this.state.iconList} />
-      );
+    var hasKeys = this.state.safe && (this.state.safe.offline || (this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].keyList.length));
+    if (this.state.config.frontend.offline) {
+      if (!this.state.editMode) {
+        return (
+          <SafeView config={this.state.config}
+                    safe={this.state.safe}
+                    safeContent={this.state.safeContent}
+                    oidcStatus={this.state.oidcStatus}
+                    iconList={this.state.iconList} />
+        );
+      } else {
+        return (
+          <SafeEdit config={this.state.config}
+                    safe={this.state.safe}
+                    safeContent={this.state.safeContent}
+                    editMode={this.state.editMode}/>
+        );
+      }
     } else {
-      return (
-        <SafeEdit config={this.state.config}
-                  safe={this.state.safe}
-                  safeContent={this.state.safeContent}
-                  editMode={this.state.editMode}/>
-      );
+      if ((!this.state.editMode && hasKeys) || this.state.oidcStatus !== "connected") {
+        return (
+          <SafeView config={this.state.config}
+                    safe={this.state.safe}
+                    safeContent={this.state.safeContent}
+                    oidcStatus={this.state.oidcStatus}
+                    iconList={this.state.iconList} />
+        );
+      } else {
+        return (
+          <SafeEdit config={this.state.config}
+                    safe={this.state.safe}
+                    safeContent={this.state.safeContent}
+                    editMode={this.state.editMode}/>
+        );
+      }
     }
 	}
 }

@@ -1,60 +1,37 @@
 import React, { Component } from 'react';
 
 import i18next from 'i18next';
-
 import { decodeProtectedHeader, jwtDecrypt, importJWK } from 'jose-browser-runtime';
-
-import ManageExportData from './ManageExportData';
 import JwkInput from './JwkInput';
+
 import messageDispatcher from '../lib/MessageDispatcher';
 
-function getUnlockedCoinList(props) {
-  if (props.safeContent && props.safe.name && props.safeContent[props.safe.name]) {
-    return props.safeContent[props.safe.name].unlockedCoinList;
-  } else {
-    return [];
-  }
-}
-
-class ModalManageSafe extends Component {
+class ModalOfflineSafe extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       config: props.config,
-      oidcStatus: props.oidcStatus,
-      safe: props.safe,
-      safeContent: props.safeContent,
-      cbSaveCoin: props.cbSaveCoin,
       cbClose: props.cbClose,
-      unlockedCoinList: getUnlockedCoinList(props),
-      exportSafeWithSecurity: false,
-      exportSecurityType: "password",
-      password: "",
-      confirmPassword: "",
-      pwdScore: -1,
+      safeName: false,
+      coinList: [],
       importJwk: "",
-      errorExportJwk: false,
-      exportInvalid: false,
       importData: false,
       importDataResult: false,
       importTotalCount: 0,
       importTotalSuccess: 0,
       importSecurityType: false,
       importRunning: false,
-      showProgress: false,
+      importComplete: false,
       coinMax: 0,
-      coinNow: 0,
-      merge: true
+      coinNow: 0
     };
     
     this.changePassword = this.changePassword.bind(this);
     this.getImportFile = this.getImportFile.bind(this);
     this.parseContent = this.parseContent.bind(this);
-    this.importContent = this.importContent.bind(this);
     this.completeImportContent = this.completeImportContent.bind(this);
     this.editImportJwk = this.editImportJwk.bind(this);
-    this.changeMerge = this.changeMerge.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -72,22 +49,19 @@ class ModalManageSafe extends Component {
   }
   
   isImportInvalid() {
-    if (this.state.exportSafeWithSecurity) {
-      if (this.state.exportSecurityType === "password") {
-        if (!this.state.password || this.state.password !== this.state.confirmPassword) {
+    if (this.state.exportSecurityType === "password") {
+      if (!this.state.password || this.state.password !== this.state.confirmPassword) {
+        return true;
+      }
+    } else if (this.state.exportSecurityType === "jwk") {
+      try {
+        if (!this.state.importJwk || !(JSON.parse(this.state.importJwk).alg)) {
           return true;
         }
-      } else if (this.state.exportSecurityType === "jwk") {
-        try {
-          if (!this.state.importJwk || !(JSON.parse(this.state.importJwk).alg)) {
-            return true;
-          }
-        } catch (e) {
-          return true;
-        }
+      } catch (e) {
+        return true;
       }
     }
-    return false;
   }
 
   editImportJwk(importJwk) {
@@ -97,7 +71,11 @@ class ModalManageSafe extends Component {
   }
   
   getImportFile(e) {
-    this.setState({exportSafeWithSecurity: false, importData: false, importDataResult: false, importTotalCount: 0, importTotalSuccess: 0, importSecurityType: false}, () => {
+    let safeName = e.target.files[0].name;
+    if (safeName.lastIndexOf('.') > -1) {
+      safeName = safeName.substring(0, safeName.lastIndexOf('.'));
+    }
+    this.setState({importData: false, importDataResult: false, importTotalCount: 0, importTotalSuccess: 0, importSecurityType: false, safeName: safeName}, () => {
       var file = e.target.files[0];
       var fr = new FileReader();
       fr.onload = (ev2) => {
@@ -117,7 +95,9 @@ class ModalManageSafe extends Component {
       } catch (e) {
       }
       if (importDataJson && Array.isArray(importDataJson)) {
-        this.importContent(importDataJson);
+        this.setState({coinList: importDataJson, importDataResult: "importComplete", importTotalCount: importDataJson.length, importComplete: true}, () => {
+          messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
+        });
       } else {
         var header = false;
         try {
@@ -143,10 +123,12 @@ class ModalManageSafe extends Component {
       var enc = new TextEncoder();
       jwtDecrypt(this.state.importData, enc.encode(this.state.password))
       .then((decImport) => {
-        this.importContent(decImport.payload.data);
+        this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
+          messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
+        });
       })
       .catch(() => {
-        this.setState({importDataResult: "invalidPassword"});
+        this.setState({importDataResult: "invalidPassword", coinList: []});
       });
     } else if (this.state.importSecurityType === "jwk") {
       try {
@@ -156,89 +138,28 @@ class ModalManageSafe extends Component {
         .then((exportKey) => {
           jwtDecrypt(this.state.importData, exportKey)
           .then((decImport) => {
-            this.importContent(decImport.payload.data);
+            this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
+              messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
+            });
           })
           .catch(() => {
-            this.setState({importDataResult: "invalidJwk"});
+            this.setState({importDataResult: "invalidJwk", coinList: []});
           });
         });
       } catch (err) {
-        this.setState({importDataResult: "invalidJwk"});
+        this.setState({importDataResult: "invalidJwk", coinList: []});
       }
     }
   }
   
-  importContent(content) {
-    var importedCoins = 0, nbElements = 0;
-    this.setState({importRunning: true, showProgress: true, coinMax: content.length, coinNow: 0}, () => {
-      let curCoinList = this.state.safeContent[this.state.safe.name].coinList||[];
-      content.forEach((coin) => {
-        let curCoin = false, coinName = false, result = true;
-        if (coin.name) {
-          curCoinList.forEach(ccoin => {
-            if (ccoin.name === coin.name) {
-              curCoin = ccoin;
-              coinName = ccoin.name;
-            }
-          });
-          delete(coin.name);
-          if (curCoin && this.state.merge) {
-            if (curCoin.last_updated && coin.lastUpdated) {
-              result = false;
-              if (curCoin.last_updated < coin.lastUpdated) {
-                result = true;
-              }
-            }
-          }
-        }
-        try {
-          this.state.cbSaveCoin(result, coinName, coin)
-          .then(() => {
-            importedCoins++;
-          })
-          .catch(() => {
-            messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
-          })
-          .finally(() => {
-            nbElements++;
-            this.setState({coinNow: this.state.coinNow+1}, () => {
-              if (nbElements === content.length) {
-                if (nbElements === importedCoins) {
-                  this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false, showProgress: false})
-                } else {
-                  this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false, showProgress: false})
-                }
-              }
-            });
-          });
-        } catch (e) {
-          nbElements++;
-          this.setState({coinNow: this.state.coinNow+1}, () => {
-            if (nbElements === content.length) {
-              if (nbElements === importedCoins) {
-                this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false, showProgress: false})
-              } else {
-                this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false, showProgress: false})
-              }
-            }
-          });
-        }
-      });
-    });
-  }
-
   closeModal(e, result) {
     if (this.state.cbClose) {
       this.state.cbClose();
     }
   }
   
-  changeMerge() {
-    this.setState({merge: !this.state.merge});
-  }
-
 	render() {
-    var importDataResultJsx, importSecurityJsx, completeButtonJsx, showProgressJsx, exportJsx;
+    var importDataResultJsx, importSecurityJsx, completeButtonJsx, showProgressJsx;
     if (this.state.importDataResult === "invalidData") {
       importDataResultJsx = 
         <div className="alert alert-danger" role="alert">
@@ -247,12 +168,12 @@ class ModalManageSafe extends Component {
     } else if (this.state.importDataResult === "importComplete") {
       importDataResultJsx = 
         <div className="alert alert-success" role="alert">
-          {i18next.t("importComplete", {count: this.state.importTotalCount})}
+          {i18next.t("importOfflineComplete", {count: this.state.importTotalCount, name: this.state.safeName})}
         </div>
     } else if (this.state.importDataResult === "importIncomplete") {
       importDataResultJsx = 
         <div className="alert alert-warning" role="alert">
-          {i18next.t("importIncomplete", {count: this.state.importTotalCount, total: this.state.importTotalSuccess})}
+          {i18next.t("importOfflineIncomplete", {count: this.state.importTotalCount, total: this.state.importTotalSuccess, name: this.state.safeName})}
         </div>
     } else if (this.state.importDataResult === "invalidPassword") {
       importDataResultJsx = 
@@ -272,7 +193,11 @@ class ModalManageSafe extends Component {
       }
       var isDisabled = (this.state.importSecurityType === "password" && !this.state.password) || (this.state.importSecurityType === "jwk" && !this.state.importJwk);
       completeButtonJsx =
-        <button type="button" className="btn btn-secondary" onClick={this.completeImportContent} title={i18next.t("modalOk")} disabled={isDisabled || this.state.importRunning}>
+        <button type="button"
+                className="btn btn-secondary"
+                onClick={this.completeImportContent}
+                title={i18next.t("modalOk")}
+                disabled={isDisabled || this.state.importRunning || this.state.importComplete}>
           {i18next.t("modalOk")}{spinnerJsx}
         </button>
     }
@@ -280,7 +205,7 @@ class ModalManageSafe extends Component {
       importSecurityJsx =
         <div className="mb-3">
           <label htmlFor="newPassword" className="form-label">{i18next.t("importPassword")}</label>
-          <input type="password" className="form-control" id="password" autoComplete="new-password" value={this.state.password} onChange={this.changePassword}/>
+          <input type="password" className="form-control" id="password" autoComplete="new-password" value={this.state.password||""} onChange={this.changePassword}/>
         </div>
     } else if (this.state.importSecurityType === "jwk") {
       importSecurityJsx =
@@ -289,64 +214,24 @@ class ModalManageSafe extends Component {
           <JwkInput isError={false} ph={i18next.t("safeKeyJwkPh")} cb={this.editImportJwk}/>
         </div>
     }
-    if (this.state.showProgress) {
-      showProgressJsx =
-        <code className="btn-icon-right">
-          {this.state.coinNow}/{this.state.coinMax}
-        </code>
-    }
-    if (this.state.safe) {
-      let name;
-      if (this.state.safe.offline) {
-        name = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      } else {
-        name = this.state.safe.name;
-      }
-      exportJsx =
-      <div>
-        <div className="mb-3">
-          <div className="alert alert-primary" role="alert">
-            {i18next.t("exportSafe")}
-          </div>
-        </div>
-        <ManageExportData config={this.state.config}
-                          safe={this.state.safe}
-                          content={this.state.unlockedCoinList}
-                          id={name}
-                          name={this.state.safe.display_name} />
-        <hr/>
-      </div>
-    }
     return (
-      <div className="modal" tabIndex="-1" id="manageSafe">
+      <div className="modal" tabIndex="-1" id="offlineSafe">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{i18next.t("manageSafe")}</h5>
+              <h5 className="modal-title">{i18next.t("offlineSafe")}</h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={(e) => this.closeModal(e, false)}></button>
             </div>
             <div className="modal-body">
-              {exportJsx}
               <div className="mb-3">
                 <div className="alert alert-primary" role="alert">
                   {i18next.t("importSafe")}
                 </div>
               </div>
               <div className="mb-3">
-                <input className="form-check-input btn-icon"
-                       type="checkbox"
-                       id="importMerge"
-                       onChange={this.changeMerge}
-                       checked={this.state.merge} />
-                <label className="form-check-label" htmlFor="importMerge">
-                  {i18next.t("importMerge")}
-                </label>
-              </div>
-              <div className="mb-3">
                 <input type="file"
                        className="upload"
                        id="importSafeFileInput"
-                       disabled={this.state.oidcStatus !== "connected"}
                        onChange={this.getImportFile} />
                 <label htmlFor="importSafeFileInput" className="btn btn-secondary" disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-cloud-upload" aria-hidden="true"></i>
@@ -367,4 +252,4 @@ class ModalManageSafe extends Component {
 	}
 }
 
-export default ModalManageSafe;
+export default ModalOfflineSafe;

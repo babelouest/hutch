@@ -13,7 +13,6 @@ class ProfileView extends Component {
       profile: props.profile,
       hutchProfile: props.hutchProfile
     };
-    this.addSafe = this.addSafe.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -32,22 +31,27 @@ class ProfileView extends Component {
   addSafe() {
     messageDispatcher.sendMessage("App", {action: 'addSafe'});
   }
-
+  
 	render() {
     var contentJsx, buttonJsx;
     if (this.state.hutchProfile) {
+      let message = this.state.hutchProfile.message;
+      if (!this.state.config.frontend.offline) {
+        buttonJsx = 
+          <div className="d-flex justify-content-center">
+            <button type="button" onClick={this.editProfile} className="btn btn-secondary">{i18next.t("profileEdit")}</button>
+          </div>
+      } else {
+        message = i18next.t("offlineProfileMessage");
+      }
       contentJsx =
         <div>
           <div className="d-flex justify-content-center">
             <img src={this.state.hutchProfile.picture} className="card-img-top profile-image"/>
           </div>
           <div className="d-flex justify-content-center">
-            <p>{this.state.hutchProfile.message}</p>
+            <p>{message}</p>
           </div>
-        </div>
-      buttonJsx = 
-        <div className="d-flex justify-content-center">
-          <button type="button" onClick={this.editProfile} className="btn btn-secondary">{i18next.t("profileEdit")}</button>
         </div>
     } else {
       buttonJsx = <button type="button" onClick={this.editProfile} className="btn btn-secondary">{i18next.t("profileCreate")}</button>

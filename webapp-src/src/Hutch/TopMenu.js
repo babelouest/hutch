@@ -27,10 +27,10 @@ class TopMenu extends Component {
     return props;
   }
   
-  navigateTo(e, safe) {
+  navigateTo(e, safe, offline = false) {
     e.preventDefault();
     routage.addRoute(safe||"");
-    messageDispatcher.sendMessage("App", {action: 'nav', target: safe});
+    messageDispatcher.sendMessage("App", {action: 'nav', target: safe, offline: offline});
   }
   
   navigateoConfig(e) {
@@ -43,14 +43,27 @@ class TopMenu extends Component {
     messageDispatcher.sendMessage("App", {action: 'generate'});
   }
   
+  offlineSafe(e) {
+    e.preventDefault();
+    messageDispatcher.sendMessage("App", {action: 'offline'});
+  }
+  
 	render() {
     var safeListJsx = [];
     this.state.safeList.forEach((safe, index) => {
       var safeIconJsx;
-      if (this.state.safeContent && this.state.safeContent[safe.name] && this.state.safeContent[safe.name].key) {
-        safeIconJsx = <i className="fa fa-unlock btn-icon-right" aria-hidden="true"></i>;
+      if (!safe.offline) {
+        if (this.state.safeContent && this.state.safeContent[safe.name] && this.state.safeContent[safe.name].key) {
+          safeIconJsx = <i className="fa fa-unlock btn-icon-right" aria-hidden="true"></i>;
+        } else {
+          safeIconJsx = <i className="fa fa-lock btn-icon-right" aria-hidden="true"></i>;
+        }
       } else {
-        safeIconJsx = <i className="fa fa-lock btn-icon-right" aria-hidden="true"></i>;
+        if (safe.updated) {
+          safeIconJsx = <i className="fa fa-paper-plane btn-icon-right" aria-hidden="true"></i>;
+        } else {
+          safeIconJsx = <i className="fa fa-plane btn-icon-right" aria-hidden="true"></i>;
+        }
       }
       let className = "nav-link";
       if (this.state.curSafe.name === safe.name) {
@@ -96,6 +109,15 @@ class TopMenu extends Component {
               {safeListJsx}
             </ul>
             <ul className="navbar-nav ms-auto flex-nowrap text-right">
+              <li className="nav-item">
+                <a className="nav-link"
+                   data-bs-toggle="collapse"
+                   data-bs-target=".navbar-collapse.show"
+                   href="#"
+                   onClick={this.offlineSafe} href="#">
+                  <i className="fa fa-plane btn-icon-right" aria-hidden="true"></i>
+                </a>
+              </li>
               <li className="nav-item">
                 <a className="nav-link"
                    data-bs-toggle="collapse"

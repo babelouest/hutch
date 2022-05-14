@@ -48,7 +48,8 @@ class SafeView extends Component {
       coinEditContent: false,
       removeCoinMessage: false,
       filterTimeout: false,
-      filtering: false
+      filtering: false,
+      showModalManageSafe: false
     };
     
     this.reloadSafe = this.reloadSafe.bind(this);
@@ -62,6 +63,7 @@ class SafeView extends Component {
     this.addCoin = this.addCoin.bind(this);
     this.editCoinHeader = this.editCoinHeader.bind(this);
     this.manageSafe = this.manageSafe.bind(this);
+    this.manageSafeClose = this.manageSafeClose.bind(this);
     this.removeCoin = this.removeCoin.bind(this);
     this.removeCoinConfirm = this.removeCoinConfirm.bind(this);
     this.coinSaveCallback = this.coinSaveCallback.bind(this);
@@ -123,14 +125,19 @@ class SafeView extends Component {
   
   removeSafeConfirm(result) {
     if (result) {
-      apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name, "DELETE")
-      .then(() => {
+      if (!this.state.safe.offline) {
+        apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name, "DELETE")
+        .then(() => {
+          messageDispatcher.sendMessage('App', {action: "removeSafe", safe: this.state.safe});
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveSafe")});
+        })
+        .catch(() => {
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
+        });
+      } else {
         messageDispatcher.sendMessage('App', {action: "removeSafe", safe: this.state.safe});
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageRemoveSafe")});
-      })
-      .catch(() => {
-        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorSaveSafe")});
-      });
+      }
     }
     var removeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#removeSafe'));
     removeModal.hide();
@@ -169,14 +176,19 @@ class SafeView extends Component {
   
   removeCoinConfirm(result) {
     if (result) {
-      apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin/" + this.state.coinEditName, "DELETE")
-      .then(() => {
+      if (!this.state.safe.offline) {
+        apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin/" + this.state.coinEditName, "DELETE")
+        .then(() => {
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinRemove")});
+          messageDispatcher.sendMessage('App', {action: "removeCoin", target: this.state.safe, coin: this.state.coinEditName});
+        })
+        .catch(() => {
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinRemove")});
+        });
+      } else {
         messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinRemove")});
         messageDispatcher.sendMessage('App', {action: "removeCoin", target: this.state.safe, coin: this.state.coinEditName});
-      })
-      .catch(() => {
-        messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinRemove")});
-      })
+      }
     }
     var modalCoinEditModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#removeCoin'));
     modalCoinEditModal.hide();
@@ -186,42 +198,63 @@ class SafeView extends Component {
     var modalCoinEditModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#modalCoinEdit'));
     modalCoinEditModal && modalCoinEditModal.hide();
     if (result) {
+      content.lastUpdated = Math.floor(Date.now() / 1000);
       if (name) {
-        return new EncryptJWT(content)
-        .setProtectedHeader({ alg: this.state.safe.alg_type, enc: this.state.safe.enc_type, sign_thumb: this.state.config.sign_thumb })
-        .encrypt(this.state.safeContent[this.state.safe.name].key)
-        .then((data) => {
+        if (!this.state.safe.offline) {
+          return new EncryptJWT(content)
+          .setProtectedHeader({ alg: this.state.safe.alg_type, enc: this.state.safe.enc_type, sign_thumb: this.state.config.sign_thumb })
+          .encrypt(this.state.safeContent[this.state.safe.name].key)
+          .then((data) => {
+            var body = {
+              name: name,
+              data: data
+            }
+            return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin/" + name, "PUT", body)
+            .then(() => {
+              toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
+              messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: name, data: content}});
+            })
+            .catch(() => {
+              toast && messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
+            });
+          });
+        } else {
           var body = {
             name: name,
-            data: data
+            data: false
           }
-          return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin/" + name, "PUT", body)
-          .then(() => {
-            toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
-            messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: name, data: content}});
-          })
-          .catch(() => {
-            toast && messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
-          })
-        });
+          toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
+          messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: name, data: content}});
+          return Promise.resolve("ok");
+        }
       } else {
-        return new EncryptJWT(content)
-        .setProtectedHeader({ alg: this.state.safe.alg_type, enc: this.state.safe.enc_type, sign_thumb: this.state.config.sign_thumb })
-        .encrypt(this.state.safeContent[this.state.safe.name].key)
-        .then((data) => {
+        if (!this.state.safe.offline) {
+          return new EncryptJWT(content)
+          .setProtectedHeader({ alg: this.state.safe.alg_type, enc: this.state.safe.enc_type, sign_thumb: this.state.config.sign_thumb })
+          .encrypt(this.state.safeContent[this.state.safe.name].key)
+          .then((data) => {
+            var body = {
+              name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+              data: data
+            }
+            return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin", "POST", body)
+            .then(() => {
+              toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
+              messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: body.name, data: content}, cb: this.scrollToCoin});
+            })
+            .catch(() => {
+              messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
+            });
+          });
+        } else {
           var body = {
             name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-            data: data
+            data: false
           }
-          return apiManager.request(this.state.config.safe_endpoint + "/" + this.state.safe.name + "/coin", "POST", body)
-          .then(() => {
-            toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
-            messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: body.name, data: content}, cb: this.scrollToCoin});
-          })
-          .catch(() => {
-            messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinSave")});
-          })
-        });
+          toast && messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageSuccessCoinSave")});
+          messageDispatcher.sendMessage('App', {action: "updateCoin", target: this.state.safe, encCoin: body, unlockedCoin: {name: body.name, data: content}, cb: this.scrollToCoin});
+          return Promise.resolve("ok");
+        }
       }
     } else {
       return $.Deferred().reject("No can do");
@@ -236,46 +269,51 @@ class SafeView extends Component {
   }
   
   manageSafe() {
-    var manageSafeModal = new bootstrap.Modal(document.getElementById('manageSafe'), {
-      keyboard: false
+    this.setState({showModalManageSafe: true}, () => {
+      var manageSafeModal = new bootstrap.Modal(document.getElementById('manageSafe'), {
+        keyboard: false
+      });
+      manageSafeModal.show();
     });
-    manageSafeModal.show();
   }
   
   manageSafeClose() {
     var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
     manageSafeModal.hide();
+    this.setState({showModalManageSafe: false});
   }
 
 	render() {
-    var lockButtonJsx, secretHeaderJsx, secretListJsx = [], isUnlocked = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key);
-    if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key) {
-      lockButtonJsx =
-        <button type="button" className="btn btn-secondary btn-sm" onClick={this.lockSafe} title={i18next.t("safeLock")}>
-          <i className="fa fa-lock" aria-hidden="true"></i>
-        </button>
-      secretHeaderJsx =
-        <div className="mb-3">
-          <form onSubmit={(e) => e.preventDefault()}>
-            <div className="input-group mb-3">
-              <input type="text"
-                     className="form-control"
-                     autoComplete="new-password"
-                     placeholder={i18next.t("secretFilter")}
-                     id="coinFilter"
-                     name="coinFilter"
-                     value={this.state.filter}
-                     onChange={this.changeFilter}/>
-            </div>
-          </form>
-        </div>
-    } else {
-      lockButtonJsx =
-        <button type="button" className="btn btn-secondary btn-sm" onClick={this.unlockSafe} title={i18next.t("safeUnlock")}>
-          <i className="fa fa-unlock" aria-hidden="true"></i>
-        </button>
+    var lockButtonJsx, secretHeaderJsx, secretListJsx = [], isUnlocked = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key), updatedJsx;
+    if (!this.state.safe.offline) {
+      if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key) {
+        lockButtonJsx =
+          <button type="button" className="btn btn-secondary btn-sm" onClick={this.lockSafe} title={i18next.t("safeLock")}>
+            <i className="fa fa-lock" aria-hidden="true"></i>
+          </button>
+        secretHeaderJsx =
+          <div className="mb-3">
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="input-group mb-3">
+                <input type="text"
+                       className="form-control"
+                       autoComplete="new-password"
+                       placeholder={i18next.t("secretFilter")}
+                       id="coinFilter"
+                       name="coinFilter"
+                       value={this.state.filter}
+                       onChange={this.changeFilter}/>
+              </div>
+            </form>
+          </div>
+      } else {
+        lockButtonJsx =
+          <button type="button" className="btn btn-secondary btn-sm" onClick={this.unlockSafe} title={i18next.t("safeUnlock")}>
+            <i className="fa fa-unlock" aria-hidden="true"></i>
+          </button>
+      }
     }
-    if (isUnlocked) {
+    if (isUnlocked || this.state.safe.offline) {
       this.state.filteredCoinList.forEach((coin, index) => {
         secretListJsx.push(<Coin config={this.state.config}
                                  coin={coin}
@@ -287,44 +325,58 @@ class SafeView extends Component {
                                  key={index}/>);
       });
     }
+    let modalManageSafeJsx;
+    if (this.state.showModalManageSafe) {
+      modalManageSafeJsx = 
+        <ModalManageSafe config={this.state.config}
+                         safe={this.state.safe}
+                         safeContent={this.state.safeContent}
+                         cbSaveCoin={this.coinSaveCallback}
+                         oidcStatus={this.state.oidcStatus}
+                         cbClose={this.manageSafeClose} />
+    }
+    if (this.state.safe.updated) {
+      updatedJsx = <span className="btn-icon-right">{i18next.t("updatedSafe")}</span>;
+    }
     return (
       <div>
         <div className="alert alert-primary text-center" role="alert">
           {this.state.safe.display_name||this.state.safe.name}
+          {updatedJsx}
           <div className="btn-group float-end" role="group">
             {lockButtonJsx}
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={this.reloadSafe}
-                    disabled={!isUnlocked || this.state.oidcStatus !== "connected"}
+                    disabled={this.state.safe.offline || !isUnlocked || this.state.oidcStatus !== "connected"}
                     title={i18next.t("reloadSafe")}>
               <i className="fa fa-refresh" aria-hidden="true"></i>
             </button>
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={this.editSafe}
-                    disabled={!isUnlocked || this.state.oidcStatus !== "connected"}
+                    disabled={this.state.safe.offline || !isUnlocked || this.state.oidcStatus !== "connected"}
                     title={i18next.t("editSafe")}>
               <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
             </button>
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={this.manageSafe}
-                    disabled={!isUnlocked}
+                    disabled={!isUnlocked && !this.state.safe.offline}
                     title={i18next.t("manageSafe")}>
               <i className="fa fa-cogs" aria-hidden="true"></i>
             </button>
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={this.addCoin}
-                    disabled={!isUnlocked || this.state.oidcStatus !== "connected"}
+                    disabled={(!isUnlocked || this.state.oidcStatus !== "connected") && !this.state.safe.offline}
                     title={i18next.t("addCoin")}>
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>
             <button type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={(e) => this.removeSafe()}
-                    disabled={!isUnlocked || this.state.oidcStatus !== "connected"}
+                    disabled={(!isUnlocked || this.state.oidcStatus !== "connected") && !this.state.safe.offline}
                     title={i18next.t("removeSafe")}>
               <i className="fa fa-trash-o" aria-hidden="true"></i>
             </button>
@@ -344,12 +396,7 @@ class SafeView extends Component {
                        content={this.state.coinEditContent}
                        cb={this.coinSaveCallback}
                        iconListOrig={this.state.iconList} />
-        <ModalManageSafe config={this.state.config}
-                         safe={this.state.safe}
-                         safeContent={this.state.safeContent}
-                         cbSaveCoin={this.coinSaveCallback}
-                         oidcStatus={this.state.oidcStatus}
-                         cbClose={this.manageSafeClose} />
+        {modalManageSafeJsx}
         <Confirm name={"removeSafe"} title={i18next.t("removeSafeTitle")} message={i18next.t("removeSafeMessage", {name: this.state.safe.display_name||this.state.safe.name})} cb={this.removeSafeConfirm} />
         <Confirm name={"removeCoin"} title={i18next.t("removeCoinTitle")} message={this.state.removeCoinMessage} cb={this.removeCoinConfirm} />
       </div>

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
 import i18next from 'i18next';
-
 import { importJWK, EncryptJWT } from 'jose-browser-runtime';
-
 import JwkInput from './JwkInput';
+
+import messageDispatcher from '../lib/MessageDispatcher';
 
 class ManageExportData extends Component {
   constructor(props) {
@@ -21,6 +21,8 @@ class ManageExportData extends Component {
       pwdScore: -1,
       password: "",
       confirmPassword: "",
+      prefixPassword: "",
+      confirmPrefixPassword: "",
       exportInvalid: false,
       exportJwk: ""
     };
@@ -28,6 +30,8 @@ class ManageExportData extends Component {
     this.changeExportSecurityType = this.changeExportSecurityType.bind(this);
     this.changePassword = this.changePassword.bind(this);
     this.changeConfirmPassword = this.changeConfirmPassword.bind(this);
+    this.changePrefixPassword = this.changePrefixPassword.bind(this);
+    this.changeConfirmPrefixPassword = this.changeConfirmPrefixPassword.bind(this);
     this.exportSafe = this.exportSafe.bind(this);
     this.editExportJwk = this.editExportJwk.bind(this);
   }
@@ -60,6 +64,14 @@ class ManageExportData extends Component {
     });
   }
   
+  changePrefixPassword(e) {
+    this.setState({prefixPassword: e.target.value});
+  }
+  
+  changeConfirmPrefixPassword(e) {
+    this.setState({confirmPrefixPassword: e.target.value}, () => {this.isExportInvalid()});
+  }
+  
   editExportJwk(exportJwk) {
     this.setState({exportJwk: exportJwk}, () => {
       this.setState({exportInvalid: this.isExportInvalid()});
@@ -89,29 +101,35 @@ class ManageExportData extends Component {
     return false;
   }
 
-  exportSafe() {
+  exportSafe(e) {
+    e.preventDefault();
     var exported = [];
     this.state.content.forEach(coin => {
-      exported.push(coin.data);
+      let data = Object.assign({}, coin.data);
+      data.name = coin.name;
+      exported.push(data);
     });
     if (this.state.exportSafeWithSecurity) {
       if (this.state.exportSecurityType === "password" || this.state.exportSecurityType === "master-password") {
         var enc = new TextEncoder();
-        var containerKey = enc.encode(this.state.password);
-        var lockAlg = "PBES2-HS256+A128KW";
+        var containerKey = enc.encode(this.state.prefixPassword + this.state.password);
+        var lockAlg = "PBES2-HS512+A256KW";
         if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW" || this.state.safe.alg_type === "PBES2-HS384+A192KW") {
           lockAlg = "PBES2-HS384+A192KW";
-        } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW" || this.state.safe.alg_type === "PBES2-HS512+A256KW") {
-          lockAlg = "PBES2-HS512+A256KW";
+        } else if (this.state.safe.alg_type === "A128KW" || this.state.safe.alg_type === "A128GCMKW" || this.state.safe.alg_type === "PBES2-HS256+A128KW") {
+          lockAlg = "PBES2-HS256+A128KW";
         }
         new EncryptJWT({data: exported})
-        .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
+        .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type||"A256GCM", sign_key: this.state.config.sign_thumb})
         .encrypt(containerKey)
         .then((jwt) => {
           var $anchor = $("#"+this.state.id+"-download");
           $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(jwt));
           $anchor.attr("download", this.state.name+".jwt");
           $anchor[0].click();
+          if (this.state.safe.offline) {
+            messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
+          }
         });
       } else if (this.state.exportSecurityType === "jwk") {
         var key = JSON.parse(this.state.exportJwk);
@@ -127,6 +145,9 @@ class ManageExportData extends Component {
               $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(jwt));
               $anchor.attr("download", this.state.name+".jwt");
               $anchor[0].click();
+              if (this.state.safe.offline) {
+                messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
+              }
             });
           } else {
             this.setState({exportInvalid: 1});
@@ -135,9 +156,12 @@ class ManageExportData extends Component {
       }
     } else {
       var $anchor = $("#"+this.state.id+"-download");
-      $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(JSON.stringify(exported)));
+      $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(unescape(encodeURIComponent(JSON.stringify(exported)))));
       $anchor.attr("download", this.state.name+".json");
       $anchor[0].click();
+      if (this.state.safe.offline) {
+        messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
+      }
     }
   }
   
@@ -177,9 +201,38 @@ class ManageExportData extends Component {
         </div>
       } else if (this.state.exportSecurityType === "master-password") {
         exportSecurityJsx =
-        <div className="mb-3">
-          <label htmlFor="newPassword" className="form-label">{i18next.t("newPassword")}</label>
-          <input type="password" autoComplete="new-password" className="form-control" id="newPassword" value={this.state.password} onChange={this.changePassword}/>
+        <div>
+          <div className="mb-3">
+            <label htmlFor="prefixPassword" className="form-label">{i18next.t("prefixPassword")}</label>
+            <input type="password"
+                   autoComplete="off"
+                   className="form-control"
+                   id="prefixPassword"
+                   placeholder={i18next.t("prefixPasswordPh")}
+                   value={this.state.prefixPassword}
+                   onChange={(e) => this.changePrefixPassword(e)}/>
+            {pwdScoreJsx}
+          </div>
+          <div className="mb-3">
+            <label htmlFor="confirmPrefixPassword" className="form-label">{i18next.t("confirmPrefixPassword")}</label>
+            <input type="password"
+                   autoComplete="off"
+                   className="form-control"
+                   id="confirmPrefixPassword"
+                   placeholder={i18next.t("confirmPrefixPasswordPh")}
+                   value={this.state.confirmPrefixPassword}
+                   onChange={(e) => this.changeConfirmPrefixPassword(e)}/>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="newPassword" className="form-label">{i18next.t("masterPassword")}</label>
+            <input type="password"
+            autoComplete="off"
+            className="form-control"
+            id="newPassword"
+            placeholder={i18next.t("masterPasswordPh")}
+            value={this.state.password}
+            onChange={(e) => this.changePassword(e)}/>
+          </div>
         </div>
       } else if (this.state.exportSecurityType === "jwk") {
         var messageClass = "form-control", messageErrorJsx;
@@ -214,7 +267,7 @@ class ManageExportData extends Component {
           </div>
         </div>
         {exportSecurityTypeJsx}
-        <form>
+        <form onSubmit={(e) => this.exportSafe(e)}>
           {exportSecurityJsx}
         </form>
         <div className="mb-3">

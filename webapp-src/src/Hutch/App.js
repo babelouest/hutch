@@ -16,6 +16,7 @@ import Profile from './Profile';
 import Safe from './Safe';
 import Config from './Config';
 import ModalGeneratePassword from './ModalGeneratePassword';
+import ModalOfflineSafe from './ModalOfflineSafe';
 
 class App extends Component {
   constructor(props) {
@@ -30,6 +31,7 @@ class App extends Component {
       safeContent: {},
       iconList: [],
       curSafe: false,
+      offlineSafe: false,
       addSafe: false,
       oidcStatus: "connecting",
       tokenTimeout: false,
@@ -41,6 +43,7 @@ class App extends Component {
       trustworthy: true,
       forceTrust: false,
       showModalGeneratePassword: false,
+      showModalOfflineSafe: false,
       modalGeneratePasswordElement: {
         params: {
           type: "chars",
@@ -150,9 +153,25 @@ class App extends Component {
           });
           modalGeneratePassword.show();
         });
-        this.setState({showModalGeneratePassword: true});
+      } else if (message.action === "offline") {
+        this.setState({showModalOfflineSafe: true}, () => {
+          var offlineSafe = new bootstrap.Modal(document.getElementById('offlineSafe'), {
+            keyboard: false
+          });
+          offlineSafe.show();
+        });
       } else if (message.action === "addSafe") {
-        this.setState({nav: "safe", curSafe: {name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), display_name: "", enc_type: "A256GCM", alg_type: "A256GCMKW"}, editSafeMode: 1});
+        this.setState({
+          nav: "safe",
+          curSafe: {
+            name: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+            display_name: "",
+            offline: !!this.state.config.frontend.offline,
+            enc_type: "A256GCM",
+            alg_type: "A256GCMKW"
+          },
+          editSafeMode: 1
+        });
       } else if (message.action === "loadSafe") {
         this.getSafe(message.target);
       } else if (message.action === "editSafe") {
@@ -204,7 +223,7 @@ class App extends Component {
           safeContent[message.target.name].key = message.key;
         }
         safeContent[message.target.name].extractableKey = message.masterkeyData;
-        safeContent[message.target.name].lastUnlock = (message.key?Date.now()/1000:0);
+        safeContent[message.target.name].lastUnlock = (message.key?Math.floor(Date.now() / 1000):0);
         if (!message.key) {
           if (message.removeStorage) {
             var localStorageKey = "hutchsafe-"+message.target.name;
@@ -300,10 +319,14 @@ class App extends Component {
         });
       } else if (message.action === "lockAllSafe") {
         this.state.safeList.forEach((safe) => {
-          messageDispatcher.sendMessage('App', {action: "setSafeKey", target: safe, removeStorage: true, key: false});
+          if (!safe.offline) {
+            messageDispatcher.sendMessage('App', {action: "setSafeKey", target: safe, removeStorage: true, key: false});
+          } else {
+            messageDispatcher.sendMessage('App', {action: "removeSafe", safe: safe});
+          }
         });
       } else if (message.action === "updateCoin") {
-        var safeContent = this.state.safeContent;
+        var safeContent = this.state.safeContent, safeList = this.state.safeList;
         var added = false;
         safeContent[message.target.name].coinList.forEach((encCoin, index) => {
           if (encCoin.name === message.encCoin.name) {
@@ -322,13 +345,21 @@ class App extends Component {
           safeContent[message.target.name].unlockedCoinList.push(message.unlockedCoin);
         }
         safeContent[message.target.name].unlockedCoinList.sort(this.compareCoin);
-        this.setState({safeContent: safeContent}, () => {
+        if (message.target.offline) {
+          safeList.forEach((safe, index) => {
+            if (safe.name === message.target.name) {
+              safe.updated = true;
+              safeList[index] = safe;
+            }
+          });
+        }
+        this.setState({safeContent: safeContent, safeList: safeList}, () => {
           if (message.cb) {
             message.cb(message.encCoin.name);
           }
         });
       } else if (message.action === "removeCoin") {
-        var safeContent = this.state.safeContent;
+        var safeContent = this.state.safeContent, safeList = this.state.safeList;
         safeContent[message.target.name].coinList.forEach((encCoin, index) => {
           if (encCoin.name === message.coin) {
             delete(safeContent[message.target.name].coinList[index]);
@@ -339,10 +370,48 @@ class App extends Component {
             delete(safeContent[message.target.name].unlockedCoinList[index]);
           }
         });
-        this.setState({safeContent: safeContent});
+        if (message.target.offline) {
+          safeList.forEach((safe, index) => {
+            if (safe.name === message.target.name) {
+              safe.updated = true;
+              safeList[index] = safe;
+            }
+          });
+        }
+        this.setState({safeContent: safeContent, safeList: safeList});
       } else if (message.action === "sessionTimeout") {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
         this.setState({oidcStatus: "timeout"});
+      } else if (message.action === "addOfflineSafe") {
+        let safeList = this.state.safeList, safeContent = this.state.safeContent, newSafe = {name: message.safeName, display_name: message.safeName, enc_type: false, alg_type: false, offline: true, updated: false};
+        safeList.push(newSafe);
+        let unlockedCoinList = [], mockCoinList = [];
+        message.coinList.forEach((coin, index) => {
+          unlockedCoinList.push({
+            name: coin.name||"offline-" + index,
+            data: coin
+          });
+          mockCoinList.push({
+            name: coin.name||"offline-" + index,
+            data: false,
+            last_updated: coin.lastUpdated||Math.floor(Date.now() / 1000)
+          });
+        });
+        safeContent[message.safeName] = {
+          keyList: [],
+          coinList: mockCoinList,
+          unlockedCoinList: unlockedCoinList,
+          key: false
+        }
+        this.setState({safeList: safeList, safeContent: safeContent, nav: "safe", curSafe: newSafe, editSafeMode: 0});
+      } else if (message.action === "offlineSafeExported") {
+        let safeList = this.state.safeList;
+        safeList.forEach((safe, index) => {
+          if (safe.name === message.safeName) {
+            safeList[index].updated = false;
+          }
+        });
+        this.setState({safeList: safeList});
       }
     });
 
@@ -358,12 +427,22 @@ class App extends Component {
       this.setState({iconList: iconList});
     });
 
+    if (this.state.config.frontend.offline) {
+      this.state.oidcStatus = "connected";
+      this.state.hutchProfile = {
+        name: "Myrddin",
+        picture: "img/offline-mode.svg"
+      };
+      this.state.hasProfile = true;
+    }
+
     this.getHutchProfile = this.getHutchProfile.bind(this);
     this.getSafeList = this.getSafeList.bind(this);
     this.getSafeKeyList = this.getSafeKeyList.bind(this);
     this.unlockCoinList = this.unlockCoinList.bind(this);
     this.gotoRoute = this.gotoRoute.bind(this);
     this.closeGenerateModal = this.closeGenerateModal.bind(this);
+    this.manageSafeClose = this.manageSafeClose.bind(this);
   }
 
   gotoRoute(route) {
@@ -605,11 +684,16 @@ class App extends Component {
     modalGeneratePassword.hide();
     this.setState({showModalGeneratePassword: false});
   }
+  
+  manageSafeClose() {
+    var offlineSafe = bootstrap.Modal.getOrCreateInstance(document.querySelector('#offlineSafe'));
+    offlineSafe.hide();
+    this.setState({showModalOfflineSafe: false});
+  }
 
 	render() {
-    var bodyJsx, trustworthyJsx, forceTrustJsx, safeList = [];
+    var bodyJsx, trustworthyJsx, forceTrustJsx;
     if (this.state.trustworthy || (!this.state.trustworthy && this.state.forceTrust)) {
-      safeList = this.state.safeList;
       if (this.state.nav === "profile") {
         bodyJsx = <Profile config={this.state.config}
                            profile={this.state.profile}
@@ -647,7 +731,7 @@ class App extends Component {
           {forceTrustJsx}
         </div>
     }
-    var modalGenerate;
+    var modalGenerate, modalOfflineSafe;
     if (this.state.showModalGeneratePassword) {
       modalGenerate = <ModalGeneratePassword config={this.state.config}
                                              element={this.state.modalGeneratePasswordElement}
@@ -655,11 +739,19 @@ class App extends Component {
                                              callback={this.closeGenerateModal}
                                              hideSaveAndClose={true} />
     }
+    if (this.state.showModalOfflineSafe) {
+      modalOfflineSafe = <ModalOfflineSafe config={this.state.config}
+                                          safe={false}
+                                          safeContent={false}
+                                          cbSaveCoin={false}
+                                          oidcStatus={false}
+                                          cbClose={this.manageSafeClose} />
+    }
     return (
       <div className="container-fluid">
         <TopMenu config={this.state.config}
                  oidcStatus={this.state.oidcStatus}
-                 safeList={safeList}
+                 safeList={this.state.safeList}
                  safeContent={this.state.safeContent}
                  curSafe={this.state.curSafe}
                  hasProfile={this.state.hasProfile}/>
@@ -667,6 +759,7 @@ class App extends Component {
         {bodyJsx}
         <Notification loggedIn={this.state.oidcStatus}/>
         {modalGenerate}
+        {modalOfflineSafe}
       </div>
     );
 	}
