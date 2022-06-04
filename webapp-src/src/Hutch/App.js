@@ -383,7 +383,8 @@ class App extends Component {
         messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageSessionTimeout"), autohide: false});
         this.setState({oidcStatus: "timeout"});
       } else if (message.action === "addOfflineSafe") {
-        let safeList = this.state.safeList, safeContent = this.state.safeContent, newSafe = {name: message.safeName, display_name: message.safeName, enc_type: false, alg_type: false, offline: true, updated: false};
+        let newSafeName = message.safeName+"-"+(Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5));
+        let safeList = this.state.safeList, safeContent = this.state.safeContent, newSafe = {name: newSafeName, display_name: message.safeName, enc_type: false, alg_type: false, offline: true, updated: false};
         safeList.push(newSafe);
         let unlockedCoinList = [], mockCoinList = [];
         message.coinList.forEach((coin, index) => {
@@ -397,13 +398,16 @@ class App extends Component {
             last_updated: coin.lastUpdated||Math.floor(Date.now() / 1000)
           });
         });
-        safeContent[message.safeName] = {
+        safeContent[newSafeName] = {
           keyList: [],
           coinList: mockCoinList,
           unlockedCoinList: unlockedCoinList,
           key: false
         }
-        this.setState({safeList: safeList, safeContent: safeContent, nav: "safe", curSafe: newSafe, editSafeMode: 0});
+        routage.addRoute(newSafeName||"");
+        this.setState({safeList: safeList, safeContent: safeContent, nav: "safe", curSafe: newSafe, editSafeMode: 0}, () => {
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("importOfflineComplete", {count: message.coinList.length, name: message.safeName}), autohide: false});
+        });
       } else if (message.action === "offlineSafeExported") {
         let safeList = this.state.safeList;
         safeList.forEach((safe, index) => {

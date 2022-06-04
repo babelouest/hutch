@@ -97,6 +97,9 @@ class ModalOfflineSafe extends Component {
       if (importDataJson && Array.isArray(importDataJson)) {
         this.setState({coinList: importDataJson, importDataResult: "importComplete", importTotalCount: importDataJson.length, importComplete: true}, () => {
           messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
+          if (this.state.cbClose) {
+            this.state.cbClose();
+          }
         });
       } else {
         var header = false;
@@ -118,13 +121,19 @@ class ModalOfflineSafe extends Component {
     }
   }
   
-  completeImportContent() {
+  completeImportContent(e) {
+    if (e) {
+      e.preventDefault();
+    }
     if (this.state.importSecurityType === "password") {
       var enc = new TextEncoder();
       jwtDecrypt(this.state.importData, enc.encode(this.state.password))
       .then((decImport) => {
         this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
           messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
+          if (this.state.cbClose) {
+            this.state.cbClose();
+          }
         });
       })
       .catch(() => {
@@ -140,6 +149,9 @@ class ModalOfflineSafe extends Component {
           .then((decImport) => {
             this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
               messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
+              if (this.state.cbClose) {
+                this.state.cbClose();
+              }
             });
           })
           .catch(() => {
@@ -193,7 +205,7 @@ class ModalOfflineSafe extends Component {
       }
       var isDisabled = (this.state.importSecurityType === "password" && !this.state.password) || (this.state.importSecurityType === "jwk" && !this.state.importJwk);
       completeButtonJsx =
-        <button type="button"
+        <button type="submit"
                 className="btn btn-secondary"
                 onClick={this.completeImportContent}
                 title={i18next.t("modalOk")}
@@ -204,7 +216,7 @@ class ModalOfflineSafe extends Component {
     if (this.state.importSecurityType === "password") {
       importSecurityJsx =
         <div className="mb-3">
-          <label htmlFor="newPassword" className="form-label">{i18next.t("importPassword")}</label>
+          <label htmlFor="password" className="form-label">{i18next.t("importPassword")}</label>
           <input type="password" className="form-control" id="password" autoComplete="new-password" value={this.state.password||""} onChange={this.changePassword}/>
         </div>
     } else if (this.state.importSecurityType === "jwk") {
@@ -236,8 +248,10 @@ class ModalOfflineSafe extends Component {
                 <label htmlFor="importSafeFileInput" className="btn btn-secondary" disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-cloud-upload" aria-hidden="true"></i>
                 </label>
-                {importSecurityJsx}
-                {completeButtonJsx}
+                <form onSubmit={this.completeImportContent}>
+                  {importSecurityJsx}
+                  {completeButtonJsx}
+                </form>
                 {showProgressJsx}
                 {importDataResultJsx}
               </div>

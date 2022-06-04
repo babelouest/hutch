@@ -204,7 +204,7 @@
   "importInvalidData": "Données d'import invalides",
   "importComplete": "{{count}} secrets ont été importés",
   "importIncomplete": "{{count}} secrets ont été importés sur {{total}}",
-  "importOfflineComplete": "{{count}} secrets ont été importés dans le coffre {{name}}",
+  "importOfflineComplete": "Import Terminé, {{count}} secrets ont été importés dans le coffre {{name}}",
   "importOfflineIncomplete": "{{count}} secrets ont été importés sur {{total}} dans le coffre {{name}}",
   "importInvalidPassword": "Mot de passe invalide",
   "importInvalidKey": "Clé invalide",
@@ -215,6 +215,5 @@
   "updatedSafe": "(Modifié)",
   "offlineProfileMessage": "Vous êtes en mode déconnecté, les coffes et les secrets que vous crérez ne seront pas sauvegardés en ligne mais doivent être exportés sur votre machine.",
   "offlineSafe": "Coffre hors connexion",
-  "importOfflineSafe": "Importer une sauvegarde dans un nouveau coffre hors-connexion, vous devrez sauvegarder le coffre à la fin de l'utilisation, au risque de perdre toutes les modifications.",
-  "importOfflineComplete": "Import Terminé"
+  "importOfflineSafe": "Importer une sauvegarde dans un nouveau coffre hors-connexion, vous devrez sauvegarder le coffre à la fin de l'utilisation, au risque de perdre toutes les modifications."
 }

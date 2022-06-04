@@ -312,6 +312,22 @@ class SafeView extends Component {
             <i className="fa fa-unlock" aria-hidden="true"></i>
           </button>
       }
+    } else {
+      secretHeaderJsx =
+        <div className="mb-3">
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="input-group mb-3">
+              <input type="text"
+                     className="form-control"
+                     autoComplete="new-password"
+                     placeholder={i18next.t("secretFilter")}
+                     id="coinFilter"
+                     name="coinFilter"
+                     value={this.state.filter}
+                     onChange={this.changeFilter}/>
+            </div>
+          </form>
+        </div>
     }
     if (isUnlocked || this.state.safe.offline) {
       this.state.filteredCoinList.forEach((coin, index) => {
