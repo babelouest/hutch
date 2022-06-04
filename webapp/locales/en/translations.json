@@ -204,7 +204,7 @@
   "importInvalidData": "Invalid backup data",
   "importComplete": "{{count}} secrets were imported",
   "importIncomplete": "{{count}} out of {{total}} secrets were imported",
-  "importOfflineComplete": "{{count}} secrets were imported in {{name}}",
+  "importOfflineComplete": "Import complete, {{count}} secrets were imported in {{name}}",
   "importOfflineIncomplete": "{{count}} out of {{total}} secrets were imported in {{name}}",
   "importInvalidPassword": "Invalid password",
   "importInvalidKey": "Invalid key",
@@ -215,6 +215,5 @@
   "updatedSafe": "(Updated)",
   "offlineProfileMessage": "You are using Hutch in offline mode. Safes and secrets won't be saved online, but must be exported on your device.",
   "offlineSafe": "Offline safe",
-  "importOfflineSafe": "Import a backup in a new offline safe, you must backup the safe after use, otherwise all changes will be lost.",
-  "importOfflineComplete": "Import complete"
+  "importOfflineSafe": "Import a backup in a new offline safe, you must backup the safe after use, otherwise all changes will be lost."
 }
