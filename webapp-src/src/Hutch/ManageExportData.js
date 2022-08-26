@@ -129,6 +129,17 @@ class ManageExportData extends Component {
           $anchor[0].click();
           if (this.state.safe.offline) {
             messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
+            try {
+              var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
+              if (manageSafeModal) {
+                manageSafeModal.hide();
+              }
+              var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
+              if (exportCoinModal) {
+                exportCoinModal.hide();
+              }
+            } catch (e) {
+            }
           }
         });
       } else if (this.state.exportSecurityType === "jwk") {
@@ -147,6 +158,17 @@ class ManageExportData extends Component {
               $anchor[0].click();
               if (this.state.safe.offline) {
                 messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
+                try {
+                  var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
+                  if (manageSafeModal) {
+                    manageSafeModal.hide();
+                  }
+                  var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
+                  if (exportCoinModal) {
+                    exportCoinModal.hide();
+                  }
+                } catch (e) {
+                }
               }
             });
           } else {
@@ -161,6 +183,17 @@ class ManageExportData extends Component {
       $anchor[0].click();
       if (this.state.safe.offline) {
         messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
+        try {
+          var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
+          if (manageSafeModal) {
+            manageSafeModal.hide();
+          }
+          var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
+          if (exportCoinModal) {
+            exportCoinModal.hide();
+          }
+        } catch (e) {
+        }
       }
     }
   }
@@ -269,13 +302,13 @@ class ManageExportData extends Component {
         {exportSecurityTypeJsx}
         <form onSubmit={(e) => this.exportSafe(e)}>
           {exportSecurityJsx}
+          <div className="mb-3">
+            <button type="submit" className="btn btn-secondary" onClick={this.exportSafe} title={i18next.t("downloadExport")} disabled={this.state.exportInvalid}>
+              <i className="fa fa-cloud-download" aria-hidden="true"></i>
+            </button>
+          </div>
+          <a className="upload" id={this.state.id+"-download"} />
         </form>
-        <div className="mb-3">
-          <button type="button" className="btn btn-secondary" onClick={this.exportSafe} title={i18next.t("downloadExport")} disabled={this.state.exportInvalid}>
-            <i className="fa fa-cloud-download" aria-hidden="true"></i>
-          </button>
-        </div>
-        <a className="upload" id={this.state.id+"-download"} />
       </div>
     );
 	}
