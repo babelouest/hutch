@@ -406,7 +406,7 @@ class App extends Component {
         }
         routage.addRoute(newSafeName||"");
         this.setState({safeList: safeList, safeContent: safeContent, nav: "safe", curSafe: newSafe, editSafeMode: 0}, () => {
-          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("importOfflineComplete", {count: message.coinList.length, name: message.safeName}), autohide: false});
+          messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("importOfflineComplete", {count: message.coinList.length, name: message.safeName})});
         });
       } else if (message.action === "offlineSafeExported") {
         let safeList = this.state.safeList;
