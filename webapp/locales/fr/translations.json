@@ -145,6 +145,7 @@
   "coinElementRemove": "Supprimer",
   "coinElementDownload": "Télécharger",
   "coinElementTags": "Tags",
+  "coinUsedTags": "Tags utilisés",
   "messageCopyToClipboard": "Copié dans le presse-papier",
   "messageCopyToClipboardError": "Erreur lors de la copie dans le presse-papier",
   "removeElementTitle": "Supprimer l'élément",
@@ -197,7 +198,9 @@
   "coinElementShowShortcut": "Afficher le raccourci",
   "coinElementHide": "Cacher par défaut",
   "coinElementShow": "Afficher/Masquer",
+  "CoinElementTags": "Étiquettes",
   "exportJwk": "Clé JWK pour chiffrer l'export",
+  "exportSuccess": "Export réalisé avec succès",
   "jwkError": "La clé doit être un JWK valide, avec une valeur 'alg' spécifiée et doit être une clé publique ou symétrique",
   "importSafe": "Importer une sauvegarde dans ce coffre",
   "importMerge": "Remplacer uniquement les secrets plus récents",
@@ -208,6 +211,7 @@
   "importOfflineIncomplete": "{{count}} secrets ont été importés sur {{total}} dans le coffre {{name}}",
   "importInvalidPassword": "Mot de passe invalide",
   "importInvalidKey": "Clé invalide",
+  "importPrefixPassword": "Préfixe du mot de passe (si applicable)",
   "importPassword": "Mot de passe",
   "importJwk": "Clé JWK pour déchiffrer l'import",
   "messageSortEnabled": "Tri activé",
@@ -215,5 +219,6 @@
   "updatedSafe": "(Modifié)",
   "offlineProfileMessage": "Vous êtes en mode déconnecté, les coffes et les secrets que vous crérez ne seront pas sauvegardés en ligne mais doivent être exportés sur votre machine.",
   "offlineSafe": "Coffre hors connexion",
-  "importOfflineSafe": "Importer une sauvegarde dans un nouveau coffre hors-connexion, vous devrez sauvegarder le coffre à la fin de l'utilisation, au risque de perdre toutes les modifications."
+  "importOfflineSafe": "Importer une sauvegarde dans un nouveau coffre hors-connexion, vous devrez sauvegarder le coffre à la fin de l'utilisation, au risque de perdre toutes les modifications.",
+  "switchSafeViewFolder": "Basculer vers la vue en dossiers"
 }
