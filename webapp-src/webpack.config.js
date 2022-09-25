@@ -26,6 +26,18 @@ module.exports = {
     compress: true,
     port: 3000,
     host: 'localhost',
-    open: true
-  },
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4884/',
+        secure: false,
+        changeOrigin: true
+      },
+      '/.well-known/hutch-configuration': {
+        target: 'http://localhost:4884/',
+        secure: false,
+        changeOrigin: true
+      }
+    }
+  }
 };

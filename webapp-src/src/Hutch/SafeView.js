@@ -21,14 +21,51 @@ function getUnlockedCoinList(props) {
   }
 }
 
-function filterCoins(unlockedCoinList, filter) {
-  var filteredCoinList = [];
-  unlockedCoinList.forEach((coin) => {
-    if (coin.data.displayName.toUpperCase().search(filter.toUpperCase()) > -1) {
-      filteredCoinList.push(coin);
+function arraysMatch(tags, selectedTags) {
+  let match = 0;
+  tags.forEach(tag => {
+    if (selectedTags.indexOf(tag) !== -1) {
+      match++;
     }
   });
+  return match === selectedTags.length;
+}
+
+function filterCoins(unlockedCoinList, filter, selectedTags) {
+  var preFilteredCoinList = [], filteredCoinList = [];
+  if (filter) {
+    unlockedCoinList.forEach((coin) => {
+      if (coin.data.displayName.toUpperCase().search(filter.toUpperCase()) > -1) {
+        preFilteredCoinList.push(coin);
+      }
+    });
+  } else {
+    preFilteredCoinList = unlockedCoinList;
+  }
+  if (selectedTags.length) {
+    preFilteredCoinList.forEach((coin) => {
+      if (arraysMatch(coin.data.tags||[], selectedTags)) {
+        filteredCoinList.push(coin);
+      }
+    });
+  } else {
+    filteredCoinList = preFilteredCoinList;
+  }
   return filteredCoinList;
+}
+
+function getAllTags(coinList) {
+  var tagsList = [];
+  coinList.forEach((coin, index) => {
+    if (coin.data.tags) {
+      coin.data.tags.forEach(tag => {
+        if (tagsList.indexOf(tag) === -1) {
+          tagsList.push(tag);
+        }
+      });
+    }
+  });
+  return tagsList.sort();
 }
   
 class SafeView extends Component {
@@ -49,7 +86,9 @@ class SafeView extends Component {
       removeCoinMessage: false,
       filterTimeout: false,
       filtering: false,
-      showModalManageSafe: false
+      showModalManageSafe: false,
+      selectedTags: [],
+      allTags: getAllTags(getUnlockedCoinList(props))
     };
     
     this.reloadSafe = this.reloadSafe.bind(this);
@@ -67,16 +106,19 @@ class SafeView extends Component {
     this.removeCoin = this.removeCoin.bind(this);
     this.removeCoinConfirm = this.removeCoinConfirm.bind(this);
     this.coinSaveCallback = this.coinSaveCallback.bind(this);
+    this.clearSearch = this.clearSearch.bind(this);
+    this.selectTag = this.selectTag.bind(this);
   }
   
   static getDerivedStateFromProps(props, state) {
     let newState = Object.assign({}, props);
     if (props.oidcStatus === "connected" || props.oidcStatus === "timeout") {
-      if (state.filter) {
-        newState.filteredCoinList = filterCoins(newState.safeContent[newState.safe.name].unlockedCoinList, state.filter);
+      if (state.filter || state.selectedTags.length) {
+        newState.filteredCoinList = filterCoins(newState.safeContent[newState.safe.name].unlockedCoinList, state.filter, state.selectedTags);
       } else {
         newState.filteredCoinList = newState.safeContent[newState.safe.name].unlockedCoinList
       }
+      newState.allTags = getAllTags(newState.safeContent[newState.safe.name].unlockedCoinList)
     }
     return newState;
   }
@@ -282,9 +324,58 @@ class SafeView extends Component {
     manageSafeModal.hide();
     this.setState({showModalManageSafe: false});
   }
+  
+  clearSearch() {
+    this.setState({filter: "", selectedTags: []});
+  }
+  
+  selectTag(e, tag) {
+    e.preventDefault();
+    let selectedTags = this.state.selectedTags;
+    selectedTags.push(tag);
+    this.setState({selectedTags: selectedTags});
+  }
+  
+  deleteTag(e, index) {
+    e.preventDefault();
+    let selectedTags = this.state.selectedTags;
+    selectedTags.splice(index, 1);
+    this.setState({selectedTags: selectedTags});
+  }
 
 	render() {
-    var lockButtonJsx, secretHeaderJsx, secretListJsx = [], isUnlocked = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key), updatedJsx;
+    var lockButtonJsx, secretHeaderJsx, secretListJsx = [], isUnlocked = (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key), updatedJsx, coinTags = [], selectedTagsJsx = [], tags = [], tagsListJsx = [];
+    if (isUnlocked || this.state.safe.offline) {
+      this.state.filteredCoinList.forEach((coin, index) => {
+        secretListJsx.push(<Coin config={this.state.config}
+                                 coin={coin}
+                                 safe={this.state.safe}
+                                 cbEditHeader={this.editCoinHeader}
+                                 cbRemoveCoin={this.removeCoin}
+                                 cbSaveCoin={this.coinSaveCallback}
+                                 oidcStatus={this.state.oidcStatus}
+                                 allTags={this.state.allTags}
+                                 key={index}/>);
+        if (coin.data.tags) {
+          coin.data.tags.forEach(tag => {
+            if (tags.indexOf(tag) === -1 && this.state.selectedTags.indexOf(tag) === -1) {
+              tags.push(tag);
+            }
+          });
+          tags.sort();
+        }
+        tagsListJsx = [];
+        tags.forEach((tag, indexTag) => {
+          tagsListJsx.push(
+            <li key={index + "-" + indexTag}>
+              <a className="dropdown-item" href="#" onClick={(e) => this.selectTag(e, tag)}>
+                {tag}
+              </a>
+            </li>
+          );
+        });
+      });
+    }
     if (!this.state.safe.offline) {
       if (this.state.safe && this.state.safeContent && this.state.safeContent[this.state.safe.name] && this.state.safeContent[this.state.safe.name].key) {
         lockButtonJsx =
@@ -297,12 +388,24 @@ class SafeView extends Component {
               <div className="input-group mb-3">
                 <input type="text"
                        className="form-control"
-                       autoComplete="new-password"
                        placeholder={i18next.t("secretFilter")}
                        id="coinFilter"
                        name="coinFilter"
                        value={this.state.filter}
                        onChange={this.changeFilter}/>
+                <button className="btn btn-outline-secondary dropdown-toggle input-group-append border" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled={!tags.length}>
+                  <i className="fa fa-tags" aria-hidden="true"></i>
+                </button>
+                <ul className="dropdown-menu">
+                  {tagsListJsx}
+                </ul>
+                <span className="input-group-append">
+                  <button className="btn btn-outline-secondary border"
+                          type="button"
+                          onClick={this.clearSearch}>
+                        <i className="fa fa-times"></i>
+                    </button>
+                </span>
               </div>
             </form>
           </div>
@@ -319,27 +422,27 @@ class SafeView extends Component {
             <div className="input-group mb-3">
               <input type="text"
                      className="form-control"
-                     autoComplete="new-password"
                      placeholder={i18next.t("secretFilter")}
                      id="coinFilter"
                      name="coinFilter"
                      value={this.state.filter}
                      onChange={this.changeFilter}/>
+              <button className="btn btn-outline-secondary dropdown-toggle input-group-append border" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled={!tags.length}>
+                <i className="fa fa-tags" aria-hidden="true"></i>
+              </button>
+              <ul className="dropdown-menu">
+                {tagsListJsx}
+              </ul>
+              <span className="input-group-append">
+                  <button className="btn btn-outline-secondary border"
+                          type="button"
+                          onClick={this.clearSearch}>
+                      <i className="fa fa-times"></i>
+                  </button>
+              </span>
             </div>
           </form>
         </div>
-    }
-    if (isUnlocked || this.state.safe.offline) {
-      this.state.filteredCoinList.forEach((coin, index) => {
-        secretListJsx.push(<Coin config={this.state.config}
-                                 coin={coin}
-                                 safe={this.state.safe}
-                                 cbEditHeader={this.editCoinHeader}
-                                 cbRemoveCoin={this.removeCoin}
-                                 cbSaveCoin={this.coinSaveCallback}
-                                 oidcStatus={this.state.oidcStatus}
-                                 key={index}/>);
-      });
     }
     let modalManageSafeJsx;
     if (this.state.showModalManageSafe) {
@@ -354,6 +457,18 @@ class SafeView extends Component {
     if (this.state.safe.updated) {
       updatedJsx = <span className="btn-icon-right">{i18next.t("updatedSafe")}</span>;
     }
+    this.state.selectedTags.forEach((tag, index) => {
+      selectedTagsJsx.push(
+        <a href="#" onClick={(e) => this.deleteTag(e, index)} key={index}>
+          <span className="badge rounded-pill bg-secondary btn-icon">
+            {tag}
+            <span className="badge badge-light btn-icon-right">
+              <i className="fas fa-times"></i>
+            </span>
+          </span>
+        </a>
+      );
+    });
     return (
       <div>
         <div className="alert alert-primary text-center" role="alert">
@@ -399,6 +514,9 @@ class SafeView extends Component {
           </div>
         </div>
         {secretHeaderJsx}
+        <div className="btn-icon-top">
+          {selectedTagsJsx}
+        </div>
         <div className="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
           {secretListJsx}
         </div>

@@ -34,6 +34,7 @@ class Coin extends Component {
       cbEditHeader: props.cbEditHeader,
       cbRemoveCoin: props.cbRemoveCoin,
       cbSaveCoin: props.cbSaveCoin,
+      allTags: props.allTags,
       showAddElement: false,
       newElementType: false,
       editElementList: [],
@@ -42,7 +43,8 @@ class Coin extends Component {
       showEditTags: false,
       showExportCoin: false,
       sortRowsEnabled: false,
-      overId: false
+      overId: false,
+      editCoinTags: true
     };
 
     this.exportCoin = this.exportCoin.bind(this);
@@ -57,6 +59,7 @@ class Coin extends Component {
     this.saveElement = this.saveElement.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onDragOver = this.onDragOver.bind(this);
+    this.setCoinTags = this.setCoinTags.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -132,7 +135,16 @@ class Coin extends Component {
 
   setElementTags(e, index) {
     e.preventDefault();
-    this.setState({curElementIndex: index, curTags: this.state.coin.data.rows[index].tags||[], showEditTags: true}, () => {
+    this.setState({curElementIndex: index, curTags: this.state.coin.data.rows[index].tags||[], showEditTags: true, editCoinTags: false}, () => {
+      var modalCoinElementTags = new bootstrap.Modal(document.getElementById('modalCoinElementTags'), {
+        keyboard: false
+      });
+      modalCoinElementTags.show();
+    });
+  }
+
+  setCoinTags() {
+    this.setState({curTags: this.state.coin.data.tags||[], showEditTags: true, editCoinTags: true}, () => {
       var modalCoinElementTags = new bootstrap.Modal(document.getElementById('modalCoinElementTags'), {
         keyboard: false
       });
@@ -144,9 +156,17 @@ class Coin extends Component {
     if (result) {
       var coin = this.state.coin;
       if (tags.length) {
-        coin.data.rows[this.state.curElementIndex].tags = tags;
+        if (this.state.editCoinTags) {
+          coin.data.tags = tags;
+        } else {
+          coin.data.rows[this.state.curElementIndex].tags = tags;
+        }
       } else {
-        delete(coin.data.rows[this.state.curElementIndex].tags);
+        if (this.state.editCoinTags) {
+          delete(coin.data.tags);
+        } else {
+          delete(coin.data.rows[this.state.curElementIndex].tags);
+        }
       }
       this.state.cbSaveCoin(true, coin.name, coin.data, true);
     }
@@ -236,11 +256,20 @@ class Coin extends Component {
     e.preventDefault();
     $("#collapse-"+this.state.coin.name).collapse('toggle');
   }
-
+  
 	render() {
-    var coinIconJsx, addElementJsx, newElementJsx, newElementSeparator, elementListJsx = [], confirmJsx, editTagsJsx, exportCoinJsx, headerButtonsJsx, headerButtonList = [], headerButtonListJsx = [];
+    var coinIconJsx, addElementJsx, newElementJsx, newElementSeparator, elementListJsx = [], confirmJsx, editTagsJsx, exportCoinJsx, headerButtonsJsx, headerButtonList = [], headerButtonListJsx = [], tagsListJsx = [];
     if (this.state.coin.data.icon) {
       coinIconJsx = <i className={this.state.coin.data.icon + " fa btn-icon"} aria-hidden="true"></i>;
+    }
+    if (this.state.coin.data.tags) {
+      this.state.coin.data.tags.forEach((tag, index) => {
+        tagsListJsx.push(
+          <span className="badge rounded-pill bg-secondary btn-icon" key={index}>
+            {tag}
+          </span>
+        );
+      });
     }
     if (this.state.showAddElement) {
       addElementJsx =
@@ -316,7 +345,7 @@ class Coin extends Component {
       confirmJsx = <Confirm name={"removeElement"} title={i18next.t("removeElementTitle")} message={i18next.t("removeElementMessage")} cb={this.removeElementConfirm} />
     }
     if (this.state.showEditTags) {
-      editTagsJsx = <ModalCoinElementTags index={this.state.curElementIndex} tags={this.state.curTags} cb={this.setElementTagsConfirm} />
+      editTagsJsx = <ModalCoinElementTags tags={this.state.curTags} allTags={this.state.allTags} cb={this.setElementTagsConfirm} />
     }
     if (this.state.showExportCoin) {
       exportCoinJsx = <ModalCoinExport config={this.state.config} cb={this.exportCoinClose} safe={this.state.safe} coin={this.state.coin} />
@@ -526,6 +555,7 @@ class Coin extends Component {
             <div id={"collapse-"+this.state.coin.name} className="accordion-collapse collapse" aria-labelledby={"heading-"+this.state.coin.name} data-bs-parent={"#coin-"+this.state.coin.name}>
               <div className="accordion-body">
                 <div className="mb-3" role="group">
+                  {tagsListJsx}
                   <div className="btn-group float-end" role="group">
                     <button type="button"
                             className="btn btn-secondary btn-sm"
@@ -553,6 +583,13 @@ class Coin extends Component {
                             disabled={this.state.oidcStatus !== "connected"}
                             title={i18next.t("addSecretElement")}>
                       <i className="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                    <button type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={this.setCoinTags}
+                            disabled={this.state.oidcStatus !== "connected"}
+                            title={i18next.t("setCoinTags")}>
+                      <i className="fa fa-tags" aria-hidden="true"></i>
                     </button>
                     <button type="button"
                             className="btn btn-secondary btn-sm"

@@ -7,8 +7,8 @@ class ModalCoinElementTags extends Component {
     super(props);
 
     this.state = {
-      index: props.index,
       tags: props.tags,
+      allTags: props.allTags,
       cb: props.cb,
       inputValue: ""
     };
@@ -17,6 +17,7 @@ class ModalCoinElementTags extends Component {
     this.deleteTag = this.deleteTag.bind(this);
     this.submitForm = this.submitForm.bind(this);
     this.changeInputValue = this.changeInputValue.bind(this);
+    this.addTagFromAll = this.addTagFromAll.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -37,10 +38,17 @@ class ModalCoinElementTags extends Component {
     }
   }
   
+  addTagFromAll(e, tag) {
+    e.preventDefault();
+    var tags = this.state.tags;
+    tags.push(tag);
+    return this.setState({tags: tags});
+  }
+  
   addTag() {
     var tags = this.state.tags;
     if (this.state.inputValue) {
-      tags.push(this.state.inputValue);
+      tags.push(this.state.inputValue.trim());
     }
     return this.setState({tags: tags, inputValue: ""});
   }
@@ -64,14 +72,25 @@ class ModalCoinElementTags extends Component {
   }
 
 	render() {
-    var tagsListJsx = [];
+    var tagsListJsx = [], allTagsListJsx = [];
+    this.state.allTags.forEach((tag, index) => {
+      if (this.state.tags.indexOf(tag) === -1) {
+        allTagsListJsx.push(
+          <a href="#" onClick={(e) => this.addTagFromAll(e, tag)} key={index}>
+            <span className="badge rounded-pill bg-secondary btn-icon">
+              {tag}
+            </span>
+          </a>
+        );
+      }
+    });
     this.state.tags.forEach((tag, index) => {
       tagsListJsx.push(
         <a href="#" onClick={(e) => this.deleteTag(e, index)} key={index}>
           <span className="badge rounded-pill bg-secondary btn-icon">
             {tag}
             <span className="badge badge-light btn-icon-right">
-            <i className="fas fa-times"></i>
+              <i className="fas fa-times"></i>
             </span>
           </span>
         </a>
@@ -87,6 +106,12 @@ class ModalCoinElementTags extends Component {
             </div>
             <form onSubmit={(e) => this.submitForm(e)}>
               <div className="modal-body">
+                <div className="mb-3">
+                  <label htmlFor="coinDisplayName" className="form-label">{i18next.t("coinUsedTags")}</label>
+                </div>
+                <div className="mb-3">
+                  {allTagsListJsx}
+                </div>
                 <div className="mb-3">
                   <label htmlFor="coinDisplayName" className="form-label">{i18next.t("coinDisplayName")}</label>
                   <div className="input-group mb-3">

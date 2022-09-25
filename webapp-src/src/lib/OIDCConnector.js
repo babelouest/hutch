@@ -169,7 +169,7 @@ class OIDCConnector {
           if (storedData && storedData.accessToken && this.isTokenValid(storedData.accessToken)) {
             var curDate = new Date();
             this.accessToken = storedData.accessToken;
-            let expires_in = Math.floor((((token.iat + token.expires_in)*1000) - curDate.getTime())/1000);
+            let expires_in = Math.floor((((storedData.accessToken.iat + storedData.accessToken.expires_in)*1000) - curDate.getTime())/1000);
             this.broadcastMessage("connected", this.accessToken.access_token, expires_in);
           } else {
             this.broadcastMessage("disconnected");

@@ -145,6 +145,7 @@
   "coinElementRemove": "Remove",
   "coinElementDownload": "Download",
   "coinElementTags": "Tags",
+  "coinUsedTags": "Used tags",
   "messageCopyToClipboard": "Copied into the clipboard",
   "messageCopyToClipboardError": "Error while copying into the clipboard",
   "removeElementTitle": "Remove element",
@@ -197,7 +198,9 @@
   "coinElementShowShortcut": "Show shortcut",
   "coinElementHide": "Default hide",
   "coinElementShow": "Show/Hide",
+  "CoinElementTags": "Tags",
   "exportJwk": "JWK to encrypt the backup",
+  "exportSuccess": "Export successful",
   "jwkError": "The key must be a valid JWK, with a 'alg' value specified, and must be a public or symmetric key.",
   "importSafe": "Import a safe backup",
   "importMerge": "Replace only when secrets are updated",
@@ -208,6 +211,7 @@
   "importOfflineIncomplete": "{{count}} out of {{total}} secrets were imported in {{name}}",
   "importInvalidPassword": "Invalid password",
   "importInvalidKey": "Invalid key",
+  "importPrefixPassword": "Password prefix (if applicable)",
   "importPassword": "Password",
   "importJwk": "JWK to decrypt the import",
   "messageSortEnabled": "Sort enabled",
@@ -215,5 +219,6 @@
   "updatedSafe": "(Updated)",
   "offlineProfileMessage": "You are using Hutch in offline mode. Safes and secrets won't be saved online, but must be exported on your device.",
   "offlineSafe": "Offline safe",
-  "importOfflineSafe": "Import a backup in a new offline safe, you must backup the safe after use, otherwise all changes will be lost."
+  "importOfflineSafe": "Import a backup in a new offline safe, you must backup the safe after use, otherwise all changes will be lost.",
+  "switchSafeViewFolder": "Switch to folder view"
 }

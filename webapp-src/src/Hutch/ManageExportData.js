@@ -65,11 +65,15 @@ class ManageExportData extends Component {
   }
   
   changePrefixPassword(e) {
-    this.setState({prefixPassword: e.target.value});
+    this.setState({prefixPassword: e.target.value}, () => {
+      this.setState({exportInvalid: this.isExportInvalid()});
+    });
   }
   
   changeConfirmPrefixPassword(e) {
-    this.setState({confirmPrefixPassword: e.target.value}, () => {this.isExportInvalid()});
+    this.setState({confirmPrefixPassword: e.target.value}, () => {
+      this.setState({exportInvalid: this.isExportInvalid()});
+    });
   }
   
   editExportJwk(exportJwk) {
@@ -86,6 +90,8 @@ class ManageExportData extends Component {
         }
       } else if (this.state.exportSecurityType === "master-password") {
         if (!this.state.password) {
+          return true;
+        } else if (!!this.state.prefixPassword && (this.state.prefixPassword !== this.state.confirmPrefixPassword)) {
           return true;
         }
       } else if (this.state.exportSecurityType === "jwk") {
@@ -129,17 +135,22 @@ class ManageExportData extends Component {
           $anchor[0].click();
           if (this.state.safe.offline) {
             messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
-            try {
-              var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
-              if (manageSafeModal) {
-                manageSafeModal.hide();
-              }
-              var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
-              if (exportCoinModal) {
-                exportCoinModal.hide();
-              }
-            } catch (e) {
+          } else {
+            messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("exportSuccess")});
+          }
+          try {
+            var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
+            if (manageSafeModal) {
+              manageSafeModal.hide();
             }
+          } catch (e) {
+          }
+          try {
+            var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
+            if (exportCoinModal) {
+              exportCoinModal.hide();
+            }
+          } catch (e) {
           }
         });
       } else if (this.state.exportSecurityType === "jwk") {
@@ -158,17 +169,22 @@ class ManageExportData extends Component {
               $anchor[0].click();
               if (this.state.safe.offline) {
                 messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
-                try {
-                  var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
-                  if (manageSafeModal) {
-                    manageSafeModal.hide();
-                  }
-                  var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
-                  if (exportCoinModal) {
-                    exportCoinModal.hide();
-                  }
-                } catch (e) {
+              } else {
+                messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("exportSuccess")});
+              }
+              try {
+                var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
+                if (manageSafeModal) {
+                  manageSafeModal.hide();
                 }
+              } catch (e) {
+              }
+              try {
+                var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
+                if (exportCoinModal) {
+                  exportCoinModal.hide();
+                }
+              } catch (e) {
               }
             });
           } else {
@@ -183,17 +199,22 @@ class ManageExportData extends Component {
       $anchor[0].click();
       if (this.state.safe.offline) {
         messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
-        try {
-          var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
-          if (manageSafeModal) {
-            manageSafeModal.hide();
-          }
-          var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
-          if (exportCoinModal) {
-            exportCoinModal.hide();
-          }
-        } catch (e) {
+      } else {
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("exportSuccess")});
+      }
+      try {
+        var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
+        if (manageSafeModal) {
+          manageSafeModal.hide();
         }
+      } catch (e) {
+      }
+      try {
+        var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
+        if (exportCoinModal) {
+          exportCoinModal.hide();
+        }
+      } catch (e) {
       }
     }
   }

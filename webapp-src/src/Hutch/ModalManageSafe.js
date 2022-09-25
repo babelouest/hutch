@@ -30,6 +30,7 @@ class ModalManageSafe extends Component {
       unlockedCoinList: getUnlockedCoinList(props),
       exportSafeWithSecurity: false,
       exportSecurityType: "password",
+      prefixPassword: "",
       password: "",
       confirmPassword: "",
       pwdScore: -1,
@@ -49,6 +50,7 @@ class ModalManageSafe extends Component {
     };
     
     this.changePassword = this.changePassword.bind(this);
+    this.changePrefixPassword = this.changePrefixPassword.bind(this);
     this.getImportFile = this.getImportFile.bind(this);
     this.parseContent = this.parseContent.bind(this);
     this.importContent = this.importContent.bind(this);
@@ -69,6 +71,10 @@ class ModalManageSafe extends Component {
     this.setState({password: e.target.value, pwdScore: pwdScore}, () => {
       this.setState({exportInvalid: this.isImportInvalid()});
     });
+  }
+  
+  changePrefixPassword(e) {
+    this.setState({prefixPassword: e.target.value});
   }
   
   isImportInvalid() {
@@ -144,7 +150,7 @@ class ModalManageSafe extends Component {
     }
     if (this.state.importSecurityType === "password") {
       var enc = new TextEncoder();
-      jwtDecrypt(this.state.importData, enc.encode(this.state.password))
+      jwtDecrypt(this.state.importData, enc.encode(this.state.password + (this.state.prefixPassword||"")))
       .then((decImport) => {
         this.importContent(decImport.payload.data);
       })
@@ -283,9 +289,15 @@ class ModalManageSafe extends Component {
     }
     if (this.state.importSecurityType === "password") {
       importSecurityJsx =
-        <div className="mb-3">
-          <label htmlFor="newPassword" className="form-label">{i18next.t("importPassword")}</label>
-          <input type="password" className="form-control" id="password" autoComplete="new-password" value={this.state.password} onChange={this.changePassword}/>
+        <div>
+          <div className="mb-3">
+            <label htmlFor="prefix-password" className="form-label">{i18next.t("importPrefixPassword")}</label>
+            <input type="password" className="form-control" id="prefix-password" autoComplete="new-password" value={this.state.prefixPassword} onChange={this.changePrefixPassword}/>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">{i18next.t("importPassword")}</label>
+            <input type="password" className="form-control" id="password" autoComplete="new-password" value={this.state.password} onChange={this.changePassword}/>
+          </div>
         </div>
     } else if (this.state.importSecurityType === "jwk") {
       importSecurityJsx =
