@@ -128,8 +128,6 @@ void exit_server(struct config_elements ** config, int exit_value);
 void print_help(FILE * output);
 const char * get_filename_ext(const char *path);
 char * get_file_content(const char * file_path);
-char * url_decode(char *str);
-char * url_encode(char *str);
 const char * get_ip_source(const struct _u_request * request);
 
 int check_result_value(json_t * result, const int value);

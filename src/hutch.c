@@ -160,7 +160,7 @@ int main (int argc, char ** argv) {
   
   if (i_jwt_profile_access_token_init_config(config->iddawc_resource_config, I_METHOD_HEADER, NULL, NULL, config->oidc_scope, config->external_url, config->oidc_dpop_max_iat) == I_TOKEN_OK) {
     if (config->oidc_server_remote_config != NULL) {
-      if (!i_jwt_profile_access_token_load_config(config->iddawc_resource_config, config->oidc_server_remote_config, config->oidc_server_remote_config_verify_cert)) {
+      if (!i_jwt_profile_access_token_load_config(config->iddawc_resource_config, config->oidc_server_remote_config, (int)config->oidc_server_remote_config_verify_cert)) {
         y_log_message(Y_LOG_LEVEL_ERROR, "OIDC authentication - Error i_jwt_profile_access_token_load_config");
         exit_server(&config, HUTCH_ERROR);
       }
@@ -374,7 +374,7 @@ int build_config_from_args(int argc, char ** argv, struct config_elements * conf
           break;
         case 'p':
           if (optarg != NULL) {
-            config->port = strtol(optarg, NULL, 10);
+            config->port = (unsigned int)strtol(optarg, NULL, 10);
           } else {
             fprintf(stderr, "Error!\nNo TCP Port number specified\n");
             return 0;
@@ -590,7 +590,7 @@ int build_config_from_file(struct config_elements * config) {
             config_setting_lookup_string(database, "password", &db_mariadb_password);
             config_setting_lookup_string(database, "dbname", &db_mariadb_dbname);
             config_setting_lookup_int(database, "port", &db_mariadb_port);
-            config->conn = h_connect_mariadb(db_mariadb_host, db_mariadb_user, db_mariadb_password, db_mariadb_dbname, db_mariadb_port, NULL);
+            config->conn = h_connect_mariadb(db_mariadb_host, db_mariadb_user, db_mariadb_password, db_mariadb_dbname, (unsigned int)db_mariadb_port, NULL);
             if (config->conn == NULL) {
               fprintf(stderr, "Error opening mariadb database %s\n", db_mariadb_dbname);
               ret = 0;
@@ -639,7 +639,7 @@ int build_config_from_file(struct config_elements * config) {
       mime_type_list = config_lookup(&cfg, "app_files_mime_types");
       if (mime_type_list != NULL) {
         for (i=0; i<config_setting_length(mime_type_list); i++) {
-          mime_type = config_setting_get_elem(mime_type_list, i);
+          mime_type = config_setting_get_elem(mime_type_list, (unsigned int)i);
           if (mime_type != NULL) {
             if (config_setting_lookup_string(mime_type, "extension", &extension) == CONFIG_TRUE &&
                 config_setting_lookup_string(mime_type, "mime_type", &mime_type_value) == CONFIG_TRUE) {
@@ -665,7 +665,7 @@ int build_config_from_file(struct config_elements * config) {
         }
       }
       if (config_setting_lookup_bool(oidc_cfg, "server_remote_config_verify_cert", &cur_oidc_server_remote_config_verify_cert) == CONFIG_TRUE) {
-        config->oidc_server_remote_config_verify_cert = (time_t)cur_oidc_server_remote_config_verify_cert;
+        config->oidc_server_remote_config_verify_cert = (unsigned int)cur_oidc_server_remote_config_verify_cert;
       }
       if (config_setting_lookup_string(oidc_cfg, "server_public_jwks", &cur_oidc_server_public_jwks) == CONFIG_TRUE) {
         if ((config->oidc_server_public_jwks = o_strdup(cur_oidc_server_public_jwks)) == NULL) {
@@ -854,67 +854,6 @@ const char * get_ip_source(const struct _u_request * request) {
 };
 
 /**
- * Converts a hex character to its integer value
- */
-char from_hex(char ch) {
-  return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
-}
-
-/**
- * Converts an integer value to its hex character
- */
-char to_hex(char code) {
-  static char hex[] = "0123456789abcdef";
-  return hex[code & 15];
-}
-
-/**
- * Returns a url-encoded version of str
- * IMPORTANT: be sure to free() the returned string after use 
- * Thanks Geek Hideout!
- * http://www.geekhideout.com/urlcode.shtml
- */
-char * url_encode(char * str) {
-  char * pstr = str, * buf = o_malloc(strlen(str) * 3 + 1), * pbuf = buf;
-  while (* pstr) {
-    if (isalnum(* pstr) || * pstr == '-' || * pstr == '_' || * pstr == '.' || * pstr == '~') 
-      * pbuf++ = * pstr;
-    else if (* pstr == ' ') 
-      * pbuf++ = '+';
-    else 
-      * pbuf++ = '%', * pbuf++ = to_hex(* pstr >> 4), * pbuf++ = to_hex(* pstr & 15);
-    pstr++;
-  }
-  * pbuf = '\0';
-  return buf;
-}
-
-/**
- * Returns a url-decoded version of str
- * IMPORTANT: be sure to free() the returned string after use
- * Thanks Geek Hideout!
- * http://www.geekhideout.com/urlcode.shtml
- */
-char * url_decode(char * str) {
-  char * pstr = str, * buf = o_malloc(strlen(str) + 1), * pbuf = buf;
-  while (* pstr) {
-    if (* pstr == '%') {
-      if (pstr[1] && pstr[2]) {
-        * pbuf++ = from_hex(pstr[1]) << 4 | from_hex(pstr[2]);
-        pstr += 2;
-      }
-    } else if (* pstr == '+') { 
-      * pbuf++ = ' ';
-    } else {
-      * pbuf++ = * pstr;
-    }
-    pstr++;
-  }
-  * pbuf = '\0';
-  return buf;
-}
-
-/**
  *
  * Read the content of a file and return it as a char *
  * returned value must be free'd after use
@@ -928,7 +867,7 @@ char * get_file_content(const char * file_path) {
   f = fopen (file_path, "rb");
   if (f) {
     fseek (f, 0, SEEK_END);
-    length = ftell (f);
+    length = (size_t)ftell (f);
     fseek (f, 0, SEEK_SET);
     buffer = o_malloc((length+1)*sizeof(char));
     if (buffer) {
