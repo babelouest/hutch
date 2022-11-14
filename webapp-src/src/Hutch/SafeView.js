@@ -315,6 +315,9 @@ class SafeView extends Component {
       var manageSafeModal = new bootstrap.Modal(document.getElementById('manageSafe'), {
         keyboard: false
       });
+      manageSafeModal._element.addEventListener('hidden.bs.modal', (event) => {
+        this.manageSafeClose();
+      });
       manageSafeModal.show();
     });
   }

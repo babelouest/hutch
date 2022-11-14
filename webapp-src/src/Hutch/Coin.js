@@ -71,6 +71,9 @@ class Coin extends Component {
       var exportCoinModal = new bootstrap.Modal(document.getElementById('exportCoinModal'), {
         keyboard: false
       });
+      exportCoinModal._element.addEventListener('hidden.bs.modal', (event) => {
+        this.exportCoinClose();
+      });
       exportCoinModal.show();
     });
   }

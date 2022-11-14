@@ -152,6 +152,7 @@ class ManageExportData extends Component {
             }
           } catch (e) {
           }
+          this.setState({exportSafeWithSecurity: false, exportSecurityType: "password", pwdScore: -1, password: "", prefixPassword: "", confirmPrefixPassword: "", exportInvalid: false, exportJwk: ""});
         });
       } else if (this.state.exportSecurityType === "jwk") {
         var key = JSON.parse(this.state.exportJwk);
@@ -186,6 +187,7 @@ class ManageExportData extends Component {
                 }
               } catch (e) {
               }
+              this.setState({exportSafeWithSecurity: false, exportSecurityType: "password", pwdScore: -1, password: "", prefixPassword: "", confirmPrefixPassword: "", exportInvalid: false, exportJwk: ""});
             });
           } else {
             this.setState({exportInvalid: 1});
@@ -216,6 +218,7 @@ class ManageExportData extends Component {
         }
       } catch (e) {
       }
+      this.setState({exportSafeWithSecurity: false, exportSecurityType: "password", pwdScore: -1, password: "", prefixPassword: "", confirmPrefixPassword: "", exportInvalid: false, exportJwk: ""});
     }
   }
   
