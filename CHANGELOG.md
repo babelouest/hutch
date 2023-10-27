@@ -10,6 +10,8 @@
 - Fix `static_compressed_inmemory_website_callback`
 - Allow to disable static files server
 - Allow offline mode and offline safe
+- cmake: remove `DownloadProject` feature, now dependencies must be previously installed
+- Add QR-code support to exchange data
 
 ## 2.0.0
 
