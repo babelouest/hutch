@@ -24,6 +24,7 @@ class CoinElementMisc extends Component {
     
     this.copyToClipboard = this.copyToClipboard.bind(this);
     this.toggleShowValue = this.toggleShowValue.bind(this);
+    this.showQrCode = this.showQrCode.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -41,22 +42,36 @@ class CoinElementMisc extends Component {
     this.setState({showElement: !this.state.showElement});
   }
   
+  showQrCode() {
+    messageDispatcher.sendMessage('App', {action: 'showQrCode', value: this.state.element.value, metaData: this.state.coin.data.displayName + " - " + i18next.t("coinElementMisc")});
+  }
+
 	render() {
     var tagListJsx = [];
     this.state.element.tags && this.state.element.tags.forEach((tag, index) => {
       tagListJsx.push(<span key={index} className="badge rounded-pill bg-secondary btn-icon">{tag}</span>);
     });
-    var value, showIcon;
+    var valueJsx, valueSmJsx, showIcon;
     if (this.state.element.hide) {
       if (this.state.showElement) {
-        value = 
+        valueJsx = 
           <div className="col">
             <span className="btn-icon-right">
-              <pre>{this.state.element.value}</pre>
+              <pre className="d-none d-md-block">
+                {this.state.element.value}
+              </pre>
             </span>
           </div>
+        valueSmJsx =
+        <div className="row d-md-none coin-tag">
+          <div className="col">
+            <pre>
+              {this.state.element.value}
+            </pre>
+          </div>
+        </div>
       } else {
-        value =
+        valueJsx =
           <div className="col text-truncate">
             <span className="btn-icon-right">
               ********
@@ -68,7 +83,7 @@ class CoinElementMisc extends Component {
           <i className="fa fa-eye" aria-hidden="true"></i>
         </a>
     } else {
-      value = 
+      valueJsx = 
         <div className="col">
           <span className="btn-icon-right">
             <pre>{this.state.element.value}</pre>
@@ -78,20 +93,32 @@ class CoinElementMisc extends Component {
     return (
         <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index} className="border border-secondary rounded coin-element">
           <div className="row btn-icon-bottom">
-            <div className="col">
+            <div className="col d-none d-md-block">
               <span className="btn-icon-right">
                 <span className="badge bg-primary">
+                  <i className="fa fa-clone btn-icon" aria-hidden="true"></i>
                   {i18next.t("coinElementMisc")}
                 </span>
               </span>
               {showIcon}
             </div>
-            {value}
+            <div className="col d-md-none">
+              <span className="btn-icon-right">
+                <span className="badge bg-primary">
+                  <i className="fa fa-clone" aria-hidden="true"></i>
+                </span>
+              </span>
+              {showIcon}
+            </div>
+            {valueJsx}
             <div className="col">
               <div className="btn-group float-end btn-icon" role="group">
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementCopy")} onClick={this.copyToClipboard}>
                   <i className="fa fa-files-o" aria-hidden="true"></i>
                 </button>
+              <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementShowQrCode")} onClick={this.showQrCode}>
+                <i className="fa fa-qrcode" aria-hidden="true"></i>
+              </button>
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementEdit")} onClick={(e) => this.state.cbEdit(e, this.state.index)} disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                 </button>
@@ -109,6 +136,7 @@ class CoinElementMisc extends Component {
               {tagListJsx}
             </div>
           </div>
+          {valueSmJsx}
         </div>
     );
 	}

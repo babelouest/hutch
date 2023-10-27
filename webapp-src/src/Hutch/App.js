@@ -17,6 +17,7 @@ import Safe from './Safe';
 import Config from './Config';
 import ModalGeneratePassword from './ModalGeneratePassword';
 import ModalOfflineSafe from './ModalOfflineSafe';
+import ModalQrCode from './ModalQrCode';
 
 class App extends Component {
   constructor(props) {
@@ -44,6 +45,8 @@ class App extends Component {
       forceTrust: false,
       showModalGeneratePassword: false,
       showModalOfflineSafe: false,
+      showModalQrCode: false,
+      modalQrCodeData: false,
       modalGeneratePasswordElement: {
         params: {
           type: "chars",
@@ -416,6 +419,13 @@ class App extends Component {
           }
         });
         this.setState({safeList: safeList});
+      } else if (message.action === "showQrCode") {
+        this.setState({showModalQrCode: true, modalQrCodeData: {metaData: message.metaData, value: message.value}}, () => {
+          var qrCodeModal = new bootstrap.Modal(document.getElementById('qrCodeModal'), {
+            keyboard: false
+          });
+          qrCodeModal.show();
+        });
       }
     });
 
@@ -447,6 +457,7 @@ class App extends Component {
     this.gotoRoute = this.gotoRoute.bind(this);
     this.closeGenerateModal = this.closeGenerateModal.bind(this);
     this.manageSafeClose = this.manageSafeClose.bind(this);
+    this.manageQrCodeClose = this.manageQrCodeClose.bind(this);
   }
 
   gotoRoute(route) {
@@ -694,6 +705,12 @@ class App extends Component {
     offlineSafe.hide();
     this.setState({showModalOfflineSafe: false});
   }
+  
+  manageQrCodeClose() {
+    var offlineSafe = bootstrap.Modal.getOrCreateInstance(document.querySelector('#qrCodeModal'));
+    offlineSafe.hide();
+    this.setState({showModalQrCode: false, modalQrCodeData: false});
+  }
 
 	render() {
     var bodyJsx, trustworthyJsx, forceTrustJsx;
@@ -735,7 +752,7 @@ class App extends Component {
           {forceTrustJsx}
         </div>
     }
-    var modalGenerate, modalOfflineSafe;
+    var modalGenerate, modalOfflineSafe, modalQrCode;
     if (this.state.showModalGeneratePassword) {
       modalGenerate = <ModalGeneratePassword config={this.state.config}
                                              element={this.state.modalGeneratePasswordElement}
@@ -751,6 +768,10 @@ class App extends Component {
                                           oidcStatus={false}
                                           cbClose={this.manageSafeClose} />
     }
+    if (this.state.showModalQrCode) {
+      modalQrCode = <ModalQrCode data={this.state.modalQrCodeData}
+                                 cb={this.manageQrCodeClose} />
+    }
     return (
       <div className="container-fluid">
         <TopMenu config={this.state.config}
@@ -764,6 +785,7 @@ class App extends Component {
         <Notification loggedIn={this.state.oidcStatus}/>
         {modalGenerate}
         {modalOfflineSafe}
+        {modalQrCode}
       </div>
     );
 	}

@@ -22,6 +22,7 @@ class CoinElementUrl extends Component {
     };
     
     this.copyToClipboard = this.copyToClipboard.bind(this);
+    this.showQrCode = this.showQrCode.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -34,6 +35,10 @@ class CoinElementUrl extends Component {
     });
   }
   
+  showQrCode() {
+    messageDispatcher.sendMessage('App', {action: 'showQrCode', value: this.state.element.value, metaData: this.state.coin.data.displayName + " - " + i18next.t("coinElementUrl")});
+  }
+
 	render() {
     var tagListJsx = [];
     this.state.element.tags && this.state.element.tags.forEach((tag, index) => {
@@ -42,10 +47,18 @@ class CoinElementUrl extends Component {
     return (
         <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index} className="border border-secondary rounded coin-element">
           <div className="row btn-icon-bottom">
-            <div className="col">
+            <div className="col d-none d-md-block">
               <span className="btn-icon-right">
                 <span className="badge bg-primary">
+                  <i className="fa fa-link btn-icon" aria-hidden="true"></i>
                   {i18next.t("coinElementUrl")}
+                </span>
+              </span>
+            </div>
+            <div className="col d-md-none">
+              <span className="btn-icon-right">
+                <span className="badge bg-primary">
+                  <i className="fa fa-link" aria-hidden="true"></i>
                 </span>
               </span>
             </div>
@@ -59,6 +72,9 @@ class CoinElementUrl extends Component {
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementCopy")} onClick={this.copyToClipboard}>
                   <i className="fa fa-files-o" aria-hidden="true"></i>
                 </button>
+              <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementShowQrCode")} onClick={this.showQrCode}>
+                <i className="fa fa-qrcode" aria-hidden="true"></i>
+              </button>
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementEdit")} onClick={(e) => this.state.cbEdit(e, this.state.index)} disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                 </button>

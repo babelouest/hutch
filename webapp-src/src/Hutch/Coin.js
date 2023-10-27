@@ -35,6 +35,7 @@ class Coin extends Component {
       cbRemoveCoin: props.cbRemoveCoin,
       cbSaveCoin: props.cbSaveCoin,
       allTags: props.allTags,
+      curAllTags: [],
       showAddElement: false,
       newElementType: false,
       editElementList: [],
@@ -138,7 +139,7 @@ class Coin extends Component {
 
   setElementTags(e, index) {
     e.preventDefault();
-    this.setState({curElementIndex: index, curTags: this.state.coin.data.rows[index].tags||[], showEditTags: true, editCoinTags: false}, () => {
+    this.setState({curElementIndex: index, curTags: this.state.coin.data.rows[index].tags||[], showEditTags: true, editCoinTags: false, curAllTags: []}, () => {
       var modalCoinElementTags = new bootstrap.Modal(document.getElementById('modalCoinElementTags'), {
         keyboard: false
       });
@@ -147,7 +148,7 @@ class Coin extends Component {
   }
 
   setCoinTags() {
-    this.setState({curTags: this.state.coin.data.tags||[], showEditTags: true, editCoinTags: true}, () => {
+    this.setState({curTags: this.state.coin.data.tags||[], showEditTags: true, editCoinTags: true, curAllTags: this.state.allTags}, () => {
       var modalCoinElementTags = new bootstrap.Modal(document.getElementById('modalCoinElementTags'), {
         keyboard: false
       });
@@ -268,7 +269,7 @@ class Coin extends Component {
     if (this.state.coin.data.tags) {
       this.state.coin.data.tags.forEach((tag, index) => {
         tagsListJsx.push(
-          <span className="badge rounded-pill bg-secondary btn-icon" key={index}>
+          <span className="badge rounded-pill bg-secondary btn-icon btn-icon-top" key={index}>
             {tag}
           </span>
         );
@@ -348,7 +349,7 @@ class Coin extends Component {
       confirmJsx = <Confirm name={"removeElement"} title={i18next.t("removeElementTitle")} message={i18next.t("removeElementMessage")} cb={this.removeElementConfirm} />
     }
     if (this.state.showEditTags) {
-      editTagsJsx = <ModalCoinElementTags tags={this.state.curTags} allTags={this.state.allTags} cb={this.setElementTagsConfirm} />
+      editTagsJsx = <ModalCoinElementTags tags={this.state.curTags} allTags={this.state.curAllTags} cb={this.setElementTagsConfirm} />
     }
     if (this.state.showExportCoin) {
       exportCoinJsx = <ModalCoinExport config={this.state.config} cb={this.exportCoinClose} safe={this.state.safe} coin={this.state.coin} />

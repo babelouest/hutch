@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-
 import i18next from 'i18next';
-
+import { QrReader } from 'react-qr-reader';
 import { decodeProtectedHeader, jwtDecrypt, importJWK } from 'jose-browser-runtime';
 
 import ManageExportData from './ManageExportData';
@@ -34,6 +33,7 @@ class ModalManageSafe extends Component {
       password: "",
       confirmPassword: "",
       pwdScore: -1,
+      importText: "",
       importJwk: "",
       errorExportJwk: false,
       exportInvalid: false,
@@ -46,17 +46,22 @@ class ModalManageSafe extends Component {
       showProgress: false,
       coinMax: 0,
       coinNow: 0,
-      merge: true
+      merge: true,
+      showScanQr: false,
+      importDataJson: false
     };
     
     this.changePassword = this.changePassword.bind(this);
     this.changePrefixPassword = this.changePrefixPassword.bind(this);
+    this.changeImportText = this.changeImportText.bind(this);
     this.getImportFile = this.getImportFile.bind(this);
     this.parseContent = this.parseContent.bind(this);
     this.importContent = this.importContent.bind(this);
     this.completeImportContent = this.completeImportContent.bind(this);
     this.editImportJwk = this.editImportJwk.bind(this);
     this.changeMerge = this.changeMerge.bind(this);
+    this.toggleScanQr = this.toggleScanQr.bind(this);
+    this.handleQrCodeScan = this.handleQrCodeScan.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -103,7 +108,7 @@ class ModalManageSafe extends Component {
   }
   
   getImportFile(e) {
-    this.setState({exportSafeWithSecurity: false, importData: false, importDataResult: false, importTotalCount: 0, importTotalSuccess: 0, importSecurityType: false}, () => {
+    this.setState({exportSafeWithSecurity: false, importData: false, importText: "", importDataResult: false, importTotalCount: 0, importTotalSuccess: 0, importSecurityType: false}, () => {
       var file = e.target.files[0];
       var fr = new FileReader();
       fr.onload = (ev2) => {
@@ -115,6 +120,18 @@ class ModalManageSafe extends Component {
     });
   }
   
+  changeImportText(e) {
+    this.setState({importText: e.target.value,
+                   importData: e.target.value,
+                   importDataResult: false,
+                   importTotalCount: 0,
+                   importTotalSuccess: 0,
+                   importSecurityType: false,
+                   safeName: "import"}, () => {
+      this.parseContent();
+    });
+  }
+  
   parseContent() {
     if (this.state.importData) {
       var importDataJson = false;
@@ -123,7 +140,7 @@ class ModalManageSafe extends Component {
       } catch (e) {
       }
       if (importDataJson && Array.isArray(importDataJson)) {
-        this.importContent(importDataJson);
+        this.setState({importSecurityType: "none", importDataJson: importDataJson});
       } else {
         var header = false;
         try {
@@ -150,7 +167,7 @@ class ModalManageSafe extends Component {
     }
     if (this.state.importSecurityType === "password") {
       var enc = new TextEncoder();
-      jwtDecrypt(this.state.importData, enc.encode(this.state.password + (this.state.prefixPassword||"")))
+      jwtDecrypt(this.state.importData, enc.encode((this.state.prefixPassword||"") + this.state.password))
       .then((decImport) => {
         this.importContent(decImport.payload.data);
       })
@@ -174,6 +191,8 @@ class ModalManageSafe extends Component {
       } catch (err) {
         this.setState({importDataResult: "invalidJwk"});
       }
+    } else if (this.state.importSecurityType === "none") {
+      this.importContent(this.state.importDataJson);
     }
   }
   
@@ -213,10 +232,10 @@ class ModalManageSafe extends Component {
             this.setState({coinNow: this.state.coinNow+1}, () => {
               if (nbElements === content.length) {
                 if (nbElements === importedCoins) {
-                  this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false, showProgress: false}, () => {
+                  this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false, showProgress: false, importDataJson: false}, () => {
                   });
                 } else {
-                  this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false, showProgress: false});
+                  this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false, showProgress: false, importDataJson: false});
                 }
               }
             });
@@ -226,10 +245,10 @@ class ModalManageSafe extends Component {
           this.setState({coinNow: this.state.coinNow+1}, () => {
             if (nbElements === content.length) {
               if (nbElements === importedCoins) {
-                this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false, showProgress: false}, () => {
+                this.setState({importDataResult: "importComplete", importTotalCount: importedCoins, importRunning: false, showProgress: false, importDataJson: false}, () => {
                 });
               } else {
-                this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false, showProgress: false});
+                this.setState({importDataResult: "importIncomplete", importTotalCount: importedCoins, importTotalSuccess: nbElements, importRunning: false, showProgress: false, importDataJson: false});
               }
             }
           });
@@ -248,8 +267,27 @@ class ModalManageSafe extends Component {
     this.setState({merge: !this.state.merge});
   }
 
+  toggleScanQr() {
+    this.setState({showScanQr: !this.state.showScanQr});
+  }
+  
+  handleQrCodeScan(result, error) {
+    if (result && result.text) {
+      this.setState({importText: result.text,
+                     importData: result.text,
+                     importDataResult: false,
+                     importTotalCount: 0,
+                     importTotalSuccess: 0,
+                     importSecurityType: false,
+                     safeName: "import",
+                     showScanQr: false}, () => {
+        this.parseContent();
+      });
+    }
+  }
+
 	render() {
-    var importDataResultJsx, importSecurityJsx, completeButtonJsx, showProgressJsx, exportJsx;
+    var importDataResultJsx, importSecurityJsx, completeButtonJsx, showProgressJsx, exportJsx, scanQrJsx;
     if (this.state.importDataResult === "invalidData") {
       importDataResultJsx = 
         <div className="alert alert-danger" role="alert">
@@ -319,7 +357,7 @@ class ModalManageSafe extends Component {
       } else {
         name = this.state.safe.name;
       }
-      exportJsx =
+      exportJsx = 
       <div>
         <div className="mb-3">
           <div className="alert alert-primary" role="alert">
@@ -333,6 +371,14 @@ class ModalManageSafe extends Component {
                           name={this.state.safe.display_name} />
         <hr/>
       </div>
+    }
+    if (this.state.showScanQr) {
+      scanQrJsx =
+      <QrReader
+        onResult={this.handleQrCodeScan}
+        style={{ width: '100%' }}
+        constraints={{ facingMode: 'environment' }}
+      />
     }
     return (
       <div className="modal" tabIndex="-1" id="manageSafe">
@@ -368,6 +414,29 @@ class ModalManageSafe extends Component {
                 <label htmlFor="importSafeFileInput" className="btn btn-secondary" disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-cloud-upload" aria-hidden="true"></i>
                 </label>
+              </div>
+              {i18next.t("or")}<hr/>
+              <div className="mb-3">
+                <label htmlFor="importText" className="form-label">{i18next.t("importText")}</label>
+                <textarea className="form-control"
+                          id="importText"
+                          value={this.state.importText}
+                          placeholder={i18next.t("importTextPh")}
+                          onChange={this.changeImportText}>
+                </textarea>
+                <div className="btn-group">
+                  <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)} disabled={!this.state.importText}>
+                    <i className="fa fa-cloud-upload" aria-hidden="true"></i>
+                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={this.toggleScanQr} title={i18next.t("importQrCode")}>
+                    <i className="fa fa-qrcode" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+              <div className="mb-3">
+                {scanQrJsx}
+              </div>
+              <div className="mb-3">
                 <form onSubmit={this.completeImportContent}>
                   {importSecurityJsx}
                   {completeButtonJsx}

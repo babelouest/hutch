@@ -44,10 +44,18 @@ class CoinElementFile extends Component {
     return (
         <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index} className="border border-secondary rounded coin-element">
           <div className="row btn-icon-bottom">
-            <div className="col">
+            <div className="col d-none d-md-block">
               <span className="btn-icon-right">
                 <span className="badge bg-primary">
+                  <i className="fa fa-file btn-icon" aria-hidden="true"></i>
                   {i18next.t("coinElementFile")}
+                </span>
+              </span>
+            </div>
+            <div className="col d-md-none">
+              <span className="btn-icon-right">
+                <span className="badge bg-primary">
+                  <i className="fa fa-file" aria-hidden="true"></i>
                 </span>
               </span>
             </div>

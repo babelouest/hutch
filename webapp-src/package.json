@@ -24,9 +24,10 @@
 		"i18next": "^21.9.1",
 		"i18next-browser-languagedetector": "^6.1.5",
 		"i18next-http-backend": "^1.4.1",
-		"jose-browser-runtime": "^4.9.3",
+		"jose-browser-runtime": "^4.15.4",
 		"js-cookie": "^3.0.1",
+		"qrcode-generator": "^1.4.4",
 		"react": "^17.0.2",
-		"react-dom": "^17.0.2"
-	}
-}
+		"react-dom": "^17.0.2",
+		"react-qr-reader": "^3.0.0-beta-1"
+	}}

@@ -15,7 +15,10 @@ class ModalOfflineSafe extends Component {
       cbClose: props.cbClose,
       safeName: false,
       coinList: [],
+      password: "",
+      prefixPassword: "",
       importJwk: "",
+      importText: "",
       importData: false,
       importDataResult: false,
       importTotalCount: 0,
@@ -28,6 +31,8 @@ class ModalOfflineSafe extends Component {
     };
     
     this.changePassword = this.changePassword.bind(this);
+    this.changePrefixPassword = this.changePrefixPassword.bind(this);
+    this.changeImportText = this.changeImportText.bind(this);
     this.getImportFile = this.getImportFile.bind(this);
     this.parseContent = this.parseContent.bind(this);
     this.completeImportContent = this.completeImportContent.bind(this);
@@ -45,6 +50,22 @@ class ModalOfflineSafe extends Component {
     }
     this.setState({password: e.target.value, pwdScore: pwdScore}, () => {
       this.setState({exportInvalid: this.isImportInvalid()});
+    });
+  }
+  
+  changePrefixPassword(e) {
+    this.setState({prefixPassword: e.target.value});
+  }
+  
+  changeImportText(e) {
+    this.setState({importText: e.target.value,
+                   importData: e.target.value,
+                   importDataResult: false,
+                   importTotalCount: 0,
+                   importTotalSuccess: 0,
+                   importSecurityType: false,
+                   safeName: "import"}, () => {
+      this.parseContent();
     });
   }
   
@@ -75,7 +96,7 @@ class ModalOfflineSafe extends Component {
     if (safeName.lastIndexOf('.') > -1) {
       safeName = safeName.substring(0, safeName.lastIndexOf('.'));
     }
-    this.setState({importData: false, importDataResult: false, importTotalCount: 0, importTotalSuccess: 0, importSecurityType: false, safeName: safeName}, () => {
+    this.setState({importData: false, importText: "", importDataResult: false, importTotalCount: 0, importTotalSuccess: 0, importSecurityType: false, safeName: safeName}, () => {
       var file = e.target.files[0];
       var fr = new FileReader();
       fr.onload = (ev2) => {
@@ -127,7 +148,7 @@ class ModalOfflineSafe extends Component {
     }
     if (this.state.importSecurityType === "password") {
       var enc = new TextEncoder();
-      jwtDecrypt(this.state.importData, enc.encode(this.state.password))
+      jwtDecrypt(this.state.importData, enc.encode((this.state.prefixPassword||"") + this.state.password))
       .then((decImport) => {
         this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
           messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
@@ -215,9 +236,15 @@ class ModalOfflineSafe extends Component {
     }
     if (this.state.importSecurityType === "password") {
       importSecurityJsx =
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">{i18next.t("importPassword")}</label>
-          <input type="password" className="form-control" id="password" autoComplete="new-password" value={this.state.password||""} onChange={this.changePassword}/>
+        <div>
+          <div className="mb-3">
+            <label htmlFor="prefix-password" className="form-label">{i18next.t("importPrefixPassword")}</label>
+            <input type="password" className="form-control" id="prefix-password" autoComplete="new-password" value={this.state.prefixPassword} onChange={this.changePrefixPassword}/>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">{i18next.t("importPassword")}</label>
+            <input type="password" className="form-control" id="password" autoComplete="new-password" value={this.state.password} onChange={this.changePassword}/>
+          </div>
         </div>
     } else if (this.state.importSecurityType === "jwk") {
       importSecurityJsx =
@@ -248,6 +275,21 @@ class ModalOfflineSafe extends Component {
                 <label htmlFor="importSafeFileInput" className="btn btn-secondary" disabled={this.state.oidcStatus !== "connected"}>
                   <i className="fa fa-cloud-upload" aria-hidden="true"></i>
                 </label>
+              </div>
+              {i18next.t("or")}<hr/>
+              <div className="mb-3">
+                <label htmlFor="importText" className="form-label">{i18next.t("importText")}</label>
+                <textarea className="form-control"
+                          id="importText"
+                          value={this.state.importText}
+                          placeholder={i18next.t("importTextPh")}
+                          onChange={this.changeImportText}>
+                </textarea>
+                <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)} disabled={!this.state.importText}>
+                  <i className="fa fa-cloud-upload" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div className="mb-3">
                 <form onSubmit={this.completeImportContent}>
                   {importSecurityJsx}
                   {completeButtonJsx}

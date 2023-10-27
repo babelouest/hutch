@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 import { importJWK, EncryptJWT } from 'jose-browser-runtime';
 import JwkInput from './JwkInput';
+import qrcode from 'qrcode-generator';
 
 import messageDispatcher from '../lib/MessageDispatcher';
 
@@ -24,7 +25,8 @@ class ManageExportData extends Component {
       prefixPassword: "",
       confirmPrefixPassword: "",
       exportInvalid: false,
-      exportJwk: ""
+      exportJwk: "",
+      qrCode: false
     };
     this.toggleExportSafeWithSecurity = this.toggleExportSafeWithSecurity.bind(this);
     this.changeExportSecurityType = this.changeExportSecurityType.bind(this);
@@ -34,16 +36,19 @@ class ManageExportData extends Component {
     this.changeConfirmPrefixPassword = this.changeConfirmPrefixPassword.bind(this);
     this.exportSafe = this.exportSafe.bind(this);
     this.editExportJwk = this.editExportJwk.bind(this);
+    this.generateExport = this.generateExport.bind(this);
+    this.exportToClipboard = this.exportToClipboard.bind(this);
+    this.showQrCode = this.showQrCode.bind(this);
   }
   
   toggleExportSafeWithSecurity() {
-    this.setState({exportSafeWithSecurity: !this.state.exportSafeWithSecurity, importData: false, importDataResult: false, importTotalCount: 0, importTotalSuccess: 0, importSecurityType: false}, () => {
+    this.setState({exportSafeWithSecurity: !this.state.exportSafeWithSecurity, importData: false, importDataResult: false, importTotalCount: 0, importTotalSuccess: 0, importSecurityType: false, qrCode: false}, () => {
       this.setState({exportInvalid: this.isExportInvalid()});
     });
   }
   
   changeExportSecurityType(e) {
-    this.setState({exportSecurityType: e.target.value}, () => {
+    this.setState({exportSecurityType: e.target.value, qrCode: false}, () => {
       this.setState({exportInvalid: this.isExportInvalid()});
     });
   }
@@ -107,8 +112,7 @@ class ManageExportData extends Component {
     return false;
   }
 
-  exportSafe(e) {
-    e.preventDefault();
+  generateExport() {
     var exported = [];
     this.state.content.forEach(coin => {
       let data = Object.assign({}, coin.data);
@@ -125,79 +129,60 @@ class ManageExportData extends Component {
         } else if (this.state.safe.alg_type === "A128KW" || this.state.safe.alg_type === "A128GCMKW" || this.state.safe.alg_type === "PBES2-HS256+A128KW") {
           lockAlg = "PBES2-HS256+A128KW";
         }
-        new EncryptJWT({data: exported})
+        return new EncryptJWT({data: exported})
         .setProtectedHeader({alg: lockAlg, enc: this.state.safe.enc_type||"A256GCM", sign_key: this.state.config.sign_thumb})
-        .encrypt(containerKey)
-        .then((jwt) => {
-          var $anchor = $("#"+this.state.id+"-download");
-          $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(jwt));
-          $anchor.attr("download", this.state.name+".jwt");
-          $anchor[0].click();
-          if (this.state.safe.offline) {
-            messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
-          } else {
-            messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("exportSuccess")});
-          }
-          try {
-            var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
-            if (manageSafeModal) {
-              manageSafeModal.hide();
-            }
-          } catch (e) {
-          }
-          try {
-            var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
-            if (exportCoinModal) {
-              exportCoinModal.hide();
-            }
-          } catch (e) {
-          }
-          this.setState({exportSafeWithSecurity: false, exportSecurityType: "password", pwdScore: -1, password: "", prefixPassword: "", confirmPrefixPassword: "", exportInvalid: false, exportJwk: ""});
-        });
+        .encrypt(containerKey);
       } else if (this.state.exportSecurityType === "jwk") {
         var key = JSON.parse(this.state.exportJwk);
         key.use = "enc";
-        importJWK(key, key.alg)
+        return importJWK(key, key.alg)
         .then((exportKey) => {
           if (exportKey.type === "public" || exportKey.type === "secret") {
-            new EncryptJWT({data: exported})
+            return new EncryptJWT({data: exported})
             .setProtectedHeader({alg: key.alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb})
-            .encrypt(exportKey)
-            .then((jwt) => {
-              var $anchor = $("#"+this.state.id+"-download");
-              $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(jwt));
-              $anchor.attr("download", this.state.name+".jwt");
-              $anchor[0].click();
-              if (this.state.safe.offline) {
-                messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
-              } else {
-                messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("exportSuccess")});
-              }
-              try {
-                var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
-                if (manageSafeModal) {
-                  manageSafeModal.hide();
-                }
-              } catch (e) {
-              }
-              try {
-                var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
-                if (exportCoinModal) {
-                  exportCoinModal.hide();
-                }
-              } catch (e) {
-              }
-              this.setState({exportSafeWithSecurity: false, exportSecurityType: "password", pwdScore: -1, password: "", prefixPassword: "", confirmPrefixPassword: "", exportInvalid: false, exportJwk: ""});
-            });
+            .encrypt(exportKey);
           } else {
             this.setState({exportInvalid: 1});
           }
         });
       }
     } else {
+      return Promise.resolve(JSON.stringify(exported));
+    }
+  }
+
+  exportToClipboard(e) {
+    e.preventDefault();
+    this.generateExport()
+    .then((res) => {
+      navigator.clipboard.writeText(res).then(() => {
+        messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("messageCopyToClipboard")});
+      });
+      try {
+        var manageSafeModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#manageSafe'));
+        if (manageSafeModal) {
+          manageSafeModal.hide();
+        }
+      } catch (e) {
+      }
+      try {
+        var exportCoinModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#exportCoinModal'));
+        if (exportCoinModal) {
+          exportCoinModal.hide();
+        }
+      } catch (e) {
+      }
+      this.setState({exportSafeWithSecurity: false, exportSecurityType: "password", pwdScore: -1, password: "", prefixPassword: "", confirmPrefixPassword: "", exportInvalid: false, exportJwk: "", qrCode: false});
+    });
+  }
+
+  exportSafe(e) {
+    e.preventDefault();
+    this.generateExport()
+    .then((res) => {
       var $anchor = $("#"+this.state.id+"-download");
-      $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(unescape(encodeURIComponent(JSON.stringify(exported)))));
-      $anchor.attr("download", this.state.name+".json");
+      $anchor.attr("href", "data:application/octet-stream;base64,"+btoa(res));
+      $anchor.attr("download", this.state.name+".jwt");
       $anchor[0].click();
       if (this.state.safe.offline) {
         messageDispatcher.sendMessage('App', {action: "offlineSafeExported", safeName: this.state.safe.name});
@@ -218,12 +203,20 @@ class ManageExportData extends Component {
         }
       } catch (e) {
       }
-      this.setState({exportSafeWithSecurity: false, exportSecurityType: "password", pwdScore: -1, password: "", prefixPassword: "", confirmPrefixPassword: "", exportInvalid: false, exportJwk: ""});
-    }
+      this.setState({exportSafeWithSecurity: false, exportSecurityType: "password", pwdScore: -1, password: "", prefixPassword: "", confirmPrefixPassword: "", exportInvalid: false, exportJwk: "", qrCode: false});
+    });
   }
   
+  showQrCode(e) {
+    e.preventDefault();
+    this.generateExport()
+    .then((res) => {
+      this.setState({qrCode: res});
+    });
+  }
+
 	render() {
-    var exportSecurityTypeJsx, exportSecurityJsx;
+    var exportSecurityTypeJsx, exportSecurityJsx, qrCodeJsx;
     if (this.state.exportSafeWithSecurity) {
       exportSecurityTypeJsx =
         <select className="form-select" value={this.state.exportSecurityType} onChange={this.changeExportSecurityType}>
@@ -308,30 +301,51 @@ class ManageExportData extends Component {
           </div>
       }
     }
-    return (
-      <div>
-        <div className="mb-3">
-          <div className="form-check">
-            <input className="form-check-input"
-                   type="checkbox"
-                   value=""
-                   id={this.state.id+"-exportSafeWithSecurity"}
-                   checked={this.state.exportSafeWithSecurity}
-                   onChange={this.toggleExportSafeWithSecurity}/>
-            <label className="form-check-label" htmlFor={this.state.id+"-exportSafeWithSecurity"}>
-              {i18next.t("exportSafeWithSecurity")}
-            </label>
+    if (this.state.qrCode) {
+      let qr = qrcode(0, 'L');
+      if (this.state.qrCode.length < 23648) {
+        qr.addData(this.state.qrCode);
+        qr.make();
+        qrCodeJsx = 
+          <div className="text-center">
+            <img className="img-fluid" src={qr.createDataURL(4)} alt="qrcode" />
           </div>
+      } else {
+        qrCodeJsx = 
+          <div className="alert alert-warning" role="alert">
+            {i18next.t("exportShowQrCodeTooLarge")}
+          </div>
+      }
+    }
+    return (
+      <div className="mb-3">
+        <div className="form-check">
+          <input className="form-check-input"
+                 type="checkbox"
+                 value=""
+                 id={this.state.id+"-exportSafeWithSecurity"}
+                 checked={this.state.exportSafeWithSecurity}
+                 onChange={this.toggleExportSafeWithSecurity}/>
+          <label className="form-check-label" htmlFor={this.state.id+"-exportSafeWithSecurity"}>
+            {i18next.t("exportSafeWithSecurity")}
+          </label>
         </div>
         {exportSecurityTypeJsx}
         <form onSubmit={(e) => this.exportSafe(e)}>
           {exportSecurityJsx}
-          <div className="mb-3">
+          <div className="btn-group">
             <button type="submit" className="btn btn-secondary" onClick={this.exportSafe} title={i18next.t("downloadExport")} disabled={this.state.exportInvalid}>
               <i className="fa fa-cloud-download" aria-hidden="true"></i>
             </button>
+            <button type="button" className="btn btn-secondary" onClick={this.exportToClipboard} title={i18next.t("exportSafeToClipboard")} disabled={this.state.exportInvalid}>
+              <i className="fa fa-files-o" aria-hidden="true"></i>
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={this.showQrCode} title={i18next.t("exportShowQrCode")} disabled={this.state.exportInvalid}>
+              <i className="fa fa-qrcode" aria-hidden="true"></i>
+            </button>
           </div>
           <a className="upload" id={this.state.id+"-download"} />
+          {qrCodeJsx}
         </form>
       </div>
     );
