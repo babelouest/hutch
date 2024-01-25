@@ -1,51 +1,5 @@
 # Hutch Installation
 
-## Upgrade from Hutch 1.x to 2.0
-
-The entire application was re-written in Hutch 2.0. To avoid nasty bugs and potential security issues, the old and the new version are not compatible, but the secret data format is. You must make your users backup their secret first in JSON format without a password.
-
-So proceed with caution, make a backup of the database and the front-end application in case you need to restore them.
-
-### Export, migrate, then reimport all safes
-
-During the migration, you must have both version available in different addresses, e.g. https://hutch.tld/ and https://hutch2.tld/
-
-In Hutch 1.x, use the `Export safe` functionality for each safe of each user to export all safes into files.
-
-In Hutch 2.0, recreate new safes, then import all the safe backups in their new safe.
-
-## Pre-compiled packages
-
-You can install Hutch with a pre-compiled package available in the [release pages](https://github.com/babelouest/hutch/releases/latest/). The packages files `hutch-full_*` contain the package libraries of `orcania`, `yder`, `ulfius`, `hoel`, `rhonabwy` and `iddawc` precompiled for `hutch`, plus `hutch` package. To install a pre-compiled package, you need to have installed the following libraries:
-
-```
-libmicrohttpd
-libjansson
-libgnutls
-libsqlite3
-libmariadbclient
-libpq
-libconfig
-zlib
-```
-
-For example, to install Hutch with the `hutch-full_2.0.0_debian_bullseye_x86_64.tar.gz` package downloaded on the `releases` page, you must execute the following commands:
-
-```shell
-$ sudo apt install -y libconfig9 libjansson4 libcurl3-gnutls libmicrohttpd12 libsqlite3-0 libpq5 default-mysql-client zlib1g
-$ wget https://github.com/babelouest/hutch/releases/download/v2.0.0/hutch-full_2.0.0_debian_bullseye_x86_64.tar.gz
-$ tar xf hoel-dev-full_1.4.0_Debian_stretch_x86_64.tar.gz
-$ sudo dpkg -i liborcania_2.2.1_debian_bullseye_x86_64.deb
-$ sudo dpkg -i libyder_1.4.14_debian_bullseye_x86_64.deb
-$ sudo dpkg -i libulfius_2.7.6_debian_bullseye_x86_64.deb
-$ sudo dpkg -i libhoel_1.4.18_debian_bullseye_x86_64.deb
-$ sudo dpkg -i librhonabwy_1.1.1_debian_bullseye_x86_64.deb
-$ sudo dpkg -i libiddawc_1.1.0_debian_bullseye_x86_64.deb
-$ sudo dpkg -i hutch_2.0.0_debian_bullseye_x86_64.deb
-```
-
-If there's no package available for your distribution, you can recompile it manually using `CMake` or `Makefile`.
-
 ## Build API server
 
 You must install the following libraries including their header files:
@@ -84,7 +38,6 @@ $ sudo make install
 The available options for cmake are:
 - `-DWITH_JOURNALD=[on|off]` (default `on`): Build with journald (SystemD) support for logging
 - `-DCMAKE_BUILD_TYPE=[Debug|Release]` (default `Release`): Compile with debugging symbols or not
-- `-DDOWNLOAD_DEPENDENCIES=[on|off]` (default `on`): Download some dependencies if missing or using an old version: `Orcania`, `Yder`, `Ulfius`, `Rhonabwy`, `Iddawc` and `Hoel`
 - `-DBUILD_TESTING=[on|off]` (default `off`): Build testing tree
 
 ### Good ol' Makefile
