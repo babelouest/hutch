@@ -129,6 +129,7 @@ void print_help(FILE * output);
 const char * get_filename_ext(const char *path);
 char * get_file_content(const char * file_path);
 const char * get_ip_source(const struct _u_request * request);
+int text_match_pattern(const char * text, const char * pattern, size_t pattern_length);
 
 int check_result_value(json_t * result, const int value);
 

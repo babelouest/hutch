@@ -80,12 +80,13 @@ json_t * coin_get(struct config_elements * config, json_t * j_profile, const cha
 json_t * coin_is_valid(struct config_elements * config, json_t * j_profile, const char * safe, json_t * j_coin, int add) {
   json_t * j_return, * j_error = json_array(), * j_cur_coin;
   int ret;
-  
+  static const char valid_chars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
   if (j_error != NULL) {
     if (json_is_object(j_coin)) {
       ret = HU_OK;
       if (add) {
-        if (o_strnullempty(json_string_value(json_object_get(j_coin, "name"))) || json_string_length(json_object_get(j_coin, "name")) > 128) {
+        if (o_strnullempty(json_string_value(json_object_get(j_coin, "name"))) || json_string_length(json_object_get(j_coin, "name")) > 128 || !text_match_pattern(json_string_value(json_object_get(j_coin, "name")), valid_chars, o_strlen(valid_chars))) {
           ret = HU_ERROR_PARAM;
           json_array_append_new(j_error, json_string("name must be a string of maximum 128 characters"));
         } else {

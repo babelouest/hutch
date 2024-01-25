@@ -948,3 +948,21 @@ char * serialize_json_to_jwt(struct config_elements * config, const char * sign_
   r_jwk_free(jwk);
   return token;
 }
+
+int text_match_pattern(const char * text, const char * pattern, size_t pattern_length) {
+  int match = 1, char_match;
+  size_t i, j;
+
+  for (i=0; i<o_strlen(text) && match; i++) {
+    char_match = 0;
+    for (j=0; j<pattern_length; j++) {
+      if (text[i] == pattern[j]) {
+        char_match = 1;
+      }
+    }
+    if (!char_match) {
+      match = 0;
+    }
+  }
+  return match;
+}
