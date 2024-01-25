@@ -12,6 +12,8 @@
 - Allow offline mode and offline safe
 - cmake: remove `DownloadProject` feature, now dependencies must be previously installed
 - Add QR-code support to exchange data
+- Add safe key and export encryption using Webauthn PRF extension (Experimental)
+- Remove algorithms RSA1_5, RSA-OAEP and ECDH-ES as algs allowed in key generation
 
 ## 2.0.0
 
