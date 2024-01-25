@@ -98,3 +98,14 @@
 .disabled-cursor { 
   cursor: not-allowed;
 }
+.safe-image {
+  background-image: url("../img/hutch.jpg");
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position: center center;
+  filter: blur(5px);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -100;
+}

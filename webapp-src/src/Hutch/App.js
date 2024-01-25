@@ -29,6 +29,7 @@ class App extends Component {
       hutchProfile: false,
       hasProfile: false,
       safeList: [],
+      safeLoadeData: {},
       safeContent: {},
       iconList: [],
       curSafe: false,
@@ -54,7 +55,7 @@ class App extends Component {
           upprcase: true,
           numbers: true,
           special: true,
-          spaces: true,
+          spaces: false,
           noSimilarFollowingChars: false,
           passwordCharLength: 32,
           wordsNumber: 4,
@@ -157,7 +158,7 @@ class App extends Component {
           modalGeneratePassword.show();
         });
       } else if (message.action === "offline") {
-        this.setState({showModalOfflineSafe: true}, () => {
+        this.setState({showModalOfflineSafe: true, profile: {sub: Math.random().toString(36).substring(7), name: "Dave Lopper"}}, () => {
           var offlineSafe = new bootstrap.Modal(document.getElementById('offlineSafe'), {
             keyboard: false
           });
@@ -228,6 +229,10 @@ class App extends Component {
         safeContent[message.target.name].extractableKey = message.masterkeyData;
         safeContent[message.target.name].lastUnlock = (message.key?Math.floor(Date.now() / 1000):0);
         if (!message.key) {
+          if (safeContent[message.target.name].lockAfter) {
+            clearTimeout(safeContent[message.target.name].lockAfter);
+            safeContent[message.target.name].lockAfter = false;
+          }
           if (message.removeStorage) {
             var localStorageKey = "hutchsafe-"+message.target.name;
             if (window.location.pathname !== "/") {
@@ -255,44 +260,54 @@ class App extends Component {
             safeContent[message.target.name].lastUnlock = 0;
           }
         } else {
-          if (message.keepUnlocked) {
-            var unlockAlg = "A128KW";
-            if (message.target.alg_type === "A192KW" || message.target.alg_type === "A192GCMKW" || message.target.alg_type === "PBES2-HS384+A192KW") {
-              unlockAlg = "A192KW";
-            } else if (message.target.alg_type === "A256KW" || message.target.alg_type === "A256GCMKW" || message.target.alg_type === "PBES2-HS512+A256KW") {
-              unlockAlg = "A256KW";
+          console.log(message.lockPolicy, message.keepUnlocked);
+          if (message.lockPolicy === 0) {
+            if (message.lockAfterTime > 0) {
+              clearTimeout(safeContent[message.target.name].lockAfter);
+              safeContent[message.target.name].lockAfter = setTimeout(() => {
+                messageDispatcher.sendMessage('App', {action: "setSafeKey", target: message.target, key: false, removeStorage: true});
+              }, message.lockAfterTime*1000);
             }
-            generateSecret(unlockAlg, {extractable: true})
-            .then((unlockKey) => {
-              var kid = Math.random().toString(36).substring(7);
-              new EncryptJWT(message.masterkeyData)
-              .setProtectedHeader({alg: unlockAlg, enc: message.target.enc_type, sign_key: this.state.config.sign_thumb, kid: kid})
-              .encrypt(unlockKey)
-              .then((jwt) => {
-                var safeKey = {
-                  name: kid,
-                  display_name: message.unlockKeyName,
-                  type: "browser",
-                  data: jwt
-                };
-                var curSafeContent = this.state.safeContent;
-                curSafeContent[message.target.name].keyList.push(safeKey);
-                this.setState({safeContent: curSafeContent});
-                apiManager.request(this.state.config.safe_endpoint + "/" + message.target.name + "/key", "POST", safeKey)
-                .then(() => {
-                  exportJWK(unlockKey)
-                  .then((exportedUnlockKey) => {
-                    exportedUnlockKey.kid = kid;
-                    exportedUnlockKey.alg = unlockAlg;
-                    var localStorageKey = "hutchsafe-"+message.target.name;
-                    if (window.location.pathname !== "/") {
-                      localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
-                    }
-                    storage.setValue(localStorageKey, exportedUnlockKey);
+          } else {
+            if (message.keepUnlocked) {
+              var unlockAlg = "A128KW";
+              if (message.target.alg_type === "A192KW" || message.target.alg_type === "A192GCMKW" || message.target.alg_type === "PBES2-HS384+A192KW") {
+                unlockAlg = "A192KW";
+              } else if (message.target.alg_type === "A256KW" || message.target.alg_type === "A256GCMKW" || message.target.alg_type === "PBES2-HS512+A256KW") {
+                unlockAlg = "A256KW";
+              }
+              generateSecret(unlockAlg, {extractable: true})
+              .then((unlockKey) => {
+                var kid = Math.random().toString(36).substring(7);
+                new EncryptJWT(message.masterkeyData)
+                .setProtectedHeader({alg: unlockAlg, enc: message.target.enc_type, sign_key: this.state.config.sign_thumb, kid: kid})
+                .encrypt(unlockKey)
+                .then((jwt) => {
+                  var safeKey = {
+                    name: kid,
+                    display_name: message.unlockKeyName,
+                    type: "browser",
+                    data: jwt
+                  };
+                  var curSafeContent = this.state.safeContent;
+                  curSafeContent[message.target.name].keyList.push(safeKey);
+                  this.setState({safeContent: curSafeContent});
+                  apiManager.request(this.state.config.safe_endpoint + "/" + message.target.name + "/key", "POST", safeKey)
+                  .then(() => {
+                    exportJWK(unlockKey)
+                    .then((exportedUnlockKey) => {
+                      exportedUnlockKey.kid = kid;
+                      exportedUnlockKey.alg = unlockAlg;
+                      var localStorageKey = "hutchsafe-"+message.target.name;
+                      if (window.location.pathname !== "/") {
+                        localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
+                      }
+                      storage.setValue(localStorageKey, exportedUnlockKey);
+                    });
                   });
                 });
               });
-            });
+            }
           }
         }
         safeContent[message.target.name].unlockedCoinList = [];
@@ -302,8 +317,7 @@ class App extends Component {
             setTimeout(() => {
               var curSafeContent = this.state.safeContent;
               delete(curSafeContent[message.target.name].extractableKey);
-              this.setState({safeContent: curSafeContent}, () => {
-              });
+              this.setState({safeContent: curSafeContent});
             }, 600000);
           }
         });
@@ -407,6 +421,11 @@ class App extends Component {
           unlockedCoinList: unlockedCoinList,
           key: false
         }
+        if (message.lockAfterTime) {
+          safeContent[newSafeName].lockAfter = setTimeout(() => {
+            messageDispatcher.sendMessage('App', {action: "removeSafe", safe: newSafe});
+          }, message.lockAfterTime*1000);
+        }
         routage.addRoute(newSafeName||"");
         this.setState({safeList: safeList, safeContent: safeContent, nav: "safe", curSafe: newSafe, editSafeMode: 0}, () => {
           messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("importOfflineComplete", {count: message.coinList.length, name: message.safeName})});
@@ -448,6 +467,7 @@ class App extends Component {
         picture: "img/offline-mode.svg"
       };
       this.state.hasProfile = true;
+      this.state.loadingData = false;
     }
 
     this.getHutchProfile = this.getHutchProfile.bind(this);
@@ -537,6 +557,7 @@ class App extends Component {
                 }
               });
               var safeContent = this.state.safeContent;
+              var safeLoadeData = this.state.safeLoadeData;
               safeContent[safe.name] = {
                 keyList: keyList.payload.list,
                 coinList: coinList.payload.list,
@@ -544,7 +565,8 @@ class App extends Component {
                 key: false,
                 lastUnlock: 0
               };
-              this.setState({safeContent: safeContent, trustworthy: (this.state.trustworthy && trustworthy)}, () => {
+              safeLoadeData[safe.name] = true;
+              this.setState({safeContent: safeContent, safeLoadeData: safeLoadeData, trustworthy: (this.state.trustworthy && trustworthy)}, () => {
                 var localStorageKey = "hutchsafe-"+safe.name;
                 if (window.location.pathname !== "/") {
                   localStorageKey += "-" + window.btoa(unescape(encodeURIComponent(window.location.pathname))).replace(/\=+$/m,'');
@@ -565,6 +587,9 @@ class App extends Component {
                               this.unlockCoinList(safe.name, safeContent[safe.name].key);
                             });
                           });
+                        })
+                        .catch(err => {
+                          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinDecrypt")});
                         });
                       });
                     }
@@ -664,6 +689,9 @@ class App extends Component {
             safeContent[safeName].unlockedCoinList.sort(this.compareCoin);
             this.setState({safeContent: safeContent});
           }
+        })
+        .catch(err => {
+          messageDispatcher.sendMessage('Notification', {type: "warning", message: i18next.t("messageErrorCoinDecrypt")});
         });
       });
     } else {
@@ -724,12 +752,14 @@ class App extends Component {
                            oidcStatus={this.state.oidcStatus} />
       } else if (this.state.nav === "safe") {
         bodyJsx = <Safe config={this.state.config}
+                        profile={this.state.profile}
                         hutchProfile={this.state.hutchProfile}
                         safe={this.state.curSafe}
                         safeContent={this.state.safeContent}
                         editMode={this.state.editSafeMode}
                         oidcStatus={this.state.oidcStatus}
-                        iconList={this.state.iconList} />
+                        iconList={this.state.iconList}
+                        loadingData={!this.state.safeLoadeData[this.state.curSafe?.name]} />
       } else if (this.state.nav === "config") {
         bodyJsx = <Config config={this.state.config} />
       }

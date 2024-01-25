@@ -28,6 +28,7 @@ class Coin extends Component {
 
     this.state = {
       config: props.config,
+      profile: props.profile,
       oidcStatus: props.oidcStatus,
       safe: props.safe,
       coin: props.coin,
@@ -352,7 +353,7 @@ class Coin extends Component {
       editTagsJsx = <ModalCoinElementTags tags={this.state.curTags} allTags={this.state.curAllTags} cb={this.setElementTagsConfirm} />
     }
     if (this.state.showExportCoin) {
-      exportCoinJsx = <ModalCoinExport config={this.state.config} cb={this.exportCoinClose} safe={this.state.safe} coin={this.state.coin} />
+      exportCoinJsx = <ModalCoinExport config={this.state.config} profile={this.state.profile} cb={this.exportCoinClose} safe={this.state.safe} coin={this.state.coin} />
     }
     this.state.coin.data.rows.forEach((row, index) => {
       switch (row.type) {

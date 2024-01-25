@@ -10,6 +10,7 @@ class ModalCoinExport extends Component {
 
     this.state = {
       config: props.config,
+      profile: props.profile,
       cb: props.cb,
       safe: props.safe,
       coin: props.coin
@@ -31,6 +32,7 @@ class ModalCoinExport extends Component {
             </div>
               <div className="modal-body">
                 <ManageExportData config={this.state.config}
+                                  profile={this.state.profile}
                                   safe={this.state.safe}
                                   content={[this.state.coin]}
                                   id={this.state.coin.name}

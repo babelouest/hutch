@@ -51,9 +51,12 @@ class TopMenu extends Component {
 	render() {
     var safeListJsx = [];
     this.state.safeList.forEach((safe, index) => {
-      var safeIconJsx;
+      let safeIconJsx, timeoutIconJsx;
+      if (this.state.safeContent[safe.name] && this.state.safeContent[safe.name].lockAfter) {
+        timeoutIconJsx = <i className="fa fa-clock-o btn-icon-right" aria-hidden="true"></i>;
+      }
       if (!safe.offline) {
-        if (this.state.safeContent && this.state.safeContent[safe.name] && this.state.safeContent[safe.name].key) {
+        if (this.state.safeContent[safe.name] && this.state.safeContent[safe.name].key) {
           safeIconJsx = <i className="fa fa-unlock btn-icon-right" aria-hidden="true"></i>;
         } else {
           safeIconJsx = <i className="fa fa-lock btn-icon-right" aria-hidden="true"></i>;
@@ -79,6 +82,7 @@ class TopMenu extends Component {
               onClick={(e) => this.navigateTo(e, safe.name)}>
             {safe.display_name||safe.name}
             {safeIconJsx}
+            {timeoutIconJsx}
           </a>
         </li>
       );

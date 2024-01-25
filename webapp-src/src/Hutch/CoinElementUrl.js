@@ -18,15 +18,22 @@ class CoinElementUrl extends Component {
       cbTags: props.cbTags,
       isDraggable: props.isDraggable,
       cbOnDragStart: props.cbOnDragStart,
-      cbOnDragOver: props.cbOnDragOver
+      cbOnDragOver: props.cbOnDragOver,
+      showElement: false
     };
     
     this.copyToClipboard = this.copyToClipboard.bind(this);
     this.showQrCode = this.showQrCode.bind(this);
+    this.toggleShowElement = this.toggleShowElement.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
     return props;
+  }
+  
+  toggleShowElement(e) {
+    e.preventDefault();
+    this.setState({showElement: !this.state.showElement});
   }
   
   copyToClipboard() {
@@ -40,10 +47,28 @@ class CoinElementUrl extends Component {
   }
 
 	render() {
-    var tagListJsx = [];
+    var tagListJsx = [], valueJsx, valueSmJsx;
     this.state.element.tags && this.state.element.tags.forEach((tag, index) => {
       tagListJsx.push(<span key={index} className="badge rounded-pill bg-secondary btn-icon">{tag}</span>);
     });
+    if (this.state.showElement) {
+      valueJsx = <></>
+      valueSmJsx =
+        <div className="row coin-tag">
+          <div className="col">
+            <code>
+              {this.state.element.value}
+            </code>
+          </div>
+        </div>
+    } else {
+      valueJsx =
+        <div className="col text-truncate">
+          <span className="btn-icon-right">
+            <a href={this.state.element.value} target="_blank" rel="noreferrer noopener" title={this.state.element.value} className="link-secondary">{this.state.element.value}</a>
+          </span>
+        </div>
+    }
     return (
         <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index} className="border border-secondary rounded coin-element">
           <div className="row btn-icon-bottom">
@@ -54,6 +79,9 @@ class CoinElementUrl extends Component {
                   {i18next.t("coinElementUrl")}
                 </span>
               </span>
+              <a className="link-secondary btn-icon-right" alt={i18next.t("coinElementShowPassword")} href="#" onClick={this.toggleShowElement}>
+                <i className="fa fa-eye" aria-hidden="true"></i>
+              </a>
             </div>
             <div className="col d-md-none">
               <span className="btn-icon-right">
@@ -61,12 +89,11 @@ class CoinElementUrl extends Component {
                   <i className="fa fa-link" aria-hidden="true"></i>
                 </span>
               </span>
+              <a className="link-secondary btn-icon-right" alt={i18next.t("coinElementShowPassword")} href="#" onClick={this.toggleShowElement}>
+                <i className="fa fa-eye" aria-hidden="true"></i>
+              </a>
             </div>
-            <div className="col text-truncate">
-              <span className="btn-icon-right">
-                <a href={this.state.element.value} target="_blank" rel="noreferrer noopener" title={this.state.element.value} className="link-secondary">{this.state.element.value}</a>
-              </span>
-            </div>
+            {valueJsx}
             <div className="col">
               <div className="btn-group float-end btn-icon" role="group">
                 <button className="btn btn-outline-secondary btn-sm" type="button" title={i18next.t("coinElementCopy")} onClick={this.copyToClipboard}>
@@ -92,6 +119,7 @@ class CoinElementUrl extends Component {
               {tagListJsx}
             </div>
           </div>
+          {valueSmJsx}
         </div>
     );
 	}

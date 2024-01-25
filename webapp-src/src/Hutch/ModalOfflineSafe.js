@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
-
+import { QrReader } from 'react-qr-reader';
 import i18next from 'i18next';
 import { decodeProtectedHeader, jwtDecrypt, importJWK } from 'jose-browser-runtime';
-import JwkInput from './JwkInput';
 
+import JwkInput from './JwkInput';
 import messageDispatcher from '../lib/MessageDispatcher';
+import prfCommon from '../lib/PrfCommon';
+
+function base64ToArrayBuffer(base64) {
+    var binaryString = atob(base64);
+    var bytes = new Uint8Array(binaryString.length);
+    for (var i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
 
 class ModalOfflineSafe extends Component {
   constructor(props) {
@@ -27,7 +37,14 @@ class ModalOfflineSafe extends Component {
       importRunning: false,
       importComplete: false,
       coinMax: 0,
-      coinNow: 0
+      coinNow: 0,
+      showScanQr: false,
+      importDataJson: false,
+      prfPrefixSalt: false,
+      prf: false,
+      prfResult: false,
+      prfError: false,
+      lockAfterTime: 0
     };
     
     this.changePassword = this.changePassword.bind(this);
@@ -37,6 +54,9 @@ class ModalOfflineSafe extends Component {
     this.parseContent = this.parseContent.bind(this);
     this.completeImportContent = this.completeImportContent.bind(this);
     this.editImportJwk = this.editImportJwk.bind(this);
+    this.toggleScanQr = this.toggleScanQr.bind(this);
+    this.handleQrCodeScan = this.handleQrCodeScan.bind(this);
+    this.createPrfFromKey = this.createPrfFromKey.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -82,6 +102,13 @@ class ModalOfflineSafe extends Component {
       } catch (e) {
         return true;
       }
+    } else if (this.state.exportSecurityType === "prf") {
+      if (!this.state.prfResult) {
+        return true;
+      }
+      if (this.state.prfPrefixSalt && !this.state.prefixPassword) {
+        return true;
+      }
     }
   }
 
@@ -100,7 +127,7 @@ class ModalOfflineSafe extends Component {
       var file = e.target.files[0];
       var fr = new FileReader();
       fr.onload = (ev2) => {
-        this.setState({importData: ev2.target.result}, () => {
+        this.setState({importData: ev2.target.result, importText: ev2.target.result}, () => {
           this.parseContent();
         });
       };
@@ -116,12 +143,7 @@ class ModalOfflineSafe extends Component {
       } catch (e) {
       }
       if (importDataJson && Array.isArray(importDataJson)) {
-        this.setState({coinList: importDataJson, importDataResult: "importComplete", importTotalCount: importDataJson.length, importComplete: true}, () => {
-          messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
-          if (this.state.cbClose) {
-            this.state.cbClose();
-          }
-        });
+        this.setState({importSecurityType: "none", importDataJson: importDataJson});
       } else {
         var header = false;
         try {
@@ -131,7 +153,11 @@ class ModalOfflineSafe extends Component {
         }
         if (header) {
           if (header.alg === "PBES2-HS256+A128KW" || header.alg === "PBES2-HS384+A192KW" || header.alg === "PBES2-HS512+A256KW") {
-            this.setState({importSecurityType: "password"});
+            if (header.prf) {
+              this.setState({importSecurityType: "prf", prfPrefixSalt: header.prfPrefixSalt, prf: header.prf});
+            } else {
+              this.setState({importSecurityType: "password"});
+            }
           } else {
             this.setState({importSecurityType: "jwk"});
           }
@@ -147,19 +173,24 @@ class ModalOfflineSafe extends Component {
       e.preventDefault();
     }
     if (this.state.importSecurityType === "password") {
-      var enc = new TextEncoder();
-      jwtDecrypt(this.state.importData, enc.encode((this.state.prefixPassword||"") + this.state.password))
-      .then((decImport) => {
-        this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
-          messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
-          if (this.state.cbClose) {
-            this.state.cbClose();
-          }
+      let protectedHeader = decodeProtectedHeader(this.state.importData);
+      if (["PBES2-HS256+A128KW", "PBES2-HS384+A192KW", "PBES2-HS512+A256KW"].indexOf(protectedHeader.alg) > -1) {
+        var enc = new TextEncoder();
+        jwtDecrypt(this.state.importData, enc.encode((this.state.prefixPassword||"") + this.state.password), {keyManagementAlgorithms: [protectedHeader.alg]})
+        .then((decImport) => {
+          this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
+            messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList, lockAfterTime: this.state.lockAfterTime});
+            if (this.state.cbClose) {
+              this.state.cbClose();
+            }
+          });
+        })
+        .catch(() => {
+          this.setState({importDataResult: "invalidPassword", coinList: []});
         });
-      })
-      .catch(() => {
-        this.setState({importDataResult: "invalidPassword", coinList: []});
-      });
+      } else {
+        this.setState({importDataResult: "invalidPassword"});
+      }
     } else if (this.state.importSecurityType === "jwk") {
       try {
         var key = JSON.parse(this.state.importJwk);
@@ -169,7 +200,7 @@ class ModalOfflineSafe extends Component {
           jwtDecrypt(this.state.importData, exportKey)
           .then((decImport) => {
             this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
-              messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList});
+              messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList, lockAfterTime: this.state.lockAfterTime});
               if (this.state.cbClose) {
                 this.state.cbClose();
               }
@@ -182,6 +213,31 @@ class ModalOfflineSafe extends Component {
       } catch (err) {
         this.setState({importDataResult: "invalidJwk", coinList: []});
       }
+    } else if (this.state.importSecurityType === "prf") {
+      let protectedHeader = decodeProtectedHeader(this.state.importData);
+      if (["PBES2-HS256+A128KW", "PBES2-HS384+A192KW", "PBES2-HS512+A256KW"].indexOf(protectedHeader.alg) > -1) {
+        jwtDecrypt(this.state.importData, new Uint8Array(this.state.prfResult), {keyManagementAlgorithms: [protectedHeader.alg]})
+        .then((decImport) => {
+          this.setState({coinList: decImport.payload.data, importDataResult: "importComplete", importTotalCount: decImport.payload.data.length, importComplete: true}, () => {
+            messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList, lockAfterTime: this.state.lockAfterTime});
+            if (this.state.cbClose) {
+              this.state.cbClose();
+            }
+          });
+        })
+        .catch((err) => {
+          this.setState({importDataResult: "invalidPassword"});
+        });
+      } else {
+        this.setState({importDataResult: "invalidPassword"});
+      }
+    } else if (this.state.importSecurityType === "none") {
+      this.setState({coinList: this.state.importDataJson, importDataResult: "importComplete", importTotalCount: this.state.importDataJson.length, importComplete: true}, () => {
+        messageDispatcher.sendMessage('App', {action: "addOfflineSafe", safeName: this.state.safeName, coinList: this.state.coinList, lockAfterTime: this.state.lockAfterTime});
+        if (this.state.cbClose) {
+          this.state.cbClose();
+        }
+      });
     }
   }
   
@@ -191,8 +247,63 @@ class ModalOfflineSafe extends Component {
     }
   }
   
+  toggleScanQr() {
+    this.setState({showScanQr: !this.state.showScanQr});
+  }
+  
+  handleQrCodeScan(result, error) {
+    if (result && result.text) {
+      this.setState({importText: result.text,
+                     importData: result.text,
+                     importDataResult: false,
+                     importTotalCount: 0,
+                     importTotalSuccess: 0,
+                     importSecurityType: false,
+                     safeName: "import",
+                     showScanQr: false}, () => {
+        this.parseContent();
+      });
+    }
+  }
+
+  createPrfFromKey(e) {
+    let credentialDec = false, saltDec = false, headerSaltDec;
+    let salt;
+    try {
+      headerSaltDec = base64ToArrayBuffer(this.state.prf.salt);
+      credentialDec = base64ToArrayBuffer(this.state.prf.credential);
+    } catch (e) {
+      this.setState({prfError: true});
+    }
+    if (this.state.prfPrefixSalt) {
+      var enc = new TextEncoder();
+      let prfPrefixSaltEnc = enc.encode(this.state.prefixPassword);
+      saltDec = new Uint8Array(prfPrefixSaltEnc.length + headerSaltDec.byteLength);
+      saltDec.set(prfPrefixSaltEnc, 0);
+      saltDec.set(new Uint8Array(headerSaltDec), prfPrefixSaltEnc.length);
+    } else {
+      saltDec = new Uint8Array(headerSaltDec);
+    }
+    if (credentialDec && saltDec) {
+      prfCommon.createPrfFromKey(credentialDec, saltDec)
+      .then(result => {
+        this.setState({prfResult: result.prfResult});
+      })
+      .catch(err => {
+        this.setState({prfError: true});
+      });
+    } else {
+      this.setState({prfError: true});
+    }
+  }
+  
+  setLockAfter(e, value) {
+    e.preventDefault();
+    this.setState({lockAfterTime: value});
+  }
+
 	render() {
-    var importDataResultJsx, importSecurityJsx, completeButtonJsx, showProgressJsx;
+    var importDataResultJsx, importSecurityJsx, completeButtonJsx, showProgressJsx, scanQrJsx;
     if (this.state.importDataResult === "invalidData") {
       importDataResultJsx = 
         <div className="alert alert-danger" role="alert">
@@ -252,6 +363,42 @@ class ModalOfflineSafe extends Component {
           <label htmlFor="importJwk" className="form-label">{i18next.t("importJwk")}</label>
           <JwkInput isError={false} ph={i18next.t("safeKeyJwkPh")} cb={this.editImportJwk}/>
         </div>
+    } else if (this.state.importSecurityType === "prf") {
+      let prefixSaltJsx, prfErrorJsx;
+      if (this.state.prfPrefixSalt) {
+        prefixSaltJsx =
+          <div className="mb-3">
+            <label htmlFor="prefix-password" className="form-label">{i18next.t("importPrefixPassword")}</label>
+            <input type="password" className="form-control" id="prefix-password" autoComplete="new-password" value={this.state.prefixPassword} onChange={this.changePrefixPassword}/>
+          </div>
+      }
+      if (this.state.prfError) {
+        prfErrorJsx =
+          <div className="mb-3">
+            <span className="badge bg-danger">{i18next.t("safeKeyError")}</span>
+          </div>
+      } else if (this.state.prfResult) {
+        prfErrorJsx =
+          <div className="mb-3">
+            <span className="badge bg-success">{i18next.t("prfAssertionSuccess")}</span>
+          </div>
+      }
+      importSecurityJsx =
+        <div>
+          {prefixSaltJsx}
+          {prfErrorJsx}
+          <div className="mb-3">
+            <button type="button" className="btn btn-secondary" onClick={(e) => this.createPrfFromKey(e)}>{i18next.t("prfCreateCredential")}</button>
+          </div>
+        </div>
+    }
+    if (this.state.showScanQr) {
+      scanQrJsx =
+        <QrReader
+          onResult={this.handleQrCodeScan}
+          style={{ width: '100%' }}
+          constraints={{ facingMode: 'environment' }}
+        />
     }
     return (
       <div className="modal" tabIndex="-1" id="offlineSafe">
@@ -285,9 +432,38 @@ class ModalOfflineSafe extends Component {
                           placeholder={i18next.t("importTextPh")}
                           onChange={this.changeImportText}>
                 </textarea>
-                <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)} disabled={!this.state.importText}>
-                  <i className="fa fa-cloud-upload" aria-hidden="true"></i>
+                <div className="btn-group">
+                  <button type="button" className="btn btn-secondary" onClick={(e) => this.closeModal(e, false)} disabled={!this.state.importText}>
+                    <i className="fa fa-cloud-upload" aria-hidden="true"></i>
+                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={this.toggleScanQr} title={i18next.t("importQrCode")}>
+                    <i className="fa fa-qrcode" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+              <div className="mb-3">
+                {scanQrJsx}
+              </div>
+              <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                  <label className="input-group-text" htmlFor="lockAfterTime">
+                    {i18next.t("removeAfter")}
+                  </label>
+                </div>
+                <button className="btn btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        id="lockAfterTime"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                  {i18next.t("lockAfterTime"+this.state.lockAfterTime)}
                 </button>
+                <ul className="dropdown-menu">
+                  <li><a className="dropdown-item" href="#" onClick={(e) => this.setLockAfter(e, 0)}>{i18next.t("lockAfterTime0")}</a></li>
+                  <li><a className="dropdown-item" href="#" onClick={(e) => this.setLockAfter(e, 60)}>{i18next.t("lockAfterTime60")}</a></li>
+                  <li><a className="dropdown-item" href="#" onClick={(e) => this.setLockAfter(e, 300)}>{i18next.t("lockAfterTime300")}</a></li>
+                  <li><a className="dropdown-item" href="#" onClick={(e) => this.setLockAfter(e, 900)}>{i18next.t("lockAfterTime900")}</a></li>
+                  <li><a className="dropdown-item" href="#" onClick={(e) => this.setLockAfter(e, 3600)}>{i18next.t("lockAfterTime3600")}</a></li>
+                </ul>
               </div>
               <div className="mb-3">
                 <form onSubmit={this.completeImportContent}>

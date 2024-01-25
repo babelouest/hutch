@@ -28,14 +28,24 @@ class Profile extends Component {
 	render() {
     if (this.state.oidcStatus === "connecting") {
       return (
-        <div className="alert alert-success" role="alert">
-          {i18next.t("connectingMessage")}
+        <div>
+          <div className="alert alert-success" role="alert">
+            {i18next.t("connectingMessage")}
+          </div>
+          <div className="text-center">
+            <img src="img/hutch.jpg" className="img-fluid" alt="hutch"/>
+          </div>
         </div>
       );
     } else if (this.state.oidcStatus === "disconnected") {
       return (
-        <div className="alert alert-warning" role="alert">
-          {i18next.t("disconnectedMessage")}
+        <div>
+          <div className="alert alert-warning" role="alert">
+            {i18next.t("disconnectedMessage")}
+          </div>
+          <div className="text-center">
+            <img src="img/hutch.jpg" className="img-fluid" alt="hutch"/>
+          </div>
         </div>
       );
     } else {

@@ -52,14 +52,9 @@ class CoinElementPassword extends Component {
       tagListJsx.push(<span key={index} className="badge rounded-pill bg-secondary btn-icon">{tag}</span>);
     });
     if (this.state.showPassword) {
-      passwordJsx = 
-        <div className="col">
-          <code className="d-none d-md-block">
-            {this.state.element.value}
-          </code>
-        </div>
-        passwordSmJsx =
-        <div className="row d-md-none coin-tag">
+      passwordJsx = <></>
+      passwordSmJsx =
+        <div className="row coin-tag">
           <div className="col">
             <code>
               {this.state.element.value}

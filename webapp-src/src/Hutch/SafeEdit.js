@@ -16,6 +16,7 @@ class SafeEdit extends Component {
 
     this.state = {
       config: props.config,
+      profile: props.profile,
       safe: props.safe,
       safeContent: props.safeContent,
       editMode: props.editMode, // 0: read, 1: add, 2: edit
@@ -146,14 +147,14 @@ class SafeEdit extends Component {
               curSafeContent[this.state.safe.name].extractableKey = keyData.extractableKey;
               curSafeContent[this.state.safe.name].key = keyData.key;
               this.setState({safeContent: curSafeContent}, () => {
-                this.completeAddSafeKey(containerKey, data.safeKey, lockAlg, data.prefixPassword);
+                this.completeAddSafeKey(containerKey, data.safeKey, lockAlg, !!data.prefixPassword);
               });
             });
           } else {
-            this.completeAddSafeKey(containerKey, data.safeKey, lockAlg, data.prefixPassword);
+            this.completeAddSafeKey(containerKey, data.safeKey, lockAlg, !!data.prefixPassword);
           }
         } else {
-          this.completeSetSafeKey(containerKey, data.safeKey, lockAlg, data.prefixPassword);
+          this.completeSetSafeKey(containerKey, data.safeKey, lockAlg, !!data.prefixPassword);
         }
       } else if (data.safeKey.type === "jwk") {
         let jwk = false;
@@ -172,20 +173,20 @@ class SafeEdit extends Component {
               this.setState({safeContent: curSafeContent}, () => {
                 importJWK(jwk, jwk.alg)
                 .then(containerKey => {
-                  this.completeAddSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
+                  this.completeAddSafeKey(containerKey, data.safeKey, jwk.alg, !!data.prefixPassword);
                 });
               });
             });
           } else {
             importJWK(jwk, jwk.alg)
             .then(containerKey => {
-              this.completeAddSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
+              this.completeAddSafeKey(containerKey, data.safeKey, jwk.alg, !!data.prefixPassword);
             });
           }
         } else {
           importJWK(jwk, jwk.alg)
           .then(containerKey => {
-            this.completeSetSafeKey(containerKey, data.safeKey, jwk.alg, data.prefixPassword);
+            this.completeSetSafeKey(containerKey, data.safeKey, jwk.alg, !!data.prefixPassword);
           });
         }
       } else if (data.safeKey.type === "browser") {
@@ -195,6 +196,30 @@ class SafeEdit extends Component {
           this.setState({curSafeKeyContainer: false});
           messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("safeLockUpdated")});
         });
+      } else if (data.safeKey.type === "prf") {
+        var lockAlg = "PBES2-HS256+A128KW";
+        if (this.state.safe.alg_type === "A192KW" || this.state.safe.alg_type === "A192GCMKW") {
+          lockAlg = "PBES2-HS384+A192KW";
+        } else if (this.state.safe.alg_type === "A256KW" || this.state.safe.alg_type === "A256GCMKW") {
+          lockAlg = "PBES2-HS512+A256KW";
+        }
+        if (this.state.addKey) {
+          if (!this.state.safeContent[this.state.safe.name].key) {
+            this.createKeyForSafe()
+            .then((keyData) => {
+              var curSafeContent = this.state.safeContent;
+              curSafeContent[this.state.safe.name].extractableKey = keyData.extractableKey;
+              curSafeContent[this.state.safe.name].key = keyData.key;
+              this.setState({safeContent: curSafeContent}, () => {
+                this.completeAddSafeKey(new Uint8Array(data.prfResult), data.safeKey, lockAlg, !!data.prfPrefixSalt, {credential: btoa(String.fromCharCode.apply(null, new Uint8Array(data.prfCredential))), salt: btoa(String.fromCharCode.apply(null, new Uint8Array(data.prfSalt)))});
+              });
+            });
+          } else {
+            this.completeAddSafeKey(new Uint8Array(data.prfResult), data.safeKey, lockAlg, !!data.prfPrefixSalt, {credential: btoa(String.fromCharCode.apply(null, new Uint8Array(data.prfCredential))), salt: btoa(String.fromCharCode.apply(null, new Uint8Array(data.prfSalt)))});
+          }
+        } else {
+          this.completeSetSafeKey(new Uint8Array(data.prfResult), data.safeKey, lockAlg, !!data.prfPrefixSalt, {credential: btoa(String.fromCharCode.apply(null, new Uint8Array(data.prfCredential))), salt: btoa(String.fromCharCode.apply(null, new Uint8Array(data.prfSalt)))});
+        }
       }
     }
   }
@@ -223,10 +248,10 @@ class SafeEdit extends Component {
     }
   }
   
-  completeAddSafeKey(containerKey, newSafeKey, alg, prefixPassword = false) {
+  completeAddSafeKey(containerKey, newSafeKey, alg, prefixPassword = false, prf = undefined) {
     if (this.state.safeContent[this.state.safe.name].extractableKey) {
       new EncryptJWT(this.state.safeContent[this.state.safe.name].extractableKey)
-      .setProtectedHeader({alg: alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb, prefixPassword: prefixPassword})
+      .setProtectedHeader({alg: alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb, prefixPassword: !!prefixPassword, prf: prf})
       .encrypt(containerKey)
       .then((jwt) => {
         newSafeKey.data = jwt;
@@ -263,10 +288,10 @@ class SafeEdit extends Component {
     });
   }
   
-  completeSetSafeKey(containerKey, newSafeKey, alg, prefixPassword = false) {
+  completeSetSafeKey(containerKey, newSafeKey, alg, prefixPassword = false, prf = undefined) {
     if (this.state.safeContent[this.state.safe.name].extractableKey) {
       new EncryptJWT(this.state.safeContent[this.state.safe.name].extractableKey)
-      .setProtectedHeader({alg: alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb, prefixPassword: prefixPassword})
+      .setProtectedHeader({alg: alg, enc: this.state.safe.enc_type, sign_key: this.state.config.sign_thumb, prefixPassword: !!prefixPassword, prf: prf})
       .encrypt(containerKey)
       .then((jwt) => {
         newSafeKey.data = jwt;
@@ -381,6 +406,8 @@ class SafeEdit extends Component {
           faIcon += "fa-file-code-o";
         } else if (safeKey.type === "browser") {
           faIcon += "fa-firefox";
+        } else if (safeKey.type === "prf") {
+          faIcon += "fa-unlock-alt";
         }
         safeKeyListJsx.push(
           <div className="input-group" key={index}>
@@ -401,7 +428,7 @@ class SafeEdit extends Component {
       });
     }
     if (this.state.curSafeKeyContainer) {
-      modalSafeKeyJsx = <ModalSafeKey safeKey={this.state.curSafeKeyContainer} callback={this.saveSafeKey}/>
+      modalSafeKeyJsx = <ModalSafeKey profile={this.state.profile} safeKey={this.state.curSafeKeyContainer} callback={this.saveSafeKey}/>
     }
     return (
       <div>
@@ -449,6 +476,7 @@ class SafeEdit extends Component {
                     <a className="dropdown-item" href="#" onClick={(e) => this.addSafeKey(e, "password")}>{i18next.t("securityTypePassword")}</a>
                     <a className="dropdown-item" href="#" onClick={(e) => this.addSafeKey(e, "master-password")}>{i18next.t("securityTypeMasterPassword")}</a>
                     <a className="dropdown-item" href="#" onClick={(e) => this.addSafeKey(e, "jwk")}>{i18next.t("securityTypeJwk")}</a>
+                    <a className="dropdown-item" href="#" onClick={(e) => this.addSafeKey(e, "prf")}>{i18next.t("securityTypePrf")}</a>
                   </ul>
                 </div>
               </div>

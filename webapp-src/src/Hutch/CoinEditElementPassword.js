@@ -75,7 +75,7 @@ class CoinEditElementPassword extends Component {
         upprcase: true,
         numbers: true,
         special: true,
-        spaces: true,
+        spaces: false,
         noSimilarFollowingChars: false,
         passwordCharLength: 32,
         wordsNumber: 4,
@@ -108,7 +108,10 @@ class CoinEditElementPassword extends Component {
 	render() {
     var modalGenerate;
     if (this.state.showModalGeneratePassword) {
-      modalGenerate = <ModalGeneratePassword config={this.state.config} element={this.state.modalElement} originalPassword={this.state.originalPassword} callback={this.getGeneratedPassword} />
+      modalGenerate = <ModalGeneratePassword config={this.state.config}
+                                             element={this.state.modalElement}
+                                             originalPassword={this.state.originalPassword}
+                                             callback={this.getGeneratedPassword} />
     }
     var pwdScoreJsx;
     if (this.state.pwdScore === 0) {
@@ -123,7 +126,11 @@ class CoinEditElementPassword extends Component {
       pwdScoreJsx = <span className="badge bg-success">{i18next.t("pwdScoreVeryUnguessable")}</span>
     }
     return (
-      <div draggable={this.state.isDraggable} onDragStart={this.state.cbOnDragStart} onDragOver={this.state.cbOnDragOver} id={this.state.coin.name+"-"+this.state.index} className="border border-secondary rounded coin-element">
+      <div draggable={this.state.isDraggable}
+           onDragStart={this.state.cbOnDragStart}
+           onDragOver={this.state.cbOnDragOver}
+           id={this.state.coin.name+"-"+this.state.index}
+           className="border border-secondary rounded coin-element">
         <form onSubmit={(e) => this.state.cbSave(e, this.state.element, this.state.index)}>
           <div className="mb-3">
             <label htmlFor={this.state.coin.name+"-"+this.state.index} className="form-label">{i18next.t("coinElementPassword")}</label>

@@ -98,9 +98,19 @@ class ModalGeneratePassword extends Component {
   }
   
   closeModal(e, result) {
-    if (this.state.cb) {
-      this.state.cb(result, this.state.element);
-    }
+    this.setState({
+      passwordGenerated: false,
+      keyType: "AS-ES256",
+      keyAlg: "ECDH-ES+A128KW",
+      keyPair: {private: false, public: false},
+      qrcode: false,
+      qrCodeError: false,
+      showImportQrCode: false,
+      qrcodeImported: false}, () => {
+      if (this.state.cb) {
+        this.state.cb(result, this.state.element);
+      }
+    });
   }
   
   randomCharsRangeList(length, max) {
@@ -141,7 +151,7 @@ class ModalGeneratePassword extends Component {
       charList += "0123456789";
     }
     if (this.state.element.params.special) {
-      charList += "!\"#$%&\\'()*+,-./:;<=>?@[]^_`{|}~";
+      charList += "!/$%?&*(){}[];:,.-_";
     }
     if (this.state.element.params.spaces) {
       charList += " ";
@@ -302,11 +312,8 @@ class ModalGeneratePassword extends Component {
     if (this.state.hideSaveAndClose) {
       let keyAlgListJsx = [];
       if (this.state.keyType.startsWith('AS-RSA')) {
-        keyAlgListJsx.push(<option key={0} value="RSA1_5">RSA1_5</option>);
-        keyAlgListJsx.push(<option key={1} value="RSA-OAEP">RSA-OAEP</option>);
         keyAlgListJsx.push(<option key={2} value="RSA-OAEP-256">RSA-OAEP-256</option>);
       } else if (this.state.keyType.startsWith('AS-ES')) {
-        keyAlgListJsx.push(<option key={0} value="ECDH-ES">ECDH-ES</option>);
         keyAlgListJsx.push(<option key={1} value="ECDH-ES+A128KW">ECDH-ES+A128KW</option>);
         keyAlgListJsx.push(<option key={2} value="ECDH-ES+A192KW">ECDH-ES+A192KW</option>);
         keyAlgListJsx.push(<option key={3} value="ECDH-ES+A256KW">ECDH-ES+A256KW</option>);
@@ -320,7 +327,7 @@ class ModalGeneratePassword extends Component {
       }
       keyGeneratorJsx =
         <div className="accordion-item">
-          <h2 className="accordion-header" id="headingThree">
+          <h2 className="accordion-header" id="headingFour">
             <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#keyGenerator" aria-expanded="true" aria-controls="keyGenerator">
               {i18next.t("keyGenerator")}
             </button>
@@ -441,75 +448,75 @@ class ModalGeneratePassword extends Component {
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="accordion-item">
-                <h2 className="accordion-header" id="headingTwo">
-                  <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#passwordRandomWords" aria-expanded="true" aria-controls="passwordRandomWords">
-                    {i18next.t("passwordRandomWords")}
-                  </button>
-                </h2>
-                <div id="passwordRandomWords" className="accordion-collapse collapse" data-bs-parent="#secretGeneratorAccordion">
-                  <div className="accordion-body">
-                    <div className="mb-3">
-                      <label htmlFor="passwordWordsNumber" className="form-label">{i18next.t("passwordWordsNumber")}</label>
-                      <input type="number" step="1" min="0" className="form-control" id="passwordWordsNumber" value={this.state.element.params.wordsNumber} onChange={this.changePasswordWordsNumber}/>
-                    </div>
-                    <div className="input-group mb-3">
-                      <label className="input-group-text" htmlFor="passwordWordsSeparator">{i18next.t("passwordWordsSeparator")}</label>
-                      <select className="form-select" id="passwordWordsSeparator" value={this.state.element.params.wordSeparator} onChange={this.changePasswordWordsSeparator}>
-                        <option value=" ">{i18next.t("passwordWordsSeparatorSpace")}</option>
-                        <option value=".">{i18next.t("passwordWordsSeparatorDot")}</option>
-                        <option value="-">{i18next.t("passwordWordsSeparatorDash")}</option>
-                        <option value="_">{i18next.t("passwordWordsSeparatorUnderscore")}</option>
-                        <option value=",">{i18next.t("passwordWordsSeparatorComma")}</option>
-                        <option value="">{i18next.t("passwordWordsSeparatorNone")}</option>
-                      </select>
-                    </div>
-                    <h5>{i18next.t("passwordWordsLangs")}</h5>
-                    {langListJsx}
-                    <div className="mb-3">
-                      <button type="button" className="btn btn-secondary" onClick={this.generateRandomWords} disabled={!this.state.element.params.wordsNumber || !this.state.element.params.wordsLangsList.length}>{i18next.t("passwordGenerate")}</button>
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingTwo">
+                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#passwordRandomWords" aria-expanded="true" aria-controls="passwordRandomWords">
+                      {i18next.t("passwordRandomWords")}
+                    </button>
+                  </h2>
+                  <div id="passwordRandomWords" className="accordion-collapse collapse" data-bs-parent="#secretGeneratorAccordion">
+                    <div className="accordion-body">
+                      <div className="mb-3">
+                        <label htmlFor="passwordWordsNumber" className="form-label">{i18next.t("passwordWordsNumber")}</label>
+                        <input type="number" step="1" min="0" className="form-control" id="passwordWordsNumber" value={this.state.element.params.wordsNumber} onChange={this.changePasswordWordsNumber}/>
+                      </div>
+                      <div className="input-group mb-3">
+                        <label className="input-group-text" htmlFor="passwordWordsSeparator">{i18next.t("passwordWordsSeparator")}</label>
+                        <select className="form-select" id="passwordWordsSeparator" value={this.state.element.params.wordSeparator} onChange={this.changePasswordWordsSeparator}>
+                          <option value=" ">{i18next.t("passwordWordsSeparatorSpace")}</option>
+                          <option value=".">{i18next.t("passwordWordsSeparatorDot")}</option>
+                          <option value="-">{i18next.t("passwordWordsSeparatorDash")}</option>
+                          <option value="_">{i18next.t("passwordWordsSeparatorUnderscore")}</option>
+                          <option value=",">{i18next.t("passwordWordsSeparatorComma")}</option>
+                          <option value="">{i18next.t("passwordWordsSeparatorNone")}</option>
+                        </select>
+                      </div>
+                      <h5>{i18next.t("passwordWordsLangs")}</h5>
+                      {langListJsx}
+                      <div className="mb-3">
+                        <button type="button" className="btn btn-secondary" onClick={this.generateRandomWords} disabled={!this.state.element.params.wordsNumber || !this.state.element.params.wordsLangsList.length}>{i18next.t("passwordGenerate")}</button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              {keyGeneratorJsx}
-              <div className="accordion-item">
-                <h2 className="accordion-header" id="headingThree">
-                  <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#qrReader" aria-expanded="true" aria-controls="qrReader">
-                    {i18next.t("importQrCode")}
-                  </button>
-                </h2>
-                <div id="qrReader" className="accordion-collapse collapse" data-bs-parent="#secretGeneratorAccordion">
-                  <div className="accordion-body">
-                    {qrReaderBodyJsx}
+                {keyGeneratorJsx}
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id="headingThree">
+                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#qrReader" aria-expanded="true" aria-controls="qrReader">
+                      {i18next.t("importQrCode")}
+                    </button>
+                  </h2>
+                  <div id="qrReader" className="accordion-collapse collapse" data-bs-parent="#secretGeneratorAccordion">
+                    <div className="accordion-body">
+                      {qrReaderBodyJsx}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <hr/>
-              <div className="mb-3">
-                {passwordOutput}
-              </div>
-              <div className="mb-3">
-                <div className="btn-toolbar justify-content-between" role="toolbar">
-                  <div className="btn-group" role="group">
-                    <button className="btn btn-outline-secondary" type="button" onClick={this.toggleShowPassword} title={i18next.t("coinElementShowPassword")} disabled={!this.state.passwordGenerated && !this.state.qrcodeImported}>
-                      <i className="fa fa-eye" aria-hidden="true"></i>
-                    </button>
-                    <button className="btn btn-outline-secondary" type="button" onClick={this.showQrCode} title={i18next.t("coinElementShowQrCode")} disabled={!this.state.passwordGenerated && !this.state.qrcodeImported}>
-                      <i className="fa fa-qrcode" aria-hidden="true"></i>
-                    </button>
-                    <button className="btn btn-outline-secondary" type="button" onClick={this.copyNewPassword} title={i18next.t("passwordCopyNewPassword")} disabled={!this.state.passwordGenerated && !this.state.qrcodeImported}>
-                      <i className="fa fa-files-o" aria-hidden="true"></i>
-                    </button>
-                  </div>
-                  <div className="btn-group" role="group">
-                    <button className="btn btn-outline-secondary" type="button" onClick={this.copyOriginalPassword} title={i18next.t("passwordCopyOriginalPassword")} disabled={!this.state.originalPassword}>
-                      <i className="fa fa-files-o" aria-hidden="true"></i>
-                    </button>
-                  </div>
+                <hr/>
+                <div className="mb-3">
+                  {passwordOutput}
                 </div>
-                {qrcodeJsx}
+                <div className="mb-3">
+                  <div className="btn-toolbar justify-content-between" role="toolbar">
+                    <div className="btn-group" role="group">
+                      <button className="btn btn-outline-secondary" type="button" onClick={this.toggleShowPassword} title={i18next.t("coinElementShowPassword")} disabled={!this.state.passwordGenerated && !this.state.qrcodeImported}>
+                        <i className="fa fa-eye" aria-hidden="true"></i>
+                      </button>
+                      <button className="btn btn-outline-secondary" type="button" onClick={this.showQrCode} title={i18next.t("coinElementShowQrCode")} disabled={!this.state.passwordGenerated && !this.state.qrcodeImported}>
+                        <i className="fa fa-qrcode" aria-hidden="true"></i>
+                      </button>
+                      <button className="btn btn-outline-secondary" type="button" onClick={this.copyNewPassword} title={i18next.t("passwordCopyNewPassword")} disabled={!this.state.passwordGenerated && !this.state.qrcodeImported}>
+                        <i className="fa fa-files-o" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <div className="btn-group" role="group">
+                      <button className="btn btn-outline-secondary" type="button" onClick={this.copyOriginalPassword} title={i18next.t("passwordCopyOriginalPassword")} disabled={!this.state.originalPassword}>
+                        <i className="fa fa-files-o" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+                  {qrcodeJsx}
+                </div>
               </div>
             </div>
             <div className="modal-footer">

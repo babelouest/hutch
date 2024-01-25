@@ -6,6 +6,7 @@ import { decodeProtectedHeader, jwtDecrypt, importJWK } from 'jose-browser-runti
 import ManageExportData from './ManageExportData';
 import JwkInput from './JwkInput';
 import messageDispatcher from '../lib/MessageDispatcher';
+import prfCommon from '../lib/PrfCommon';
 
 function getUnlockedCoinList(props) {
   if (props.safeContent && props.safe.name && props.safeContent[props.safe.name]) {
@@ -15,12 +16,22 @@ function getUnlockedCoinList(props) {
   }
 }
 
+function base64ToArrayBuffer(base64) {
+    var binaryString = atob(base64);
+    var bytes = new Uint8Array(binaryString.length);
+    for (var i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
+
 class ModalManageSafe extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       config: props.config,
+      profile: props.profile,
       oidcStatus: props.oidcStatus,
       safe: props.safe,
       safeContent: props.safeContent,
@@ -48,7 +59,11 @@ class ModalManageSafe extends Component {
       coinNow: 0,
       merge: true,
       showScanQr: false,
-      importDataJson: false
+      importDataJson: false,
+      prfPrefixSalt: false,
+      prf: false,
+      prfResult: false,
+      prfError: false
     };
     
     this.changePassword = this.changePassword.bind(this);
@@ -62,6 +77,7 @@ class ModalManageSafe extends Component {
     this.changeMerge = this.changeMerge.bind(this);
     this.toggleScanQr = this.toggleScanQr.bind(this);
     this.handleQrCodeScan = this.handleQrCodeScan.bind(this);
+    this.createPrfFromKey = this.createPrfFromKey.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -116,7 +132,9 @@ class ModalManageSafe extends Component {
           this.parseContent();
         });
       };
-      fr.readAsText(file);
+      if (file) {
+        fr.readAsText(file);
+      }
     });
   }
   
@@ -150,7 +168,11 @@ class ModalManageSafe extends Component {
         }
         if (header) {
           if (header.alg === "PBES2-HS256+A128KW" || header.alg === "PBES2-HS384+A192KW" || header.alg === "PBES2-HS512+A256KW") {
-            this.setState({importSecurityType: "password"});
+            if (header.prf) {
+              this.setState({importSecurityType: "prf", prfPrefixSalt: header.prfPrefixSalt, prf: header.prf});
+            } else {
+              this.setState({importSecurityType: "password"});
+            }
           } else {
             this.setState({importSecurityType: "jwk"});
           }
@@ -166,14 +188,19 @@ class ModalManageSafe extends Component {
       e.preventDefault();
     }
     if (this.state.importSecurityType === "password") {
-      var enc = new TextEncoder();
-      jwtDecrypt(this.state.importData, enc.encode((this.state.prefixPassword||"") + this.state.password))
-      .then((decImport) => {
-        this.importContent(decImport.payload.data);
-      })
-      .catch(() => {
+      let protectedHeader = decodeProtectedHeader(this.state.importData);
+      if (["PBES2-HS256+A128KW", "PBES2-HS384+A192KW", "PBES2-HS512+A256KW"].indexOf(protectedHeader.alg) > -1) {
+        var enc = new TextEncoder();
+        jwtDecrypt(this.state.importData, enc.encode((this.state.prefixPassword||"") + this.state.password), {keyManagementAlgorithms: [protectedHeader.alg]})
+        .then((decImport) => {
+          this.importContent(decImport.payload.data);
+        })
+        .catch(() => {
+          this.setState({importDataResult: "invalidPassword"});
+        });
+      } else {
         this.setState({importDataResult: "invalidPassword"});
-      });
+      }
     } else if (this.state.importSecurityType === "jwk") {
       try {
         var key = JSON.parse(this.state.importJwk);
@@ -190,6 +217,19 @@ class ModalManageSafe extends Component {
         });
       } catch (err) {
         this.setState({importDataResult: "invalidJwk"});
+      }
+    } else if (this.state.importSecurityType === "prf") {
+      let protectedHeader = decodeProtectedHeader(this.state.importData);
+      if (["PBES2-HS256+A128KW", "PBES2-HS384+A192KW", "PBES2-HS512+A256KW"].indexOf(protectedHeader.alg) > -1) {
+        jwtDecrypt(this.state.importData, new Uint8Array(this.state.prfResult), {keyManagementAlgorithms: [protectedHeader.alg]})
+        .then((decImport) => {
+          this.importContent(decImport.payload.data);
+        })
+        .catch(() => {
+          this.setState({importDataResult: "invalidPassword"});
+        });
+      } else {
+        this.setState({importDataResult: "invalidPassword"});
       }
     } else if (this.state.importSecurityType === "none") {
       this.importContent(this.state.importDataJson);
@@ -286,6 +326,37 @@ class ModalManageSafe extends Component {
     }
   }
 
+  createPrfFromKey(e) {
+    let credentialDec = false, saltDec = false, headerSaltDec;
+    let salt;
+    try {
+      headerSaltDec = base64ToArrayBuffer(this.state.prf.salt);
+      credentialDec = base64ToArrayBuffer(this.state.prf.credential);
+    } catch (e) {
+      this.setState({prfError: true});
+    }
+    if (this.state.prfPrefixSalt) {
+      var enc = new TextEncoder();
+      let prfPrefixSaltEnc = enc.encode(this.state.prefixPassword);
+      saltDec = new Uint8Array(prfPrefixSaltEnc.length + headerSaltDec.byteLength);
+      saltDec.set(prfPrefixSaltEnc, 0);
+      saltDec.set(new Uint8Array(headerSaltDec), prfPrefixSaltEnc.length);
+    } else {
+      saltDec = new Uint8Array(headerSaltDec);
+    }
+    if (credentialDec && saltDec) {
+      prfCommon.createPrfFromKey(credentialDec, saltDec)
+      .then(result => {
+        this.setState({prfResult: result.prfResult});
+      })
+      .catch(err => {
+        this.setState({prfError: true});
+      });
+    } else {
+      this.setState({prfError: true});
+    }
+  }
+
 	render() {
     var importDataResultJsx, importSecurityJsx, completeButtonJsx, showProgressJsx, exportJsx, scanQrJsx;
     if (this.state.importDataResult === "invalidData") {
@@ -319,7 +390,7 @@ class ModalManageSafe extends Component {
       if (this.state.importRunning) {
         spinnerJsx = <i className="fa fa-spinner fa-spin fa-fw btn-icon-right"></i>;
       }
-      var isDisabled = (this.state.importSecurityType === "password" && !this.state.password) || (this.state.importSecurityType === "jwk" && !this.state.importJwk);
+      var isDisabled = (this.state.importSecurityType === "password" && !this.state.password) || (this.state.importSecurityType === "jwk" && !this.state.importJwk) || (this.state.importSecurityType === "prf" && !this.state.prfResult);
       completeButtonJsx =
         <button type="submit" className="btn btn-secondary" onClick={this.completeImportContent} title={i18next.t("modalOk")} disabled={isDisabled || this.state.importRunning}>
           {i18next.t("modalOk")}{spinnerJsx}
@@ -343,6 +414,34 @@ class ModalManageSafe extends Component {
           <label htmlFor="importJwk" className="form-label">{i18next.t("importJwk")}</label>
           <JwkInput isError={false} ph={i18next.t("safeKeyJwkPh")} cb={this.editImportJwk}/>
         </div>
+    } else if (this.state.importSecurityType === "prf") {
+      let prefixSaltJsx, prfErrorJsx;
+      if (this.state.prfPrefixSalt) {
+        prefixSaltJsx =
+          <div className="mb-3">
+            <label htmlFor="prefix-password" className="form-label">{i18next.t("importPrefixPassword")}</label>
+            <input type="password" className="form-control" id="prefix-password" autoComplete="new-password" value={this.state.prefixPassword} onChange={this.changePrefixPassword}/>
+          </div>
+      }
+      if (this.state.prfError) {
+        prfErrorJsx =
+          <div className="mb-3">
+            <span className="badge bg-danger">{i18next.t("safeKeyError")}</span>
+          </div>
+      } else if (this.state.prfResult) {
+        prfErrorJsx =
+          <div className="mb-3">
+            <span className="badge bg-success">{i18next.t("prfAssertionSuccess")}</span>
+          </div>
+      }
+      importSecurityJsx =
+        <div>
+          {prefixSaltJsx}
+          {prfErrorJsx}
+          <div className="mb-3">
+            <button type="button" className="btn btn-secondary" onClick={(e) => this.createPrfFromKey(e)}>{i18next.t("prfCreateCredential")}</button>
+          </div>
+        </div>
     }
     if (this.state.showProgress) {
       showProgressJsx =
@@ -365,6 +464,7 @@ class ModalManageSafe extends Component {
           </div>
         </div>
         <ManageExportData config={this.state.config}
+                          profile={this.state.profile}
                           safe={this.state.safe}
                           content={this.state.unlockedCoinList}
                           id={name}
@@ -374,11 +474,11 @@ class ModalManageSafe extends Component {
     }
     if (this.state.showScanQr) {
       scanQrJsx =
-      <QrReader
-        onResult={this.handleQrCodeScan}
-        style={{ width: '100%' }}
-        constraints={{ facingMode: 'environment' }}
-      />
+        <QrReader
+          onResult={this.handleQrCodeScan}
+          style={{ width: '100%' }}
+          constraints={{ facingMode: 'environment' }}
+        />
     }
     return (
       <div className="modal" tabIndex="-1" id="manageSafe">

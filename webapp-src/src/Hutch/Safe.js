@@ -16,11 +16,13 @@ class Safe extends Component {
     }
     this.state = {
       config: props.config,
+      profile: props.profile,
       oidcStatus: props.oidcStatus,
       hutchProfile: props.hutchProfile,
       safe: props.safe,
       safeContent: props.safeContent,
       iconList: props.iconList,
+      loadingData: props.loadingData,
       editMode: editMode
     };
   }
@@ -39,6 +41,7 @@ class Safe extends Component {
       if (!this.state.editMode) {
         return (
           <SafeView config={this.state.config}
+                    profile={this.state.profile}
                     safe={this.state.safe}
                     safeContent={this.state.safeContent}
                     oidcStatus={this.state.oidcStatus}
@@ -47,27 +50,37 @@ class Safe extends Component {
       } else {
         return (
           <SafeEdit config={this.state.config}
+                    profile={this.state.profile}
                     safe={this.state.safe}
                     safeContent={this.state.safeContent}
                     editMode={this.state.editMode}/>
         );
       }
     } else {
-      if ((!this.state.editMode && hasKeys) || this.state.oidcStatus !== "connected") {
-        return (
-          <SafeView config={this.state.config}
-                    safe={this.state.safe}
-                    safeContent={this.state.safeContent}
-                    oidcStatus={this.state.oidcStatus}
-                    iconList={this.state.iconList} />
-        );
+      if (this.state.loadingData) {
+        return 
+          <div className="perfect-centering">
+            <img src="img/hutch.jpg" className="img-fluid" alt="hutch"/>
+          </div>
       } else {
-        return (
-          <SafeEdit config={this.state.config}
-                    safe={this.state.safe}
-                    safeContent={this.state.safeContent}
-                    editMode={this.state.editMode}/>
-        );
+        if ((!this.state.editMode && hasKeys) || this.state.oidcStatus !== "connected") {
+          return (
+            <SafeView config={this.state.config}
+                      profile={this.state.profile}
+                      safe={this.state.safe}
+                      safeContent={this.state.safeContent}
+                      oidcStatus={this.state.oidcStatus}
+                      iconList={this.state.iconList} />
+          );
+        } else {
+          return (
+            <SafeEdit config={this.state.config}
+                      profile={this.state.profile}
+                      safe={this.state.safe}
+                      safeContent={this.state.safeContent}
+                      editMode={this.state.editMode}/>
+          );
+        }
       }
     }
 	}

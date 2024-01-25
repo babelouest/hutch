@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 
 import JwkInput from './JwkInput';
+import prfCommon from '../lib/PrfCommon';
 
 class ModalSafeKey extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      profile: props.profile,
       safeKey: props.safeKey,
       cb: props.callback,
       newPassword: "",
@@ -17,7 +19,14 @@ class ModalSafeKey extends Component {
       safeKeyJwk: "",
       keyName: "",
       pwdScore: -1,
-      isValid: false
+      isValid: false,
+      prfStep: 0,
+      prfError: false,
+      prfCredential: false,
+      prfPrefixSalt: "",
+      prfPrefixSaltConfirm: "",
+      prfSalt: false,
+      prfResult: false
     }
 
     this.changeNewPassword = this.changeNewPassword.bind(this);
@@ -25,6 +34,10 @@ class ModalSafeKey extends Component {
     this.changePrefixPassword = this.changePrefixPassword.bind(this);
     this.changeConfirmPrefixPassword = this.changeConfirmPrefixPassword.bind(this);
     this.editSafeKeyJwk = this.editSafeKeyJwk.bind(this);
+    this.createPrfCredential = this.createPrfCredential.bind(this);
+    this.createPrfFromKey = this.createPrfFromKey.bind(this);
+    this.changePrfPrefixSalt = this.changePrfPrefixSalt.bind(this);
+    this.changeConfirmPrfPrefixSaltConfirm = this.changeConfirmPrfPrefixSaltConfirm.bind(this);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -55,6 +68,14 @@ class ModalSafeKey extends Component {
   
   changeConfirmPrefixPassword(e) {
     this.setState({confirmPrefixPassword: e.target.value}, () => {this.isSafeKeyValid()});
+  }
+  
+  changePrfPrefixSalt(e) {
+    this.setState({prfPrefixSalt: e.target.value});
+  }
+  
+  changeConfirmPrfPrefixSaltConfirm(e) {
+    this.setState({prfPrefixSaltConfirm: e.target.value}, () => {this.isSafeKeyValid()});
   }
   
   editSafeKeyJwk(safeKeyJwk) {
@@ -92,6 +113,13 @@ class ModalSafeKey extends Component {
       } catch (e) {
         isValid = false;
       }
+    } else if (this.state.safeKey.type === "prf") {
+      if (this.state.prfPrefixSalt && ((this.state.prfPrefixSalt !== this.state.prfPrefixSaltConfirm) || this.state.prfPrefixSalt.length > 256)) {
+        isValid = false;
+      }
+      if (!this.state.prfResult?.byteLength) {
+        isValid = false;
+      }
     }
     this.setState({isValid: isValid});
   }
@@ -101,6 +129,36 @@ class ModalSafeKey extends Component {
     if (this.state.isValid) {
       this.closeModal(e, true);
     }
+  }
+  
+  createPrfCredential(e) {
+    prfCommon.createCredential(this.state.profile.sub, this.state.profile.name||"Dave Lopper")
+    .then(result => {
+      this.setState({prfError: false, prfStep: 1, prfCredential: result.credentialId, prfSalt: result.salt});
+    })
+    .catch(err => {
+      this.setState({prfError: err, prfStep: 0});
+    });
+  }
+  
+  createPrfFromKey() {
+    let salt;
+    if (this.state.prfPrefixSalt) {
+      var enc = new TextEncoder();
+      let prfPrefixSaltEnc = enc.encode(this.state.prfPrefixSalt);
+      salt = new Uint8Array(prfPrefixSaltEnc.length + this.state.prfSalt.byteLength);
+      salt.set(prfPrefixSaltEnc, 0);
+      salt.set(new Uint8Array(this.state.prfSalt), prfPrefixSaltEnc.length);
+    } else {
+      salt = this.state.prfSalt;
+    }
+    prfCommon.createPrfFromKey(this.state.prfCredential, salt)
+    .then(result => {
+      this.setState({prfError: false, prfStep: 2, prfResult: result.prfResult}, () => {this.isSafeKeyValid()});
+    })
+    .catch(err => {
+      this.setState({prfError: err});
+    });
   }
 
   closeModal(e, result) {
@@ -115,12 +173,23 @@ class ModalSafeKey extends Component {
         safeKey: this.state.safeKey,
         password: this.state.prefixPassword+this.state.newPassword,
         prefixPassword: !!this.state.prefixPassword,
-        jwk: jwk
+        jwk: jwk,
+        prfCredential: this.state.prfCredential,
+        prfPrefixSalt: this.state.prfPrefixSalt,
+        prfSalt: this.state.prfSalt,
+        prfResult: this.state.prfResult
       });
       this.setState({newPassword: "",
                     confirmNewPassword: "",
                     pwdScore: -1,
-                    isValid: false});
+                    isValid: false,
+                    prfStep: 0,
+                    prfError: false,
+                    prfCredential: false,
+                    prfPrefixSalt: "",
+                    prfPrefixSaltConfirm: "",
+                    prfSalt: false,
+                    prfResult: false});
     }
   }
 
@@ -213,6 +282,67 @@ class ModalSafeKey extends Component {
           <JwkInput isError={!this.state.isValid} ph={i18next.t("safeKeyJwkPh")} cb={this.editSafeKeyJwk}/>
           {messageErrorJsx}
         </div>
+    } else if (this.state.safeKey.type === "prf") {
+      let prfMessageJsx;
+      if (this.state.prfError === "prfDisabled") {
+        prfMessageJsx =
+          <div className="mb-3">
+            <span className="badge bg-warning">{i18next.t("prfErrorPrfDisabled")}</span>
+          </div>
+      } else if (this.state.prfError === "creationError") {
+        prfMessageJsx =
+          <div className="mb-3">
+            <span className="badge bg-danger">{i18next.t("prfErrorCreationError")}</span>
+          </div>
+      } else if (this.state.prfError === "assertionError") {
+        prfMessageJsx =
+          <div className="mb-3">
+            <span className="badge bg-danger">{i18next.t("prfErrorAssertionError")}</span>
+          </div>
+      }
+      if (this.state.prfStep === 0) {
+        inputJsx =
+          <div>
+            <div className="mb-3">
+              <button type="button" className="btn btn-secondary" onClick={this.createPrfCredential}>{i18next.t("prfCreateCredential")}</button>
+            </div>
+            {prfMessageJsx}
+          </div>
+      } else if (this.state.prfStep === 1) {
+        inputJsx =
+          <div>
+            <div className="mb-3">
+              <label htmlFor="prefixPassword" className="form-label">{i18next.t("prefixPassword")}</label>
+              <input type="password"
+                     autoComplete="off"
+                     className="form-control"
+                     id="prefixPassword"
+                     placeholder={i18next.t("prefixPasswordPh")}
+                     value={this.state.prfPrefixSalt}
+                     onChange={this.changePrfPrefixSalt}/>
+              {pwdScoreJsx}
+            </div>
+            <div className="mb-3">
+              <label htmlFor="confirmPrefixPassword" className="form-label">{i18next.t("confirmPrefixPassword")}</label>
+              <input type="password"
+                     autoComplete="off"
+                     className="form-control"
+                     id="confirmPrefixPassword"
+                     placeholder={i18next.t("confirmPrefixPasswordPh")}
+                     value={this.state.prfPrefixSaltConfirm}
+                     onChange={this.changeConfirmPrfPrefixSaltConfirm}/>
+            </div>
+            <div className="mb-3">
+              <button type="button" className="btn btn-secondary" onClick={this.createPrfFromKey}>{i18next.t("prfCreateCredential")}</button>
+            </div>
+            {prfMessageJsx}
+          </div>
+      } else if (this.state.prfStep === 2) {
+        inputJsx = 
+          <div className="mb-3">
+            <span className="badge bg-success">{i18next.t("prfCreationSuccess")}</span>
+          </div>
+      }
     }
 		return (
       <div className="modal" tabIndex="-1" id="modalSafeKey">

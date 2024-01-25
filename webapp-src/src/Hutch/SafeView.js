@@ -74,6 +74,7 @@ class SafeView extends Component {
 
     this.state = {
       config: props.config,
+      profile: props.profile,
       oidcStatus: props.oidcStatus,
       safe: props.safe,
       safeContent: props.safeContent,
@@ -138,13 +139,15 @@ class SafeView extends Component {
     unlockSafeModal.show();
   }
   
-  unlockSafeCallback(result, masterKey, keepUnlocked, unlockKeyName, masterkeyData) {
+  unlockSafeCallback(result, masterKey, lockPolicy, keepUnlocked, unlockKeyName, lockAfterTime, masterkeyData) {
     if (result) {
       messageDispatcher.sendMessage('App', {action: "setSafeKey",
                                             target: this.state.safe,
                                             key: masterKey,
+                                            lockPolicy: lockPolicy,
                                             keepUnlocked: keepUnlocked,
                                             unlockKeyName: unlockKeyName,
+                                            lockAfterTime: lockAfterTime,
                                             removeStorage: false,
                                             masterkeyData: masterkeyData});
       messageDispatcher.sendMessage('Notification', {type: "info", message: i18next.t("unlockedSafe")});
@@ -352,6 +355,7 @@ class SafeView extends Component {
       this.state.filteredCoinList.forEach((coin, index) => {
         secretListJsx.push(<Coin config={this.state.config}
                                  coin={coin}
+                                 profile={this.state.profile}
                                  safe={this.state.safe}
                                  cbEditHeader={this.editCoinHeader}
                                  cbRemoveCoin={this.removeCoin}
@@ -451,6 +455,7 @@ class SafeView extends Component {
     if (this.state.showModalManageSafe) {
       modalManageSafeJsx = 
         <ModalManageSafe config={this.state.config}
+                         profile={this.state.profile}
                          safe={this.state.safe}
                          safeContent={this.state.safeContent}
                          cbSaveCoin={this.coinSaveCallback}
@@ -521,12 +526,12 @@ class SafeView extends Component {
           {selectedTagsJsx}
         </div>
         <div className="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
+          <div className="safe-image"/>
           {secretListJsx}
         </div>
         <ModalSafeUnlock config={this.state.config}
                          safe={this.state.safe}
                          safeContent={this.state.safeContent}
-                         allowKeepUnlocked={true}
                          cb={this.unlockSafeCallback} />
         <ModalCoinEdit editMode={this.state.coinEditMode}
                        name={this.state.coinEditName}

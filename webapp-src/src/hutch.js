@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import i18next from 'i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -49,6 +49,8 @@ function getServerConfig(rootUrl) {
 }
 
 var initApp = () => {
+  const container = document.getElementById('root');
+  const root = createRoot(container);
   const urlParams = new URLSearchParams(window.location.search);
   apiManager.request("config.json")
   .then((frontEndConfig) => {
@@ -89,10 +91,10 @@ var initApp = () => {
           }
         });
         apiManager.setConfig(frontEndConfig.APIUrl);
-        ReactDOM.render(<App config={config} />, document.getElementById('root'));
+        root.render(<App config={config} />);
       })
       .fail((error) => {
-        ReactDOM.render(<ErrorConfig message={"Error getting hutch backend config"}/>, document.getElementById('root'));
+        root.render(<ErrorConfig message={"Error getting hutch backend config"}/>);
       });
     } else {
       var config = {
@@ -105,11 +107,11 @@ var initApp = () => {
         oidc_server_remote_config: false,
         scope: false
       };
-      ReactDOM.render(<App config={config} />, document.getElementById('root'));
+      root.render(<App config={config} />);
     }
   })
   .fail((error) => {
-    ReactDOM.render(<ErrorConfig message={"Error getting hutch frontend config"}/>, document.getElementById('root'));
+    root.render(<ErrorConfig message={"Error getting hutch frontend config"}/>);
   });
 }
 
