@@ -25,7 +25,7 @@ JSC=npm
 all: webapp
 
 install-dev:
-	$(JSC) install
+	$(JSC) install --legacy-peer-deps
 
 dev:
 	$(JSC) run dev
