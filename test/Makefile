@@ -7,7 +7,7 @@
 #
 
 CC=gcc
-CFLAGS=-Wall -D_REENTRANT -DDEBUG -g -O0
+CFLAGS=-Wall -Wno-unknown-pragmas -Wpedantic -D_REENTRANT -DDEBUG -g -O0
 LDFLAGS=-lc $(shell pkg-config --libs liborcania) $(shell pkg-config --libs libyder) $(shell pkg-config --libs libulfius) $(shell pkg-config --libs libhoel) $(shell pkg-config --libs librhonabwy) $(shell pkg-config --libs libiddawc) $(shell pkg-config --libs jansson) $(shell pkg-config --libs check)
 TARGET=profile safe safe_key coin
 VALGRIND_COMMAND=valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all

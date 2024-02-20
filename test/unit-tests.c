@@ -163,7 +163,7 @@ int test_request(struct _u_request * req, long int expected_status, json_t * exp
       if (jwks != NULL) {
         r_jwt_add_sign_jwks(jwt, NULL, jwks);
       }
-      r_jwt_parsen(jwt, response.binary_body, response.binary_body_length, 0);
+      r_jwt_parsen(jwt, (const char *)response.binary_body, response.binary_body_length, 0);
       if (jwks == NULL || r_jwt_verify_signature(jwt, NULL, 0) == RHN_OK) {
         json_body = r_jwt_get_full_claims_json_t(jwt);
         if (is_around_now_timestamp((time_t)r_jwt_get_header_int_value(jwt, "iat")) && (time_t)r_jwt_get_header_int_value(jwt, "exp") >= now) {

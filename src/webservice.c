@@ -66,7 +66,7 @@ int callback_hutch_server_configuration (const struct _u_request * request, stru
                                              U_OPT_NONE);
   }
   return U_CALLBACK_CONTINUE;
-};
+}
 
 /**
  * api description endpoint
@@ -95,7 +95,7 @@ int callback_hutch_server_jwks (const struct _u_request * request, struct _u_res
                                              U_OPT_NONE);
   }
   return U_CALLBACK_CONTINUE;
-};
+}
 
 int callback_default (const struct _u_request * request, struct _u_response * response, void * user_data) {
   UNUSED(request);

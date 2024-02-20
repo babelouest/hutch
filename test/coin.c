@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
                                         U_OPT_NONE);
     ulfius_send_http_request(&req, &resp);
     r_jwt_init(&jwt_jwks);
-    r_jwt_parsen(jwt_jwks, resp.binary_body, resp.binary_body_length, 0);
+    r_jwt_parsen(jwt_jwks, (const char *)resp.binary_body, resp.binary_body_length, 0);
     j_jwks = r_jwt_get_full_claims_json_t(jwt_jwks);
     r_jwks_import_from_json_t(jwks_config, j_jwks);
     r_jwt_add_sign_jwks(jwt_jwks, NULL, jwks_config);

@@ -851,7 +851,7 @@ const char * get_ip_source(const struct _u_request * request) {
   }
   
   return ip_source;
-};
+}
 
 /**
  *
